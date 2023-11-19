@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gray: #505050; /*Gray*/
+  --principal-blue: #0E2240; /*Principal Blue*/
+  --principal-red: #E31D1A; /*Principal Red*/
+  --medium-gray: #777777; /*Medium Gray*/
+  --light-gray: #CCCCCC; /*Light Gray*/
+  --light: #F4F4F4; /*Light*/
+  --white: #FFFFFF; /*Light*/
+
+  --darken-factor: 0.1;
+}
+
+body {
+  color: var(--gray);
+  background: var(--light);
+}
