@@ -40,7 +40,6 @@ next-env.d.ts
 # Ignoring files in the Backend
 
 # assets
-assets
 
 # virtual environment
 env
