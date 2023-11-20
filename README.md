@@ -48,6 +48,10 @@ pip install virtualenv
 ```bash
 python -m venv env
 ```
+- Activate virtual env.
+```bash
+.\env\Scripts\activate
+```
 - Install the requirements for the project.
 ```bash
 pip install -r requirements.txt
