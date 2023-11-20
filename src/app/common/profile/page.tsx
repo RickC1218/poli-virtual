@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import icons from "../../components/icons/icons";
+import icons from "../../../components/icons/icons";
 
 export default function Page() {
   const iconKeys = Object.keys(icons);

@@ -24,6 +24,7 @@ import {
   faStarHalfStroke,
   faBolt
  } from '@fortawesome/free-solid-svg-icons';
+import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 const icons = {
@@ -51,6 +52,7 @@ const icons = {
   faRightFromBracket,
   faEnvelope,
   faStar,
+  farStar,
   faStarHalfStroke,
   faBolt
 };

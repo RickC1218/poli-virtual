@@ -15,17 +15,17 @@ const Button: React.FC<ButtonProps> = ({ text, icon, color, type }) => {
     const smallDimensions = 'w-[175px] h-[50px] p-3 ';
     switch (color) {
       case 'red':
-        style += 'bg-[--principal-red] hover:shadow-2xl hover:shadow-red-500/50 ';
+        style += 'bg-[--principal-red] hover:shadow-lg hover:shadow-red-500/50 ';
         if (type === 'big') style += bigDimensions;
         else style += smallDimensions;
         break;
       case 'blue':
-        style += 'bg-[--principal-blue] hover:shadow-2xl hover:shadow-blue-500/50 ';
+        style += 'bg-[--principal-blue] hover:shadow-lg hover:shadow-blue-500/50 ';
         if (type === 'big') style += bigDimensions;
         else style += smallDimensions;
         break;
       case 'neutral':
-        style += 'bg-[--gray] hover:shadow-2xl hover:shadow-gray-500/50 ';
+        style += 'bg-[--gray] hover:shadow-lg hover:shadow-gray-500/50 ';
         if (type === 'big') style += bigDimensions;
         else style += smallDimensions;
         break;
@@ -36,9 +36,9 @@ const Button: React.FC<ButtonProps> = ({ text, icon, color, type }) => {
   };
 
   return (
-    <button className={`flex justify-around items-center text-[--light] text-base font-bold rounded-[10px] ${getButtonStyle()}`}>
+    <button className={`flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] ${getButtonStyle()}`}>
       {text}
-      {icon && <FontAwesomeIcon icon={icon} className="m-2 w-[18px]" />}
+      {icon && <FontAwesomeIcon icon={icon} className="m-2 w-[18px] text-[--white]" />}
     </button>
   );
 };

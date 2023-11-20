@@ -1,14 +1,12 @@
 import type { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
 
-import '../components/globals.css';
-import SideNav from '@/components/sidenav';
+import '@/components/globals.css';
 
-
-const nunito = Nunito({ 
+const nunito = Nunito({
   subsets: ['latin'],
   weight: ['400', '700']
- })
+})
 
 export const metadata: Metadata = {
   title: 'Poli Virtual',
@@ -29,12 +27,9 @@ export default function RootLayout({
       </head>
       <body className={nunito.className}>
         <div className="flex h-screen flex-col md:overflow-hidden">
-          <div className="bg-[--white] w-full">
-            <SideNav />
+          <div className="flex-grow md:overflow-x-auto">
+            <main>{children}</main>
           </div>
-            <div className="flex-grow p-6 md:overflow-x-auto md:p-12">
-              <main>{children}</main>
-              </div>
         </div>
       </body>
     </html>
