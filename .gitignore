@@ -38,6 +38,7 @@ next-env.d.ts
 
 
 # Ignoring files in the Backend
+.env
 
 # assets
 
