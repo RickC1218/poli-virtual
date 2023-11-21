@@ -34,3 +34,49 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+# Backend configuration
+
+## First steps
+- Check if you have python version 3.10.6 installed, if not, install https://www.python.org/downloads/release/python-3106/.
+- Install virtualenv.
+```bash
+pip install virtualenv
+```
+- Later, you need to create a virtual env outside the /backend folder with the command below.
+```bash
+python -m venv env
+```
+- Activate virtual env.
+```bash
+.\env\Scripts\activate
+```
+- Install the requirements for the project.
+```bash
+pip install -r requirements.txt
+```
+
+## MongoDB configuration
+- Install MongoDB Community Server https://www.mongodb.com/try/download/community.
+- Install MongoDB Compass https://www.mongodb.com/products/tools/compass.
+- Create a database in Compass and add a collection.
+
+
+<img width="513" alt="image1" src="assets\image-1.png">
+
+## Project operation
+- You need to execute the following commands:
+```bash
+# This command is used to create new migrations based on changes detected in your models (Users).
+python manage.py makemigrations Users
+
+# This command is used to apply pending migrations and update the database according to the changes defined in the migration files.
+python manage.py migrate
+```
+
+## Run the server
+- You must be located in the path where the manage.py is located and run this command.
+```bash
+python manage.py runserver
+```
