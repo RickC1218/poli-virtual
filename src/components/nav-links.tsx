@@ -3,8 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import Button from '../components/buttons/buttons';
-import icons from '../components/icons/icons';
 
 interface NavLink {
   href: string;
@@ -70,7 +68,6 @@ export default function NavLinks() {
   const pathname = usePathname();
 
   const renderLink = (link: NavLink) => {
-    // Para otros enlaces, renderiza un enlace normal
     return (
       <Link
         key={link.name}

@@ -6,9 +6,11 @@ interface ButtonProps {
   icon: IconProp; 
   color: 'red' | 'blue' | 'neutral';
   type: 'big' | 'small';
+  onClick?: () => void;
+  href?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ text, icon, color, type }) => {
+const Button: React.FC<ButtonProps> = ({ text, icon, color, type, onClick }) => {
   const getButtonStyle = () => {
     let style= '';
     const bigDimensions = 'w-[230px] h-[75px] p-2 ';
@@ -36,7 +38,10 @@ const Button: React.FC<ButtonProps> = ({ text, icon, color, type }) => {
   };
 
   return (
-    <button className={`flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] ${getButtonStyle()}`}>
+    <button 
+      onClick={onClick}
+      className={`flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] ${getButtonStyle()}`}
+    >
       {text}
       {icon && <FontAwesomeIcon icon={icon} className="m-2 w-[18px] text-[--white]" />}
     </button>

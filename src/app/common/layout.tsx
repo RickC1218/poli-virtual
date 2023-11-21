@@ -1,4 +1,5 @@
 import SideNav from '@/components/sidenav';
+import Footer from '@/components/footer';
 
 export default function Layout({
   children,
@@ -10,8 +11,9 @@ export default function Layout({
       <div className="bg-[--white] w-full">
         <SideNav />
       </div>
-      <div className="flex-grow p-6 md:overflow-x-auto md:p-12">
+      <div className="flex-grow md:overflow-x-auto ">
         <div>{children}</div>
+        <Footer />
       </div>
     </div>
   )
