@@ -18,7 +18,7 @@ const Banner: React.FC<BannerProps> = ({ title, description, button, image, addS
   const size = "big";
 
   return (
-    <div className={`flex flex-between ${addStyle ? 'lg:flex-row-reverse' : 'lg:flex-row'} w-full h-full lg:h-[700px] flex-col lg:flex-row bg-[${addStyle}] justify-between `}>
+    <div className={`flex flex-between ${addStyle} ${addStyle ? 'lg:flex-row-reverse' : 'lg:flex-row'} w-full h-full lg:h-[700px] flex-col lg:flex-row justify-between`}>
       <div className='w-full lg:w-[50%] p-6 md:p-20 self-center'>
         <h1 className="text-[32px] xl:text-[38px] pb-4 text-center lg:text-start">{title}</h1>
         <p>{description}</p>

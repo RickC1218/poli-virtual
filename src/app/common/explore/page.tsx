@@ -1,4 +1,3 @@
-import icons from "../../../components/icons/icons";
 import Banner from "@/components/banner";
 import DifferentText from "@/components/different-text";
 import BigBanner from "@/components/big-banner";

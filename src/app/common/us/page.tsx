@@ -25,7 +25,7 @@ export default function Page() {
         description="Crear una comunidad en línea donde los estudiantes de diferentes niveles académicos compartan conocimientos y habilidades, promoviendo un ciclo constante de aprendizaje y enseñanza para el crecimiento de todos los usuarios."
         button={false}
         image={true}
-        addStyle="--light-gray"
+        addStyle={`bg-[--high-gray]`}
       />
       <BigBanner
         title={<>

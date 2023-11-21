@@ -104,7 +104,7 @@ export default function Page() {
           <input
             type="text"
             onChange={handleNameChange}
-            className="bg-[--white] border border-[--light-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -112,7 +112,7 @@ export default function Page() {
           <input
             type="text"
             onChange={handleLastNameChange}
-            className="bg-[--white] border border-[--light-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -120,12 +120,12 @@ export default function Page() {
           <input
             type="mail"
             onChange={handleMailChange}
-            className="bg-[--white] border border-[--light-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Semestre:</p>
-          <select value={selectedSemester} onChange={handleSemesterChange} className="bg-[--white] border border-[--light-gray] rounded-[10px] p-2 text-sm w-[55%]">
+          <select value={selectedSemester} onChange={handleSemesterChange} className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
             <option value="1">1er semestre</option>
             <option value="2">2do semestre</option>
             <option value="3">3er semestre</option>
@@ -143,7 +143,7 @@ export default function Page() {
             type="password"
             value={password}
             onChange={handlePasswordChange}
-            className="bg-[--white] border border-[--light-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -152,7 +152,7 @@ export default function Page() {
             type="password"
             value={verification}
             onChange={handleVerificationChange}
-            className="bg-[--white] border border-[--light-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
 

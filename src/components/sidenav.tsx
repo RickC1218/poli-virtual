@@ -34,7 +34,7 @@ export default function SideNav() {
       </div>
       <div className="items-start hidden col-span-2">
         <div className="flex justify-start">
-          <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--light-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
+          <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
             <FontAwesomeIcon
               icon={icons.faSearch}
               className="text-[--medium-gray] w-[16px] m-1"
