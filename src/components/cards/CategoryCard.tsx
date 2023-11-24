@@ -1,6 +1,6 @@
 import icons from '../icons/icons';
 
-import Button from '../buttons/buttons';
+import Button from '../buttons/Buttons';
 
 interface CategoryCardProps {
   name: string;

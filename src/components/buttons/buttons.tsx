@@ -40,7 +40,7 @@ const Button: React.FC<ButtonProps> = ({ text, icon, color, type, onClick }) => 
   return (
     <button 
       onClick={onClick}
-      className={`flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] ${getButtonStyle()}`}
+      className={`flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer ${getButtonStyle()}`}
     >
       {text}
       {icon && <FontAwesomeIcon icon={icon} className="m-2 w-[18px] text-[--white]" />}

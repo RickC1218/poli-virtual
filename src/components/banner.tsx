@@ -1,6 +1,7 @@
 import icons from './icons/icons';
-import Button from './buttons/buttons';
+import Button from './buttons/Buttons';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ReactNode } from 'react';
 
@@ -13,9 +14,14 @@ interface BannerProps {
 }
 
 const Banner: React.FC<BannerProps> = ({ title, description, button, image, addStyle }) => {
-  const text = "Registrarse";
   const color = "red";
   const size = "big";
+
+  const registerLink = {
+    href: "/signin",
+    name: "Registrarse",
+    label: "Registrarse",
+  };
 
   return (
     <div className={`flex flex-between ${addStyle} ${addStyle ? 'lg:flex-row-reverse' : 'lg:flex-row'} w-full h-full lg:h-[700px] flex-col lg:flex-row justify-between`}>
@@ -24,15 +30,21 @@ const Banner: React.FC<BannerProps> = ({ title, description, button, image, addS
         <p>{description}</p>
         {button && (
           <div className="visible pt-5 lg:pt-10 flex justify-center lg:justify-start">
-            <Button
-              text={text}
-              icon={icons.faRightToBracket}
-              color={color}
-              type={size}
-            />
+            <Link
+              key={registerLink.name}
+              href={registerLink.href}
+              className="block mx-2 md:flex-none"
+            >
+              <Button
+                text={registerLink.name}
+                icon={icons.faRightToBracket}
+                type={size}
+                color={color}
+              />
+            </Link>
           </div>
-        )}      
-        </div>
+        )}
+      </div>
       {image && (
         <div className="visible justify-self-end self-center pb-20 px-20 lg:p-0">
           <Image

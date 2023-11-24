@@ -1,6 +1,7 @@
 import icons from './icons/icons';
-import Button from './buttons/buttons';
+import Button from './buttons/Buttons';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ReactNode } from 'react';
 
@@ -15,6 +16,17 @@ interface BigBannerProps {
 const BigBanner: React.FC<BigBannerProps> = ({ title, description, button, image, textButton }) => {
   const color = "red";
   const size = "big";
+
+  const registerLink = {
+    href: "/signin",
+    name: "Registrarse",
+    label: "Registrarse",
+  };
+  const contactLink = {
+    href: "/common/contact",
+    name: "Contacto",
+    label: "Contáctanos",
+  };
 
   return (
     <div className={`flex flex-col w-full ${image ? 'h-full xs:h-[1127px]' : 'h-full xs:h-[440px]' } px-6 py-12 xs:p-20 justify-items-center items-center`}>
@@ -33,12 +45,18 @@ const BigBanner: React.FC<BigBannerProps> = ({ title, description, button, image
       )}
       {button && (
         <div className="visible pt-5 lg:pt-10">
-          <Button
-            text={textButton ?? "Registrarse"}
-            icon={textButton ? icons.faEnvelope : icons.faRightToBracket}
-            color={color}
-            type={size}
-          />
+          <Link
+              key={textButton ? contactLink.name : registerLink.name}
+              href={textButton ? contactLink.href : registerLink.href}
+              className="block mx-2 md:flex-none"
+            >
+              <Button
+                text={textButton ? contactLink.label : registerLink.label}
+                icon={textButton ? icons.faEnvelope : icons.faRightToBracket}
+                color={color}
+                type={size}
+              />
+            </Link>
         </div>
       )}
     </div>

@@ -1,20 +1,22 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import icons from "../../../components/icons/icons";
+import BigBanner from "@/components/BigBanner";
+import DifferentText from "@/components/DifferentText";
 
 export default function Page() {
-  const iconKeys = Object.keys(icons);
-
   return (
     <div>
-      <h1>contact</h1>
-      <br />
-      <div className="grid grid-cols-10 gap-4">
-        {iconKeys.map((iconName) => (
-          <div key={iconName}>
-            <FontAwesomeIcon icon={icons[iconName as keyof typeof icons]} className="w-[21px] text-[--gray] hover:text-[--principal-red]" />
-          </div>
-        ))}
-      </div>
+      <BigBanner
+        title={
+          <>
+            <DifferentText color="--principal-red">Únete </DifferentText>
+            y
+            <DifferentText color="--principal-blue"> transforma </DifferentText>
+            tu futuro hoy
+          </>
+        }
+        description="Al unirse a nuestra plataforma, tendrán acceso a oportunidades educativas innovadoras que les permitirán adquirir nuevas habilidades y conocimientos que pueden aplicar de inmediato en sus vidas y carreras."
+        button={true}
+        image={false}
+      />
     </div>
   );
 }

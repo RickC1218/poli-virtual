@@ -1,9 +1,9 @@
-import Button from '@/components/buttons/buttons';
-import BannerSubthemeCard from '@/components/cards/banner-subtheme-card';
-import BannerThemeCard from '@/components/cards/banner-theme-card';
-import CategoryCard from '@/components/cards/category-card';
-import CourseCard from '@/components/cards/course-card';
-import InstructorCard from '@/components/cards/instructor-card';
+import Button from '@/components/buttons/Buttons';
+import BannerSubthemeCard from '@/components/cards/BannerSubThemeCard';
+import BannerThemeCard from '@/components/cards/BannerThemeCard';
+import CategoryCard from '@/components/cards/CategoryCard';
+import CourseCard from '@/components/cards/CourseCard';
+import InstructorCard from '@/components/cards/InstructorCard';
 import icons from '@/components/icons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';

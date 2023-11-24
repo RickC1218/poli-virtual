@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import Button from "@/components/buttons/buttons";
+import Button from "@/components/buttons/Buttons";
 import icons from "@/components/icons/icons";
 
 import { useState, ChangeEvent } from "react";

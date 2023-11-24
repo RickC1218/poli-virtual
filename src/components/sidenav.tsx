@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import NavLinks from "./nav-links";
+import NavLinks from "./NavLinks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "./icons/icons";
-import Button from "./buttons/buttons";
+import Button from "./buttons/Buttons";
 
 export default function SideNav() {
   const loginLink = {
