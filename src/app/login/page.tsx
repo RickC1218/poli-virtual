@@ -29,7 +29,7 @@ export default function Page() {
           <div className="flex items-center justify-between w-full mx-2 p-2">
             <p className="font-bold">Correo institucional:</p>
             <input
-              type="text"
+              type="mail"
               className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
           </div>
           <div className="flex items-center justify-between w-full mx-2 p-2">

@@ -1,6 +1,7 @@
 import Banner from "@/components/Banner";
 import DifferentText from "@/components/DifferentText";
 import BigBanner from "@/components/BigBanner";
+import Section from "@/components/Section";
 
 export default function Page() {
 
@@ -20,6 +21,40 @@ export default function Page() {
         En nuestra plataforma de educación virtual, los estudiantes se convierten en maestros, compartiendo su conocimiento y pasión."
         button={true}
         image={true}
+      />
+      <Section
+        title={
+          <>
+            Explora nuestra oferta de
+            <DifferentText color="--principal-blue"> cursos </DifferentText>
+            destacados
+          </>
+        }
+        description="Te ofrecemos una amplia gama de cursos emocionantes impartidos por estudiantes apasionados como tú."
+        enrolled="none"
+        sectionType="courses"
+      />
+      <Section
+        title={
+          <>
+            <DifferentText color="--principal-red">Cursos </DifferentText>
+            agregados recientemente
+          </>
+        }
+        description="Te ofrecemos una amplia gama de cursos emocionantes impartidos por estudiantes apasionados como tú."
+        enrolled="none"
+        sectionType="courses"
+      />
+      <Section
+        title={
+          <>
+            <DifferentText color="--principal-blue">Instructores </DifferentText>
+            destacados
+          </>
+        }
+        description="Descubre a nuestros instructores destacados: expertos en sus campos, apasionados por la enseñanza y listos para guiarte hacia el éxito."
+        enrolled="none"
+        sectionType="instructors"
       />
       <BigBanner
         title={

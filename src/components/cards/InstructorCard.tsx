@@ -33,7 +33,7 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tuto
     return stars;
   };
   return (
-    <div className="flex flex-col justify-center items-center p-4 bg-[--white] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[250px]  ">
+    <div className="flex flex-col justify-center items-center p-4 bg-[--white] border border-[--high-gray] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[250px]  ">
       <div className='bg-cover w-[175px] h-[175px] bg-top rounded-full' style={{backgroundImage: `url(${image})`}}>
       </div>
       <div className='flex justify-center items-center'>

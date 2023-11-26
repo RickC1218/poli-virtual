@@ -53,7 +53,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ title, name, calification, imag
   };
 
   return (
-    <div className="p-2 bg-[--white] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[431px] ">
+    <div className="p-2 bg-[--white] border border-[--high-gray] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[431px] ">
       <Image
         src={image}
         width={411}

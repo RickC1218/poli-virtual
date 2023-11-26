@@ -9,7 +9,7 @@ export default function Page() {
       <Banner
         title={<>
           Nuestra
-          <DifferentText color="--principal-red"> mision </DifferentText> 
+          <DifferentText color="--principal-red"> misión </DifferentText> 
           es
         </>}
         description="Empoderar a estudiantes universitarios para que se conviertan en instructores de calidad, promoviendo la enseñanza entre pares y el éxito académico."

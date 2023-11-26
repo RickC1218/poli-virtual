@@ -1,9 +1,11 @@
 import BigBanner from "@/components/BigBanner";
 import DifferentText from "@/components/DifferentText";
+import FormContact from "@/components/FormContact";
 
 export default function Page() {
   return (
     <div>
+      <FormContact />
       <BigBanner
         title={
           <>
