@@ -13,40 +13,40 @@ const BannerCards: React.FC<BannerCardsProps> = ({ enrolled, type }) => {
         <div className="flex overflow-x-auto space-x-2 py-5">
           <div className="w-full">
             <CourseCard
-              title="React primeros pasos con Next.js y TailwindCSS 2.0 - 2021"
+              title="Curso 1"
               name="Ricardo Erazo"
-              calification={4.2}
+              calification={2.5}
               image='/course.jpg'
               enrolled={enrolled}
             />
           </div>
           <div className="w-full">
             <CourseCard
-              title="React primeros pasos con Next.js y TailwindCSS 2.0 - 2021"
+              title="Curso 2"
               name="Ricardo Erazo"
-              calification={4.2}
+              calification={5}
               image='/course.jpg'
               enrolled={enrolled}
             />
           </div>
           <div className="w-full">
             <CourseCard
-              title="React primeros pasos con Next.js y TailwindCSS 2.0 - 2021"
+              title="Curso 3"
               name="Ricardo Erazo"
-              calification={4.2}
+              calification={3.8}
               image='/course.jpg'
               enrolled={enrolled}
             />
-          </div>
+          </div> 
           <div className="w-full">
             <CourseCard
-              title="React primeros pasos con Next.js y TailwindCSS 2.0 - 2021"
+              title="Curso 4"
               name="Ricardo Erazo"
-              calification={4.2}
+              calification={4}
               image='/course.jpg'
               enrolled={enrolled}
             />
-          </div>
+          </div> 
         </div>
       ) : (
         <div className="flex overflow-x-auto space-x-2 py-5">
@@ -55,7 +55,16 @@ const BannerCards: React.FC<BannerCardsProps> = ({ enrolled, type }) => {
               name="Ricardo Erazo"
               description="Estudiante de 9no semestre"
               tutor="Ing. Ordoñez"
-              calification={4.5}
+              calification={3.8}
+              image="/PeterParker.jpg"
+            />
+          </div>
+          <div className="w-full">
+            <InstructorCard
+              name="Ricardo Erazo"
+              description="Estudiante de 9no semestre"
+              tutor="Ing. Ordoñez"
+              calification={5}
               image="/PeterParker.jpg"
             />
           </div>
@@ -73,7 +82,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ enrolled, type }) => {
               name="Ricardo Erazo"
               description="Estudiante de 9no semestre"
               tutor="Ing. Ordoñez"
-              calification={4.5}
+              calification={2}
               image="/PeterParker.jpg"
             />
           </div>
@@ -82,7 +91,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ enrolled, type }) => {
               name="Ricardo Erazo"
               description="Estudiante de 9no semestre"
               tutor="Ing. Ordoñez"
-              calification={4.5}
+              calification={3.5}
               image="/PeterParker.jpg"
             />
           </div>
@@ -91,16 +100,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ enrolled, type }) => {
               name="Ricardo Erazo"
               description="Estudiante de 9no semestre"
               tutor="Ing. Ordoñez"
-              calification={4.5}
-              image="/PeterParker.jpg"
-            />
-          </div>
-          <div className="w-full">
-            <InstructorCard
-              name="Ricardo Erazo"
-              description="Estudiante de 9no semestre"
-              tutor="Ing. Ordoñez"
-              calification={4.5}
+              calification={4}
               image="/PeterParker.jpg"
             />
           </div>

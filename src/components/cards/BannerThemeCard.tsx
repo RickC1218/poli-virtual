@@ -10,7 +10,7 @@ interface BannerThemeCardProps {
 
 const BannerThemeCard: React.FC<BannerThemeCardProps> = ({ title, description, cuantity, duration }) => {
   return (
-    <div className="flex justify-between items-center bg-[--white] rounded-[32px] p-4 border-2 border-[--medium-gray]">
+    <div className="flex justify-between items-center bg-[--white] rounded-[32px] p-4 my-1 border-2 border-[--medium-gray]">
       <div className='w-[50px] h-[50px] rounded-2xl bg-[--principal-red] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-red-500/50'>
         <FontAwesomeIcon icon={icons.faChevronRight} className="p-2 text-[--white] w-[36px]" />
       </div>

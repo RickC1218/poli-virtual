@@ -1,21 +1,21 @@
 import { ReactNode } from 'react';
 
-import BannerCards from './BannerCards';
+import BigBannerCards from './BigBannerCards';
 
-interface SectionProps {
+interface BigSectionProps {
   title: ReactNode;
   description: string;
   enrolled: 'none' | 'enrolled' | 'completed' | 'in-progress';
   sectionType: 'courses' | 'instructors';
 }
 
-const Section: React.FC<SectionProps> = ({ title, description, enrolled, sectionType }) => {
+const BigSection: React.FC<BigSectionProps> = ({ title, description, enrolled, sectionType }) => {
   return (
-    <div className={`flex flex-between w-full h-full flex-col justify-between`}>
+    <div className={`flex flex-between w-full h-full flex-col justify-center`}>
       <div className='w-full p-6 md:px-20 md:py-10 self-center'>
         <h1 className="text-[32px] xl:text-[38px] text-center lg:text-start">{title}</h1>
         <p className='text-center lg:text-start'>{description}</p>
-        <BannerCards 
+        <BigBannerCards 
           enrolled={enrolled}
           type={sectionType}
         />
@@ -24,4 +24,4 @@ const Section: React.FC<SectionProps> = ({ title, description, enrolled, section
   );
 };
 
-export default Section;
+export default BigSection;

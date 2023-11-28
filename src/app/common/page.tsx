@@ -27,6 +27,7 @@ export default function Page() {
         {iconKeys.map((iconName) => (
           <div key={iconName}>
             <FontAwesomeIcon icon={icons[iconName as keyof typeof icons]} className="w-[21px] hover:text-[--principal-red]" />
+            {iconName}
           </div>
         ))}
       </div>
