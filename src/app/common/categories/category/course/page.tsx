@@ -7,7 +7,6 @@ import Button from '@/components/buttons/Buttons';
 import icons from '@/components/icons/icons';
 import StarRating from '@/components/StarRating';
 import BannerThemeCard from '@/components/cards/BannerThemeCard';
-import BannerSubThemeCard from '@/components/cards/BannerSubThemeCard';
 import CommentCard from '@/components/cards/CommentCard';
 
 
@@ -65,18 +64,6 @@ export default function Page() {
             title="Fundamentos de programación"
             description="Cursos que cubren diversos lenguajes de programación, metodologías de desarrollo de software."
             cuantity={10}
-            duration={120}
-          />
-          <BannerSubThemeCard
-            title="Fundamentos de programación"
-            duration={120}
-          />
-          <BannerSubThemeCard
-            title="Fundamentos de programación"
-            duration={120}
-          />
-          <BannerSubThemeCard
-            title="Fundamentos de programación"
             duration={120}
           />
           <BannerThemeCard
