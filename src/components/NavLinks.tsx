@@ -73,13 +73,13 @@ export default function NavLinks() {
         key={link.name}
         href={link.href}
         className={clsx(
-          'block p-3 cursor-pointer hover:text-[--principal-blue] md:flex-none',
+          'block p-3 cursor-pointer hover:text-[--principal-blue] hover:drop-shadow md:flex-none',
           {
-            'text-[--principal-red]': pathname === link.href,
+            'drop-shadow text-[--principal-red]': pathname === link.href,
           },
         )}
       >
-        <p className="hidden sm:block text-base">{link.name}</p>
+        <p className="block text-base">{link.name}</p>
       </Link>
     );
   };

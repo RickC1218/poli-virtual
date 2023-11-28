@@ -5,8 +5,8 @@ import Button from "@/components/buttons/Buttons";
 import icons from "@/components/icons/icons";
 
 export default function Page() {
-  const text = "Iniciar sesión";
-  const color = "blue";
+  const text = "Enviar correo";
+  const color = "red";
   const size = "small";
 
   const signinlink = {
@@ -15,10 +15,10 @@ export default function Page() {
     label: "Registrarse",
   };
 
-  const forgotlink = {
-    href: "/forgot",
-    name: "¿Olvidaste tu contraseña?",
-    label: "¿Olvidaste tu contraseña?",
+  const loginlink = {
+    href: "/login",
+    name: "Iniciar sesión",
+    label: "Iniciar sesión",
   };
 
   return (
@@ -37,30 +37,17 @@ export default function Page() {
         </Link>
       </div>
       <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center ">
-      <h1 className="text-[38px] mb-5">Inicio de sesión</h1>
+      <h1 className="text-[38px] mb-5">Recuperar cuenta</h1>
           <div className="flex items-center justify-between w-full mx-2 p-2">
             <p className="font-bold">Correo institucional:</p>
             <input
               type="mail"
               className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
           </div>
-          <div className="flex items-center justify-between w-full mx-2 p-2">
-            <p className="font-bold">Contraseña:</p>
-            <input
-              type="password"
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
-          </div>
-          <Link
-            key={forgotlink.name}
-            href={forgotlink.href}
-            className="flex self-end pr-2 md:flex-none hover:text-[--principal-red] hover:drop-shadow-md"
-          >
-            {forgotlink.name}
-          </Link>
-        <div className="flex items-center justify-center w-full m-5 p-2">
+          <div className="flex items-center justify-center w-full m-5 p-2">
           <Button
             text={text}
-            icon={icons.faUser}
+            icon={icons.faEnvelope}
             color={color}
             type={size}
           />

@@ -82,6 +82,12 @@ export default function Page() {
     console.log(message);
   }
 
+  const loginlink = {
+    href: "/login",
+    name: "Iniciar sesión",
+    label: "Iniciar sesión",
+  };
+
   return (
     <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
       <div className="col-span-2 hidden md:block">
@@ -165,6 +171,16 @@ export default function Page() {
             onClick={handleRegister}
           />
         </div>
+        <p className="text-base flex">
+          ¿Ya tienes cuenta? &nbsp;
+          <Link
+            key={loginlink.name}
+            href={loginlink.href}
+            className="block md:flex-none hover:text-[--principal-blue] hover:drop-shadow"
+          >
+            {loginlink.name}
+          </Link>
+        </p>
       </div>
     </div>
   );
