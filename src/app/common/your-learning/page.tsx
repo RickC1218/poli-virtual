@@ -1,20 +1,21 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import icons from "../../../components/icons/icons";
+import BigSection from "@/components/BigSection";
+import DifferentText from "@/components/DifferentText";
 
 export default function Page() {
-  const iconKeys = Object.keys(icons);
-
   return (
-    <div>
-      <h1>your-learning</h1>
-      <br />
-      <div className="grid grid-cols-10 gap-4">
-        {iconKeys.map((iconName) => (
-          <div key={iconName}>
-            <FontAwesomeIcon icon={icons[iconName as keyof typeof icons]} className="w-[21px] text-[--principal-red]" />
-          </div>
-        ))}
-      </div>
+    <div className={`flex flex-between w-full h-full flex-col justify-between`}>
+      <BigSection
+        title={
+          <>
+            Tu
+            <DifferentText color="--principal-blue"> biblioteca </DifferentText>
+            de cursos
+          </>
+        }
+        description="Explora y administra tu aprendizaje de manera comoda."
+        enrolled="enrolled"
+        sectionType="courses"
+      />
     </div>
   );
 }

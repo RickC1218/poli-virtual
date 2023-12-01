@@ -36,19 +36,6 @@ export default function SideNav() {
           </div>
         </Link>
       </div>
-      <div className="items-start hidden col-span-2">
-        <div className="flex justify-start">
-          <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
-            <FontAwesomeIcon
-              icon={icons.faSearch}
-              className="text-[--medium-gray] w-[16px] m-1"
-            />
-          </div>
-          <input
-            type="text"
-            className="bg-[--light] rounded-r-[10px] p-2 text-sm w-full" />
-        </div>
-      </div>
       <div className="text-[--gray] col-span-5 w-full flex justify-end lg:flex-none">
         <div className="flex lg:hidden items-center p-2">
           <button
@@ -59,6 +46,19 @@ export default function SideNav() {
           </button>
         </div>
         <div className={`flex lg:flex justify-between ${menuOpen ? 'flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl' : 'hidden'}`}>
+          <div className={`flex items-center hidden px-5 ${menuOpen ? 'flex-col space-y-1 pt-6' : 'flex-row space-x-1'}`}>
+            <div className="flex justify-start">
+              <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
+                <FontAwesomeIcon
+                  icon={icons.faSearch}
+                  className="text-[--medium-gray] w-[16px] m-1"
+                />
+              </div>
+              <input
+                type="text"
+                className="bg-[--light] rounded-r-[10px] p-2 text-sm w-full" />
+            </div>
+          </div>
           <div className={`flex items-center px-5 ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
             <NavLinks />
           </div>

@@ -3,6 +3,7 @@
 import BigSection from '@/components/BigSection';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import DifferentText from '@/components/DifferentText';
+import Section from '@/components/Section';
 
 export default function Page() {
   const breadcrumbs = [
@@ -25,6 +26,18 @@ export default function Page() {
         description="Cursos que cubren diversos lenguajes de programación, metodologías de desarrollo de software."
         enrolled="none"
         sectionType="courses"
+      />
+      <Section
+        title={
+          <>
+            <DifferentText color="--principal-blue">Instructores </DifferentText>
+            destacados
+          </>
+        }
+        description="Descubre a nuestros instructores destacados: expertos en sus campos, apasionados por la enseñanza y listos para guiarte hacia el éxito."
+        enrolled="none"
+        sectionType="instructors"
+        addStyle='hidden'
       />
     </div>
   );

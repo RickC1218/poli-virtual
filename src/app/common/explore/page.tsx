@@ -6,7 +6,7 @@ import Section from "@/components/Section";
 export default function Page() {
 
   return (
-    <div>
+    <>
       <Banner
         title={<>
           Una nueva forma de
@@ -21,6 +21,19 @@ export default function Page() {
         En nuestra plataforma de educación virtual, los estudiantes se convierten en maestros, compartiendo su conocimiento y pasión."
         button={true}
         image={true}
+      />
+      <Section
+        title={
+          <>
+            Tu
+            <DifferentText color="--principal-red"> biblioteca </DifferentText>
+            de cursos
+          </>
+        }
+        description="Explora y administra tu aprendizaje de manera comoda."
+        enrolled="enrolled"
+        sectionType="courses"
+        addStyle="hidden"
       />
       <Section
         title={
@@ -69,6 +82,6 @@ export default function Page() {
         button={true}
         image={false}
       />
-    </div>
+    </>
   );
 }

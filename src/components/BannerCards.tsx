@@ -2,7 +2,7 @@ import CourseCard from "./cards/CourseCard";
 import InstructorCard from "./cards/InstructorCard";
 
 interface BannerCardsProps {
-  enrolled: 'none' | 'enrolled' | 'completed' | 'in-progress';
+  enrolled: 'none' | 'enrolled';
   type: 'courses' | 'instructors';
 }
 

@@ -23,12 +23,18 @@ const Banner: React.FC<BannerProps> = ({ title, description, button, image, addS
     label: "Registrarse",
   };
 
+  const beinstructor = {
+    href: "/common/be-instructor",
+    name: "Sé instructor",
+    label: "Sé instructor",
+  };
+
   return (
     <div className={`flex flex-between ${addStyle} ${addStyle ? 'lg:flex-row-reverse' : 'lg:flex-row'} w-full h-full lg:h-[700px] flex-col lg:flex-row justify-between`}>
       <div className='w-full lg:w-[50%] p-6 md:p-20 self-center'>
         <h1 className="text-[32px] xl:text-[38px] pb-4 text-center lg:text-start">{title}</h1>
         <p className='text-center lg:text-start'>{description}</p>
-        {button && (
+        {button && !addStyle &&(
           <div className="visible pt-5 lg:pt-10 flex justify-center lg:justify-start">
             <Link
               key={registerLink.name}
@@ -40,6 +46,22 @@ const Banner: React.FC<BannerProps> = ({ title, description, button, image, addS
                 icon={icons.faRightToBracket}
                 type={size}
                 color={color}
+              />
+            </Link>
+          </div>
+        )}
+        {button && addStyle && (
+          <div className="visible pt-5 lg:pt-10 flex justify-center lg:justify-start">
+            <Link
+              key={beinstructor.name}
+              href={beinstructor.href}
+              className="block mx-2 md:flex-none"
+            >
+              <Button
+                text={beinstructor.name}
+                icon={icons.faBolt}
+                type={size}
+                color='blue'
               />
             </Link>
           </div>

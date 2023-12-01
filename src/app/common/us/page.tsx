@@ -5,7 +5,7 @@ import DifferentText from "@/components/DifferentText";
 export default function Page() {
 
   return (
-    <div>
+    <>
       <Banner
         title={<>
           Nuestra
@@ -39,6 +39,6 @@ export default function Page() {
         image={true}
         textButton="Contáctanos"
       />
-    </div>
+    </>
   );
 }
