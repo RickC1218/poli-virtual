@@ -1,4 +1,5 @@
 import StarRating from '../StarRating';
+import Link from 'next/link';
 
 interface InstructorCardProps {
   name: string;
@@ -9,23 +10,33 @@ interface InstructorCardProps {
 }
 
 const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tutor, calification, image }) => {
+  const instructorLink = {
+    name: "Perfil del instructor",
+    path: "/common/profile/instructor",
+  };
+
   return (
-    <div className="flex flex-col justify-center items-center p-4 bg-[--white] border border-[--high-gray] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[250px]  ">
-      <div className='bg-cover w-[175px] h-[175px] bg-top rounded-full' style={{backgroundImage: `url(${image})`}}>
-      </div>
-      <div className='flex justify-center items-center'>
-        <div className="pt-2.5 text-center">
-          <div className='mb-3'>
-            <p className="font-bold">{name}</p>
-            <p className="text-base">{description}</p>
-            <p className="text-base">{tutor}</p>
-          </div>
-          <div className="flex justify-center items-center w-full">
-            <StarRating calification={calification}/>
+    <Link
+      key={instructorLink.name}
+      href={instructorLink.path}
+    >
+      <div className="flex flex-col justify-center items-center p-4 bg-[--white] border border-[--high-gray] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[250px]">
+        <div className='bg-cover w-[175px] h-[175px] bg-top rounded-full' style={{ backgroundImage: `url(${image})` }}>
+        </div>
+        <div className='flex justify-center items-center'>
+          <div className="pt-2.5 text-center">
+            <div className='mb-3'>
+              <p className="font-bold">{name}</p>
+              <p className="text-base">{description}</p>
+              <p className="text-base">{tutor}</p>
+            </div>
+            <div className="flex justify-center items-center w-full">
+              <StarRating calification={calification} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
