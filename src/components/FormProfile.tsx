@@ -1,5 +1,5 @@
-
 "use client";
+
 import { ChangeEvent, useState } from "react";
 
 interface FormProfileProps {
@@ -8,63 +8,44 @@ interface FormProfileProps {
 
 const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
-  const [name, setName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [mail, setMail] = useState<string>("");
-  const [selectedSemester, setSelectedSemester] = useState<string>("1er semestre");
-  const [teacherName, setTeacherName] = useState<string>("");
-  const [teacherMail, setTeacherMail] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [profilePhoto, setProfilePhoto] = useState<string>("");
+  const [user, setUser] = useState({
+    userName: "",
+    userLastName: "",
+    mail: "",
+    semester: "1er semestre",
+    teacherName: "",
+    teacherMail: "",
+    description: "",
+    profilePhoto: null
+  });
 
-  //Manejo del campo de nombre
-  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement || event.target instanceof HTMLTextAreaElement) {
+      setUser({
+        ...user,
+        [event.target.name]: event.target.value
+      })
+    }
+  }
 
-  //Manejo del campo de apellido
-  const handleLastNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setLastName(event.target.value);
-  };
-
-  //Manejo del campo de correo
-  const handleMailChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setMail(event.target.value);
-  };
-
-  //Manejo del cambio de semestre
-  const handleSemesterChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSemester(event.target.value);
-  };
-
-  //Manejo del nombre del profesor
-  const handleTeacherChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTeacherName(event.target.value);
-  };
-
-  //Manejo del correo del profesor
-  const handleMailTeacherChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTeacherMail(event.target.value);
-  };
-
-  //Manejo de la descripción
-  const handleDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value);
-  };
-
-  //Manejo de las redes sociales
-  const handleProfilePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setProfilePhoto(event.target.value);
-  };
+/*  const handleFileChange = (event: ChangeEvent<HTMLImageElement>) => {
+    if (event.target.image && event.target.image[0]) {
+      setUser({
+        ...user,
+        profilePhoto: event.target.files[0]
+      });
+    }
+  }*/
 
   return (
-    <div className={`col-span-4 ${type === "profile-instructor" ? "md:col-span-3" : "md:col-span-2" }  w-[70%] p-3 md:p-5 flex flex-col justify-center items-center`}>
+    <div className={`col-span-4 ${type === "profile-instructor" ? "md:col-span-3" : "md:col-span-2"} w-[70%] p-3 md:p-5 flex flex-col justify-center items-center`}>
       <div className="flex items-center justify-between w-full mx-2 p-2">
         <p className="font-bold">Nombre:</p>
         <input
           type="text"
-          value={name}
-          onChange={handleNameChange}
+          name="userName"
+          onChange={handleChange}
+          value={user.userName}
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />
       </div>
@@ -72,8 +53,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         <p className="font-bold">Apellido:</p>
         <input
           type="text"
-          value={lastName}
-          onChange={handleLastNameChange}
+          name="userLastName"
+          onChange={handleChange}
+          value={user.userLastName}
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />
       </div>
@@ -81,14 +63,15 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         <p className="font-bold">Correo institucional:</p>
         <input
           type="mail"
-          value={mail}
-          onChange={handleMailChange}
+          name="mail"
+          onChange={handleChange}
+          value={user.mail}
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />
       </div>
       <div className="flex items-center justify-between w-full mx-2 p-2">
         <p className="font-bold">Semestre:</p>
-        <select value={selectedSemester} onChange={handleSemesterChange} className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+        <select onChange={handleChange} value={user.semester} className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
           <option value="1">1er semestre</option>
           <option value="2">2do semestre</option>
           <option value="3">3er semestre</option>
@@ -104,8 +87,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         <p className="font-bold">Profesor que te aprueba:</p>
         <input
           type="text"
-          value={teacherName}
-          onChange={handleTeacherChange}
+          name="teacherName"
+          onChange={handleChange}
+          value={user.teacherName}
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />
       </div>
@@ -113,16 +97,18 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         <p className="font-bold">Correo del profesor:</p>
         <input
           type="mail"
-          value={teacherMail}
-          onChange={handleMailTeacherChange}
+          name="teacherMail"
+          onChange={handleChange}
+          value={user.teacherMail}
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />
       </div>
       <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
         <p className="font-bold">Descripción:</p>
         <textarea
-          onChange={handleDescriptionChange}
-          value={description}
+          onChange={handleChange}
+          value={user.description}
+          name="description"
           rows={7}
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />
@@ -130,8 +116,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
         <p className="font-bold">Foto de perfil:</p>
         <input
-          onChange={handleProfilePhotoChange}
-          value={profilePhoto}
+          /*onChange={handleFileChange}*/
+          /*value={user.profilePhoto}*/
           type="file"
           className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           required />

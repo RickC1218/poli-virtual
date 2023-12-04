@@ -6,50 +6,29 @@ import Link from "next/link";
 import Button from "@/components/buttons/Buttons";
 import icons from "@/components/icons/icons";
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 
 export default function Page() {
 
-  const [name, setName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [mail, setMail] = useState<string>("");
-  const [selectedSemester, setSelectedSemester] = useState<string>("1er semestre");
-  const [password, setPassword] = useState<string>("");
-  const [verification, setVerification] = useState<string>("");
+  const [newUser, setNewUser] = useState({
+    userName: "",
+    userLastName: "",
+    mail: "",
+    semester: "1er semestre",
+    password: "",
+    verification: ""
+  })
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setNewUser({
+      ...newUser,
+      [event.target.name]: event.target.value
+    })
+  }
 
   const text = "Registrarse";
   const color = "red";
   const size = "small";
-
-  //Manejo del campo de nombre
-  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
-
-  //Manejo del campo de apellido
-  const handleLastNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setLastName(event.target.value);
-  };
-
-  //Manejo del campo de correo
-  const handleMailChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setMail(event.target.value);
-  };
-
-  //Manejo del cambio de semestre
-  const handleSemesterChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSemester(event.target.value);
-  };
-
-  //Manejo del campo de contraseña
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  //Manejo del campo de verificación
-  const handleVerificationChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setVerification(event.target.value);
-  };
 
   //Validación de contraseña
   const validatePassword = (password: string) => {
@@ -58,16 +37,17 @@ export default function Page() {
   }
 
   //Manejo del botón de registro
-  const handleRegister = () => {
+  const handleRegister = (e: FormEvent) => {
     let message = "";
     // verificar que todos los campos estén llenos
-    if (name && lastName && mail && selectedSemester && password && verification) {
+    if (newUser.userName && newUser.userLastName && newUser.mail && newUser.semester && newUser.password && newUser.verification) {
       //Validar contraseña
-      if (validatePassword(password)) {
+      if (validatePassword(newUser.password)) {
         console.log("Contraseña válida");
-        if (password === verification) {
+        if (newUser.password === newUser.verification) {
           //Registro
           message = "Registro exitoso";
+          e.preventDefault();
         } else {
           //Error
           message = "La contraseña y la verificación no coinciden";
@@ -103,13 +83,14 @@ export default function Page() {
           />
         </Link>
       </div>
-      <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center ">
+      <form onSubmit={handleRegister} className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center ">
         <h1 className="text-[38px]">Registrarse</h1>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Nombre:</p>
           <input
             type="text"
-            onChange={handleNameChange}
+            name="userName"
+            onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
@@ -117,7 +98,8 @@ export default function Page() {
           <p className="font-bold">Apellido:</p>
           <input
             type="text"
-            onChange={handleLastNameChange}
+            name="userLastName"
+            onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
@@ -125,13 +107,17 @@ export default function Page() {
           <p className="font-bold">Correo institucional:</p>
           <input
             type="mail"
-            onChange={handleMailChange}
+            name="mail"
+            onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Semestre:</p>
-          <select value={selectedSemester} onChange={handleSemesterChange} className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+          <select 
+            onChange={handleChange} 
+            name="semester"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
             <option value="1">1er semestre</option>
             <option value="2">2do semestre</option>
             <option value="3">3er semestre</option>
@@ -147,8 +133,8 @@ export default function Page() {
           <p className="font-bold">Contraseña:</p>
           <input
             type="password"
-            value={password}
-            onChange={handlePasswordChange}
+            name="password"
+            onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
@@ -156,8 +142,8 @@ export default function Page() {
           <p className="font-bold">Verificación:</p>
           <input
             type="password"
-            value={verification}
-            onChange={handleVerificationChange}
+            name="verification"
+            onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
@@ -168,7 +154,6 @@ export default function Page() {
             icon={icons.faRightToBracket}
             color={color}
             type={size}
-            onClick={handleRegister}
           />
         </div>
         <p className="text-base flex">
@@ -181,7 +166,7 @@ export default function Page() {
             {loginlink.name}
           </Link>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
