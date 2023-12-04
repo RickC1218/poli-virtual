@@ -40,21 +40,21 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## First steps
 - Check if you have python version 3.10.6 installed, if not, install https://www.python.org/downloads/release/python-3106/.
-- Install virtualenv.
+- Install poetry.
 ```bash
-pip install virtualenv
+pip install poetry
 ```
-- Later, you need to create a virtual env outside the /backend folder with the command below.
+- Next, you need to enter the poetry virtual environment with the command:
 ```bash
-python -m venv env
+poetry shell
 ```
-- Activate virtual env.
+- To deactivate the virtual environment you can use the command:
 ```bash
-.\env\Scripts\activate
+exit
 ```
-- Install the requirements for the project.
+- Install the requirements for the backend project.
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
 ## MongoDB configuration
@@ -69,7 +69,7 @@ pip install -r requirements.txt
 - You need to execute the following commands:
 ```bash
 # This command is used to create new migrations based on changes detected in your models (Users).
-python manage.py makemigrations Users
+python manage.py makemigrations
 
 # This command is used to apply pending migrations and update the database according to the changes defined in the migration files.
 python manage.py migrate
