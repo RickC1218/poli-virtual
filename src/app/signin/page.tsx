@@ -7,6 +7,7 @@ import Button from "@/components/buttons/Buttons";
 import icons from "@/components/icons/icons";
 
 import { useState, ChangeEvent, FormEvent } from "react";
+import crud_user from "@/app/api/crud_user"
 
 export default function Page() {
 
@@ -36,18 +37,32 @@ export default function Page() {
     return regex.test(password);
   }
 
+  /*//Crear usuario a través del backend
+  const getUser = async () => {
+    const res = await fetch('/api/crud_user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newUser)
+    })
+    console.log(res);
+  }*/
   //Manejo del botón de registro
-  const handleRegister = (e: FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     let message = "";
     // verificar que todos los campos estén llenos
     if (newUser.userName && newUser.userLastName && newUser.mail && newUser.semester && newUser.password && newUser.verification) {
-      //Validar contraseña
+      //Validar contraseña  
       if (validatePassword(newUser.password)) {
         console.log("Contraseña válida");
         if (newUser.password === newUser.verification) {
-          //Registro
+          //Registro exitoso
           message = "Registro exitoso";
           e.preventDefault();
+
+          //Enviar datos al backend
+          console.log(await crud_user.getUser("", ""))
         } else {
           //Error
           message = "La contraseña y la verificación no coinciden";

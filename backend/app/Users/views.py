@@ -35,7 +35,7 @@ def user_api(request, email=None):
 
     # Sign in
     elif request.method == 'GET':
-        data = JSONParser().parse(request)
+        '''data = JSONParser().parse(request)
         # Get the email and password from the request
         email = data.get("email")
         password = data.get("password")
@@ -43,7 +43,7 @@ def user_api(request, email=None):
         # See authentication DJANGO
         if email:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(email=email) # Get the user of the BD
                 password_user = user.password
 
                 # Compare hashed password with the password entered by the user
@@ -58,10 +58,10 @@ def user_api(request, email=None):
             except User.DoesNotExist:
                 return JsonResponse({"mensaje": "Usuario no encontrado"}, status=404)
 
-        else:
-            users = User.objects.all()
-            users_serializer = UserSerializer(users, many=True)
-            return JsonResponse(users_serializer.data, safe=False)
+        else:'''
+        users = User.objects.all()
+        users_serializer = UserSerializer(users, many=True)
+        return JsonResponse(users_serializer.data, safe=False)
 
     # Update user
     elif request.method == 'PUT':
