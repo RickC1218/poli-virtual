@@ -5,26 +5,41 @@ import Link from "next/link";
 
 import Button from "@/components/buttons/Buttons";
 import icons from "@/components/icons/icons";
-
-import { useState, ChangeEvent, FormEvent } from "react";
 import crud_user from "@/app/api/crud_user"
+
+import {useRouter, useParams} from "next/navigation";
+import { useState, ChangeEvent, FormEvent } from "react";
 
 export default function Page() {
 
   const [newUser, setNewUser] = useState({
-    userName: "",
-    userLastName: "",
-    mail: "",
-    semester: "1er semestre",
+    email: "",
+    name: "",
+    lastname: "",
     password: "",
-    verification: ""
+    role: "estudiante", // "estudiante" | "instructor
+    semester: "1ro",
+    approve_teacher: "",
+    approve_teacher_email: "",
+    user_description: "",
+    enrolled_courses: [],
+    //profilePhoto: null
   })
+
+  const router = useRouter();
+  const params = useParams();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setNewUser({
       ...newUser,
       [event.target.name]: event.target.value
     })
+  }
+
+  const [verification, setVerification] = useState("")
+
+  const handleVerification = (event: ChangeEvent<HTMLInputElement>) => {
+    setVerification(event.target.value)
   }
 
   const text = "Registrarse";
@@ -37,44 +52,41 @@ export default function Page() {
     return regex.test(password);
   }
 
-  /*//Crear usuario a través del backend
-  const getUser = async () => {
-    const res = await fetch('/api/crud_user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newUser)
-    })
-    console.log(res);
-  }*/
   //Manejo del botón de registro
   const handleRegister = async (e: FormEvent) => {
-    let message = "";
-    // verificar que todos los campos estén llenos
-    if (newUser.userName && newUser.userLastName && newUser.mail && newUser.semester && newUser.password && newUser.verification) {
-      //Validar contraseña  
-      if (validatePassword(newUser.password)) {
-        console.log("Contraseña válida");
-        if (newUser.password === newUser.verification) {
-          //Registro exitoso
-          message = "Registro exitoso";
-          e.preventDefault();
-
-          //Enviar datos al backend
-          console.log(await crud_user.getUser("", ""))
+    try {
+      let message = "";
+      e.preventDefault();
+      // verificar que todos los campos estén llenos
+      if (newUser.name && newUser.lastname && newUser.email && newUser.semester && newUser.password && verification) {
+        //Validar contraseña  
+        if (validatePassword(newUser.password)) {
+          if (newUser.password === verification) {
+            //Registro exitoso
+            message = "Registro exitoso";
+            //Enviar datos al backend
+            const response = await crud_user.createUser(newUser);
+            console.log(response);
+            //Envio de correo de verificación
+            //const resEmail = await crud_user.sendVerificationEmail(newUser.email);
+            //console.log(resEmail);
+            //Redirigir a la página de inicio de sesión
+            router.push("/login");
+          } else {
+            //Error
+            message = "La contraseña y la verificación no coinciden";
+          }
         } else {
-          //Error
-          message = "La contraseña y la verificación no coinciden";
+          //Contraseña inválida
+          message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial";
         }
       } else {
-        //Contraseña inválida
-        message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial";
+        message = "Todos los campos deben estar llenos";
       }
-    } else {
-      message = "Todos los campos deben estar llenos";
+      console.log(message);
+    } catch (error) {
+      console.log(error)
     }
-    console.log(message);
   }
 
   const loginlink = {
@@ -104,7 +116,7 @@ export default function Page() {
           <p className="font-bold">Nombre:</p>
           <input
             type="text"
-            name="userName"
+            name="name"
             onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
@@ -113,7 +125,7 @@ export default function Page() {
           <p className="font-bold">Apellido:</p>
           <input
             type="text"
-            name="userLastName"
+            name="lastname"
             onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
@@ -121,27 +133,27 @@ export default function Page() {
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Correo institucional:</p>
           <input
-            type="mail"
-            name="mail"
+            type="email"
+            name="email"
             onChange={handleChange}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Semestre:</p>
-          <select 
-            onChange={handleChange} 
+          <select
+            onChange={handleChange}
             name="semester"
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
-            <option value="1">1er semestre</option>
-            <option value="2">2do semestre</option>
-            <option value="3">3er semestre</option>
-            <option value="4">4to semestre</option>
-            <option value="5">5to semestre</option>
-            <option value="6">6to semestre</option>
-            <option value="7">7mo semestre</option>
-            <option value="8">8vo semestre</option>
-            <option value="9">9no semestre</option>
+            <option value="1ro">1er semestre</option>
+            <option value="2do">2do semestre</option>
+            <option value="3ro">3er semestre</option>
+            <option value="4to">4to semestre</option>
+            <option value="5to">5to semestre</option>
+            <option value="6to">6to semestre</option>
+            <option value="7mo">7mo semestre</option>
+            <option value="8vo">8vo semestre</option>
+            <option value="9no">9no semestre</option>
           </select>
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -158,7 +170,7 @@ export default function Page() {
           <input
             type="password"
             name="verification"
-            onChange={handleChange}
+            onChange={handleVerification}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required />
         </div>

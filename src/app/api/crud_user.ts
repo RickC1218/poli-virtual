@@ -4,9 +4,9 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
 
 const crud_user = {
     // Operación CREATE (POST)
-    createCurso: async (cursoData: any) => {
+    createUser: async (userData: any) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/cursos/`, cursoData);
+            const response = await axios.post(`${API_BASE_URL}/user/`, userData);
             return response.data;
         } catch (error) {
             throw error
@@ -14,9 +14,11 @@ const crud_user = {
     },
 
     // Operación READ (GET)
-    getUser: async (email: string, password: string) => {
+    getUser: async (userData: any) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/user/`);
+            const response = await axios.get(`${API_BASE_URL}/user/`, {
+                params: { __id: userData._id},
+            });
             return response.data;
         } catch (error) {
             throw error;
@@ -24,9 +26,9 @@ const crud_user = {
     },
 
     // Operación UPDATE (PUT)
-    updateCurso: async (cursoId: number, cursoData: any) => {
+    updateUser: async (email: string) => {
         try {
-            const response = await axios.put(`${API_BASE_URL}/cursos/${cursoId}/`, cursoData);
+            const response = await axios.put(`${API_BASE_URL}/user/${email}/`);
             return response.data;
         } catch (error) {
             throw error;
@@ -34,9 +36,9 @@ const crud_user = {
     },
 
     // Operación DELETE (DELETE)
-    deleteCurso: async (cursoId: number) => {
+    deleteUser: async (email: string) => {
         try {
-            const response = await axios.delete(`${API_BASE_URL}/cursos/${cursoId}/`);
+            const response = await axios.delete(`${API_BASE_URL}/user/${email}/`);
             return response.data;
         } catch (error) {
             throw error;
@@ -44,9 +46,9 @@ const crud_user = {
     },
 
     // Operación LIST (GET all)
-    listCursos: async () => {
+    listUser: async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/cursos/`);
+            const response = await axios.get(`${API_BASE_URL}/user/`);
             return response.data;
         } catch (error) {
             throw error;
