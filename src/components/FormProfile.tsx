@@ -64,6 +64,15 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     return regex.test(password);
   }
 
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+  const showAlert = (message: string) => {
+    setAlertMessage(message);
+    setTimeout(() => {
+      setAlertMessage(null);
+    }, 5000); // Cerrar el alert después de 5 segundos
+  };
+
   //Manejo del botón de registro
   const handleRegister = async (e: FormEvent) => {
     try {
@@ -95,9 +104,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       } else {
         message = "Todos los campos deben estar llenos";
       }
-      console.log(message);
+      showAlert(message);
     } catch (error) {
-      console.log(error)
+      showAlert("Error al registrar el usuario");
     }
   }
 
@@ -300,6 +309,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </Link>
       </div>
+      {alertMessage && (
+        <div className={`bg-${alertMessage.startsWith("Registro exitoso") ? 'green' : 'red'}-500 text-white p-2 rounded-md mb-4`}>
+          {alertMessage}
+        </div>
+      )}
     </form>
   );
 };
