@@ -21,6 +21,7 @@ sqlparse = "           0.2.4"
 typing-extensions = "  4.8.0"
 tzdata = "             2023.3"
 python-decouple = "^3.8"
+pyjwt = "^2.8.0"
 
 
 [build-system]

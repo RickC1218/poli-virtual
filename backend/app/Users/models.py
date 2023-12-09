@@ -12,9 +12,13 @@ class User(models.Model):
     approve_teacher_email = models.EmailField(max_length=100, blank=True)
     user_description = models.TextField(blank=True)
     enrolled_courses = models.JSONField(default=[], blank=True)
+    email_verification = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        self.password = make_password(self.password)
+        if not self.email:
+            # Si es un nuevo objeto, aplica el hash a la contraseña
+            self.password = make_password(self.password)
+
         super().save(*args, **kwargs)
 
     def __str__(self):

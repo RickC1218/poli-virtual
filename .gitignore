@@ -25,9 +25,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env
-
 # vercel
 .vercel
 
@@ -40,6 +37,3 @@ next-env.d.ts
 # Ignoring files in the Backend
 
 assets
-
-# virtual environment
-env

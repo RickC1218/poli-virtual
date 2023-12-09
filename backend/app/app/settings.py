@@ -26,7 +26,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:3001"]
 
 # Application definition
 
@@ -71,6 +71,14 @@ TEMPLATES = [
         },
     },
 ]
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'usuariobackend8@gmail.com'
+EMAIL_HOST_PASSWORD = 'zdolztbxqwtqjnuo'
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
