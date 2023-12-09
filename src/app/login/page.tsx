@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import Button from "@/components/buttons/Buttons";
+import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
 
 export default function Page() {

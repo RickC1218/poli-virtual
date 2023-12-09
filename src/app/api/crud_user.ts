@@ -6,7 +6,7 @@ const crud_user = {
     // Operación CREATE (POST)
     createUser: async (userData: any) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/user/`, userData);
+            const response = await axios.post(`${API_BASE_URL}/user/sign-up/`, userData);
             return response.data;
         } catch (error) {
             throw error
@@ -16,7 +16,7 @@ const crud_user = {
     // Operación READ (GET)
     getUser: async (userData: any) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/user/`, {
+            const response = await axios.get(`${API_BASE_URL}/user//`, {
                 params: { __id: userData._id},
             });
             return response.data;

@@ -1,5 +1,5 @@
 import icons from '../icons/icons';
-import Button from '../buttons/Buttons';
+import Button from '../buttons/Button';
 import Link from 'next/link';
 
 interface CategoryCardProps {

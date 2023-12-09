@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import Breadcrumbs from '@/components/Breadcrumbs';
-import Button from '@/components/buttons/Buttons';
+import Button from '@/components/buttons/Button';
 import icons from '@/components/icons/icons';
 import StarRating from '@/components/StarRating';
 import BannerThemeCard from '@/components/cards/BannerThemeCard';
