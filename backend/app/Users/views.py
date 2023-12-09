@@ -135,14 +135,20 @@ def sign_in(request):
                         user_serializer = UserSerializer(user)
 
                         # Generate JWT token
-                        user_token = generate_token(user_serializer.data.get("email"))
+                        user_session_token = generate_token(user_serializer.data.get("email"))
+
+                        # Update the session token of the user
+                        user_serializer = UserSerializer(user, data={'session_token': user_session_token}, partial=True)
+                        if user_serializer.is_valid():
+                            user_serializer.save()
 
                         aux_user = {
                             "email": user_serializer.data.get("email"),
                             "name": user_serializer.data.get("name"),
                             "last_name": user_serializer.data.get("lastname"),
                             "semester": user_serializer.data.get("semester"),
-                            "token": user_token
+                            "password": user_serializer.data.get("password"),
+                            "session_token": user_session_token
                         }
                         return JsonResponse(aux_user, safe=False)
                     else:
@@ -156,6 +162,33 @@ def sign_in(request):
 
         else:
             return JsonResponse({"mensaje": "Correo electrónico y contraseña no ingresados"}, status=400)
+
+
+# Sign out
+@csrf_exempt
+@api_view(['PUT'])
+def sign_out(request):
+    user_token = verify_token(request) # return the email of the user if the token is valid
+
+    if user_token is False:
+        return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+    else:
+        if request.method == 'PUT':
+            try:
+                user = User.objects.get(email=user_token)
+                print(user)
+                user_serializer = UserSerializer(user, data={'session_token': " "}, partial=True)
+                print(user_serializer)
+
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Sesión cerrada", safe=False)
+                else:
+                    return JsonResponse("Error al cerrar sesión", safe=False)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False)
 
 
 # Set email verification
@@ -214,7 +247,14 @@ def verify_token(request):
         decoded_payload = jwt.decode(token, config('SECRET_KEY_TOKEN'), algorithms=['HS256'])
         user_email = decoded_payload['user_email']
 
-        return user_email
+        # Verify the current session token
+        user = User.objects.get(email=user_email)
+        user_session_token = user.session_token
+
+        if user_session_token == token:
+            return user_email
+        else:
+            return False
     except jwt.ExpiredSignatureError:
         return False
     except jwt.InvalidTokenError:

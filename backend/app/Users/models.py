@@ -13,6 +13,7 @@ class User(models.Model):
     user_description = models.TextField(blank=True)
     enrolled_courses = models.JSONField(default=[], blank=True)
     email_verification = models.BooleanField(default=False)
+    session_token = models.CharField(max_length=300, default="")
 
 
     def __str__(self):
