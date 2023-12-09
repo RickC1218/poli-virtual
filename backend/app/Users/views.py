@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 from jwt import encode
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -92,6 +92,9 @@ def sign_up(request):
             # Existing user
             response_data = {'mensaje': f'Este usuario ya existe'}
         else:
+            # Hash the password with a random salt
+            data["password"] = make_password(data["password"])
+
             # If you are not registered, add user
             user_serializer = UserSerializer(data=data)
             if user_serializer.is_valid():

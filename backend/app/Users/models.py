@@ -14,12 +14,6 @@ class User(models.Model):
     enrolled_courses = models.JSONField(default=[], blank=True)
     email_verification = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        if not self.email:
-            # Si es un nuevo objeto, aplica el hash a la contraseña
-            self.password = make_password(self.password)
-
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
