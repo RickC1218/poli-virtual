@@ -1,4 +1,4 @@
-import CourseCard from "./cards/CourseCard";
+import CourseCard from "../cards/CourseCard";
 
 interface BigBannerCardsProps {
   enrolled: 'none' | 'enrolled' | 'completed' | 'in-progress';

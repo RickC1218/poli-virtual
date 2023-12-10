@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import DifferentText from "@/components/DifferentText";
+import DifferentText from "@/components/tools/DifferentText";
 
 export default function NotFound() {
   return (

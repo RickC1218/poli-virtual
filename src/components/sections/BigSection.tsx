@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import BigBannerCards from './BigBannerCards';
+import BigBannerCards from '../banners/BigBannerCards';
 
 interface BigSectionProps {
   title: ReactNode;

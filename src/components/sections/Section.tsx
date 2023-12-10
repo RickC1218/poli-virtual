@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import BannerCards from './BannerCards';
+import BannerCards from '../banners/BannerCards';
 
 interface SectionProps {
   title: ReactNode;

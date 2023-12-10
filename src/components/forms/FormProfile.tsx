@@ -4,9 +4,9 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 
 import crud_user from "@/app/api/crud_user"
-import Button from "./buttons/Button";
+import Button from "../buttons/Button";
 import Link from "next/link";
-import icons from "./icons/icons";
+import icons from "../icons/icons";
 
 interface FormProfileProps {
   type: "new-user" | "be-instructor" | "profile" | "profile-instructor";
@@ -290,7 +290,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
           <Link
             key="sendMail"
-            href="/"
+            href="/common/profile"
           >
             <Button
               text="Enviar correo"

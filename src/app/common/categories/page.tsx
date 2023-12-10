@@ -1,4 +1,4 @@
-import DifferentText from "@/components/DifferentText";
+import DifferentText from "@/components/tools/DifferentText";
 import CategoryCard from "@/components/cards/CategoryCard";
 
 export default function Page() {

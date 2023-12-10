@@ -1,6 +1,6 @@
-import Banner from "@/components/Banner";
-import BigBanner from "@/components/BigBanner";
-import DifferentText from "@/components/DifferentText";
+import Banner from "@/components/banners/Banner";
+import BigBanner from "@/components/banners/BigBanner";
+import DifferentText from "@/components/tools/DifferentText";
 
 export default function Page() {
 

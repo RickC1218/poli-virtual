@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
 
-import '@/components/globals.css';
+import '@/components/globals/globals.css';
 
 const nunito = Nunito({
   subsets: ['latin'],

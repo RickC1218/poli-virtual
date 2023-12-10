@@ -1,5 +1,5 @@
-import icons from './icons/icons';
-import Button from './buttons/Button';
+import icons from '../icons/icons';
+import Button from '../buttons/Button';
 import Image from 'next/image';
 import Link from 'next/link';
 

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import crud_user from "@/app/api/crud_user";
 import { useEffect, useState } from "react";
-import DifferentText from "@/components/DifferentText";
+import DifferentText from "@/components/tools/DifferentText";
 
 export default function Page() {
   

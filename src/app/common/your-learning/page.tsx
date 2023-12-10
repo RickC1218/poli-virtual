@@ -1,5 +1,5 @@
-import BigSection from "@/components/BigSection";
-import DifferentText from "@/components/DifferentText";
+import BigSection from "@/components/sections/BigSection";
+import DifferentText from "@/components/tools/DifferentText";
 
 export default function Page() {
   return (

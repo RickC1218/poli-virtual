@@ -1,6 +1,6 @@
-import BigBanner from "@/components/BigBanner";
-import DifferentText from "@/components/DifferentText";
-import FormContact from "@/components/FormContact";
+import BigBanner from "@/components/banners/BigBanner";
+import DifferentText from "@/components/tools/DifferentText";
+import FormContact from "@/components/forms/FormContact";
 
 export default function Page() {
   return (

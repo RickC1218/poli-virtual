@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import DifferentText from "@/components/DifferentText";
+import DifferentText from "@/components/tools/DifferentText";
 import icons from "@/components/icons/icons";
-import FormProfile from "@/components/FormProfile";
+import FormProfile from "@/components/forms/FormProfile";
 
 export default function Page() {
   return (

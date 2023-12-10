@@ -1,8 +1,8 @@
 "use client";
-import Banner from "@/components/Banner";
-import DifferentText from "@/components/DifferentText";
-import BigBanner from "@/components/BigBanner";
-import Section from "@/components/Section";
+import Banner from "@/components/banners/Banner";
+import DifferentText from "@/components/tools/DifferentText";
+import BigBanner from "@/components/banners/BigBanner";
+import Section from "@/components/sections/Section";
 import { useEffect, useState } from "react";
 
 export default function Page() {

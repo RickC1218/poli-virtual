@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Breadcrumbs from '@/components/tools/Breadcrumbs';
 import Button from '@/components/buttons/Button';
 import icons from '@/components/icons/icons';
-import StarRating from '@/components/StarRating';
+import StarRating from '@/components/tools/StarRating';
 import BannerThemeCard from '@/components/cards/BannerThemeCard';
 import CommentCard from '@/components/cards/CommentCard';
 

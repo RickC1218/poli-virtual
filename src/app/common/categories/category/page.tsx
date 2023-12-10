@@ -1,9 +1,9 @@
 'use client';
 
-import BigSection from '@/components/BigSection';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import DifferentText from '@/components/DifferentText';
-import Section from '@/components/Section';
+import BigSection from '@/components/sections/BigSection';
+import Breadcrumbs from '@/components/tools/Breadcrumbs';
+import DifferentText from '@/components/tools/DifferentText';
+import Section from '@/components/sections/Section';
 
 export default function Page() {
   const breadcrumbs = [

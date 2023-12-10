@@ -6,8 +6,8 @@ import Image from "next/image";
 import NavLinks from "./NavLinks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from 'react';
-import icons from "./icons/icons";
-import Button from "./buttons/Button";
+import icons from "../icons/icons";
+import Button from "../buttons/Button";
 
 export default function SideNav() {
   const [menuOpen, setMenuOpen] = useState(false);

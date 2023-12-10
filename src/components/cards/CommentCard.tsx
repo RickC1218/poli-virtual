@@ -1,4 +1,4 @@
-import StarRating from '../StarRating';
+import StarRating from '../tools/StarRating';
 
 interface CommentCardProps {
   name: string;

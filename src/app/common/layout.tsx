@@ -1,5 +1,5 @@
-import SideNav from '@/components/Sidenav';
-import Footer from '@/components/Footer';
+import SideNav from '@/components/static/sidenav';
+import Footer from '@/components/static/footer';
 
 export default function Layout({
   children,

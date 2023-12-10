@@ -1,5 +1,5 @@
-import CourseCard from "./cards/CourseCard";
-import InstructorCard from "./cards/InstructorCard";
+import CourseCard from "../cards/CourseCard";
+import InstructorCard from "../cards/InstructorCard";
 
 interface BannerCardsProps {
   enrolled: 'none' | 'enrolled';

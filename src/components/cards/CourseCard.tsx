@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import icons from '../icons/icons';
 import Image from 'next/image';
 import Link from 'next/link';
-import StarRating from '../StarRating';
+import StarRating from '../tools/StarRating';
 
 interface CourseCardProps {
   title: string;

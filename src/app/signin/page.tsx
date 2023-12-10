@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import FormProfile from "@/components/FormProfile";
+import FormProfile from "@/components/forms/FormProfile";
 
 export default function Page() {
   

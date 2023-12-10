@@ -1,9 +1,9 @@
 "use client";
 
-import Section from "@/components/Section";
-import DifferentText from "@/components/DifferentText";
+import Section from "@/components/sections/Section";
+import DifferentText from "@/components/tools/DifferentText";
 import Image from "next/image";
-import FormProfile from "@/components/FormProfile";
+import FormProfile from "@/components/forms/FormProfile";
 
 export default function Page() {
   return (

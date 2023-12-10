@@ -1,14 +1,14 @@
 "use client";
 
-import Banner from "@/components/Banner";
-import Section from "@/components/Section";
-import DifferentText from "@/components/DifferentText";
+import Banner from "@/components/banners/Banner";
+import Section from "@/components/sections/Section";
+import DifferentText from "@/components/tools/DifferentText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "@/components/icons/icons";
 import Button from "@/components/buttons/Button";
 
 import Link from "next/link";
-import FormProfile from "@/components/FormProfile";
+import FormProfile from "@/components/forms/FormProfile";
 
 export default function Page() {
   const typeUser = "student";
