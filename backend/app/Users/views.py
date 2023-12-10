@@ -61,9 +61,9 @@ def user_api(request):
 
                 if user_serializer.is_valid():
                     user_serializer.save()
-                    return JsonResponse(user_serializer.data, safe=False)
+                    return JsonResponse("Usuario actualizado", safe=False, status=200)
 
-            return JsonResponse("Error al actualizar usuario")
+            return JsonResponse("Error al actualizar usuario", safe=False, status=400)
 
 
         # Delete user
@@ -72,10 +72,10 @@ def user_api(request):
                 data = JSONParser().parse(request)
                 user = User.objects.get(email=user_token)
                 user.delete()
-                return JsonResponse("Usuario eliminado", safe=False)
+                return JsonResponse("Usuario eliminado", safe=False, status=200)
 
             except User.DoesNotExist:
-                return JsonResponse("Usuario no encontrado", safe=False)
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Sign up
@@ -173,12 +173,12 @@ def sign_out(request):
 
                 if user_serializer.is_valid():
                     user_serializer.save()
-                    return JsonResponse("Sesión cerrada", safe=False)
+                    return JsonResponse("Sesión cerrada", safe=False, status=200)
                 else:
-                    return JsonResponse("Error al cerrar sesión", safe=False)
+                    return JsonResponse("Error al cerrar sesión", safe=False, status=400)
 
             except User.DoesNotExist:
-                return JsonResponse("Usuario no encontrado", safe=False)
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Set email verification
