@@ -61,7 +61,7 @@ def user_api(request):
 
                 if user_serializer.is_valid():
                     user_serializer.save()
-                    return JsonResponse("Usuario actualizado", safe=False)
+                    return JsonResponse(user_serializer.data, safe=False)
 
             return JsonResponse("Error al actualizar usuario")
 
@@ -169,9 +169,7 @@ def sign_out(request):
         if request.method == 'PUT':
             try:
                 user = User.objects.get(email=user_token)
-                print(user)
-                user_serializer = UserSerializer(user, data={'session_token': " "}, partial=True)
-                print(user_serializer)
+                user_serializer = UserSerializer(user, data={'session_token': 'None'}, partial=True)
 
                 if user_serializer.is_valid():
                     user_serializer.save()
