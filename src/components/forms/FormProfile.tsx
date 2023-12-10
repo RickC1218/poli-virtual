@@ -32,26 +32,27 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     approve_teacher: "",
     approve_teacher_email: "",
     user_description: "",
-    session_token: "",
     //profilePhoto: ""
   });
-
+  
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
-    setUser({
-      ...user,
-      name: user.name,
-      lastname: user.lastname,
-      email: user.email,
-      password: user.password,
-      role: user.role,
-      semester: user.semester,
-      approve_teacher: user.approve_teacher,
-      approve_teacher_email: user.approve_teacher_email,
-      user_description: user.user_description,
-      session_token: user.session_token,
-      //profilePhoto: user.profilePhoto
-    });
+    if (type !== "new-user") {
+      setUser({
+        ...user,
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+        password: user.password,
+        role: user.role,
+        semester: user.semester,
+        approve_teacher: user.approve_teacher,
+        approve_teacher_email: user.approve_teacher_email,
+        user_description: user.user_description,
+        //profilePhoto: user.profilePhoto
+      });
+      localStorage.setItem('token', JSON.stringify(user.session_token));
+    }
   }, []);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -78,7 +79,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
   //Validating password
   const validatePassword = (password: string) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$/;
     return regex.test(password);
   }
 
@@ -88,7 +89,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 3000); // close the alert after 3 seconds
+    }, 5000); // close the alert after 5 seconds
   };
 
   //manage the register button
@@ -122,11 +123,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             }
           } else {
             //Error
-            message = "La contraseña y la verificación no coinciden";
+            message = "La contraseña y la verificación no coinciden.";
           }
         } else {
           //password error
-          message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial";
+          message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial.";
         }
       } else {
         message = "Todos los campos deben estar llenos";
@@ -142,15 +143,24 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     try {
       e.preventDefault();
       // obtain the session token from the user object
-      const session_token = user.session_token;
-      
+      const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
+      const userData = {
+        name: user.name,
+        lastname: user.lastname,
+        semester: user.semester,
+        email: user.email,
+        approve_teacher: user.approve_teacher,
+        approve_teacher_email: user.approve_teacher_email,
+        user_description: user.user_description,
+        //profilePhoto: user.profilePhoto
+      }
       // make sure the session token is available
       if (session_token) {
         // update the user
-        const response = await crud_user.updateUser(user, session_token);
+        const response = await crud_user.updateUser(userData, session_token);
         console.log(response);
         // update the user in the session storage
-        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        sessionStorage.setItem('currentUser', JSON.stringify(userData));
         // redirect to the explore page
         router.push("/common/profile");
         router.refresh();
@@ -347,7 +357,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </Link>
       </div>
       {alertMessage && (
-        <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--gray] p-2 rounded-md mb-4`}>
+        <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center mb-4`}>
           {alertMessage}
         </div>
       )}

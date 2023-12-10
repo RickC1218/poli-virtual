@@ -54,7 +54,7 @@ const crud_user = {
                 'Authorization': `Bearer ${session_token}`,
             };
     
-            const response = await axios.put(`${API_BASE_URL}/user/`, {userData}, { headers });
+            const response = await axios.put(`${API_BASE_URL}/user/`, userData, { headers });
             return response.data;
         } catch (error) {
             throw error;
