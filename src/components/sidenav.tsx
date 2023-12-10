@@ -9,9 +9,11 @@ import { useState } from 'react';
 import icons from "./icons/icons";
 import Button from "./buttons/Button";
 
+const sessionActive = sessionStorage.getItem("currentUser") !== null;
+console.log(sessionActive);
+
 export default function SideNav() {
 
-  const sessionActive = sessionStorage.getItem("currentUser") !== null;
   const [menuOpen, setMenuOpen] = useState(false);
   const loginLink = {
     href: "/login",

@@ -36,8 +36,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   });
 
   useEffect(() => {
-    console.log(sessionStorage.getItem("currentUser"));
-    const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+    user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
     setUser({
       ...user,
       name: user.name,
