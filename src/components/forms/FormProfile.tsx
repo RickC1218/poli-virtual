@@ -176,9 +176,15 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const handleLogOut = async (e: FormEvent) => {
     try {
       e.preventDefault();
+      const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
       //Logout
-      const response = await crud_user.logout(user);
+      console.log(session_token);
+      const response = await crud_user.logout(session_token);
       console.log(response);
+      //Remove the token
+      localStorage.removeItem('token');
+      //Remove the user from the session storage
+      sessionStorage.removeItem('currentUser');
       //redirect to the explore page
       router.push("/common/explore");
       router.refresh();
