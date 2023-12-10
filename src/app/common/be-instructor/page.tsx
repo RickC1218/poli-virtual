@@ -7,7 +7,7 @@ import FormProfile from "@/components/FormProfile";
 export default function Page() {
   return (
     <div className="grid grid-cols-4 gap-2 place-items-center bg-[--light] p-10">
-      <h1 className="text-[38px] col-span-4">Formulario para ser
+      <h1 className="text-[38px] col-span-4 text-center">Formulario para ser
         <DifferentText color="--principal-red"> instructor</DifferentText>
       </h1>
       <div className="col-span-2 hidden md:block">

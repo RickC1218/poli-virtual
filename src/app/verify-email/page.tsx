@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import crud_user from "@/app/api/crud_user";
 import { useEffect, useState } from "react";
+import DifferentText from "@/components/DifferentText";
 
 export default function Page() {
   
@@ -41,7 +42,11 @@ export default function Page() {
         </Link>
       </div>
       <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center">
-      <h1 className="text-[38px] mb-5 text-center align-middle">Tu correo fue verificado exitosamente</h1>
+      <h1 className="text-[38px] m-5 text-center align-middle">
+        Tu 
+        <DifferentText color="--principal-red"> correo </DifferentText>
+        fue verificado exitosamente
+      </h1>
       </div>
     </div>
   );

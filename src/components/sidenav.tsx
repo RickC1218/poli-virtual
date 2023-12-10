@@ -1,20 +1,24 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
 
 import NavLinks from "./NavLinks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import icons from "./icons/icons";
 import Button from "./buttons/Button";
 
-const sessionActive = sessionStorage.getItem("currentUser") !== null;
-console.log(sessionActive);
-
 export default function SideNav() {
-
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sessionActive, setSessionActive] = useState(false);
+
+  useEffect(() => {
+    // Verificar el sessionStorage para determinar si hay una sesión activa
+    const isSessionActive = sessionStorage.getItem("currentUser") !== null;
+    setSessionActive(isSessionActive);
+  }, []);
+
   const loginLink = {
     href: "/login",
     name: "Iniciar sesión",
@@ -25,11 +29,12 @@ export default function SideNav() {
     name: "Registrarse",
     label: "Registrarse",
   };
+
   return (
     <div className=" mx-auto grid grid-cols-6 gap-2 items-center justify-center py-2.5 px-2 xl:px-9 max-h-full">
       <div className="col-span-1">
         <Link
-          href="/common">
+          href="/common/explore">
           <div className="items-center flex justify-center">
             <Image
               src="/logo.png"
@@ -40,7 +45,7 @@ export default function SideNav() {
           </div>
         </Link>
       </div>
-      <div className="text-[--gray] col-span-5 w-full flex justify-end lg:flex-none">
+      <div className={`text-[--gray] col-span-5 justify-end w-full flex lg:flex-none`}>
         <div className="flex lg:hidden items-center p-2">
           <button
             className="text-[--gray] focus:outline-none flex flex-col justify-items-center items-center hover:text-[--principal-red]"
@@ -49,9 +54,9 @@ export default function SideNav() {
             <FontAwesomeIcon icon={menuOpen ? icons.faCircleXmark : icons.faBars} className={`text-3xl ${menuOpen ? 'z-10' : ''}`} />
           </button>
         </div>
-        <div className={`flex lg:flex justify-between ${menuOpen ? 'flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl' : 'hidden'}`}>
-          <div className={`flex items-center ${sessionActive ? '' : 'hidden'}  px-5 ${menuOpen ? 'flex-col space-y-1 pt-6' : 'flex-row space-x-1'}`}>
-            <div className="flex justify-start">
+        <div className={`flex lg:flex justify-between w-full ${menuOpen ? 'flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl' : 'hidden'}`}>
+          <div suppressHydrationWarning={true} className={`items-center ${sessionActive ? 'grow' : 'hidden'} px-5 ${menuOpen ? 'flex-col space-y-1 pt-6' : 'flex-row space-x-1'}`}>
+            <div className="flex justify-start w-full">
               <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
                 <FontAwesomeIcon
                   icon={icons.faSearch}
@@ -63,10 +68,10 @@ export default function SideNav() {
                 className="bg-[--light] rounded-r-[10px] p-2 text-sm w-full" />
             </div>
           </div>
-          <div className={`flex items-center px-5 ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
+          <div className={`flex justify-self-end items-center px-5 ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
             <NavLinks />
           </div>
-          <div className={`flex items-center px-5 ${sessionActive ? '' : 'hidden'} ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
+          <div className={`flex justify-self-end items-center px-5 ${sessionActive ? 'hidden' : ''} ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
             <Link
               key={loginLink.name}
               href={loginLink.href}

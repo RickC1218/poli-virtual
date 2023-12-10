@@ -45,6 +45,7 @@ export default function Page() {
     const response = await crud_user.login(user);
     sessionStorage.setItem("currentUser", JSON.stringify(response));
     router.push("/common/explore");
+    router.refresh();
   };
 
   return (

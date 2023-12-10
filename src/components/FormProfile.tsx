@@ -32,11 +32,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     approve_teacher: "",
     approve_teacher_email: "",
     user_description: "",
+    session_token: "",
     //profilePhoto: ""
   });
 
   useEffect(() => {
-    user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+    const user = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
     setUser({
       ...user,
       name: user.name,
@@ -48,6 +49,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       approve_teacher: user.approve_teacher,
       approve_teacher_email: user.approve_teacher_email,
       user_description: user.user_description,
+      session_token: user.session_token,
       //profilePhoto: user.profilePhoto
     });
   }, []);
@@ -74,9 +76,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     setVerification(event.target.value)
   }
 
-  //Validación de contraseña
+  //Validating password
   const validatePassword = (password: string) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).$/;
     return regex.test(password);
   }
 
@@ -86,38 +88,44 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 3000); // Cerrar el alert después de 3 segundos
+    }, 3000); // close the alert after 3 seconds
   };
 
-  //Manejo del botón de registro
+  //manage the register button
   const handleRegister = async (e: FormEvent) => {
     try {
       const role = "student";
       user.role = role;
       let message = "";
       e.preventDefault();
-      // verificar que todos los campos estén llenos
+      // verify that all fields are filled
       if (user.name && user.lastname && user.email && user.semester && user.password && verification) {
-        //Validar contraseña  
+        //Validate password
         if (validatePassword(user.password)) {
           if (user.password === verification) {
-            //Registro exitoso
+            //Sign up
             message = "Registro exitoso";
-            //Enviar datos al backend
-            const response = await crud_user.createUser(user);
-            console.log(response);
-            //Envio de correo de verificación
-            //const resEmail = await crud_user.emailVerification(user.email);
-            //console.log(resEmail);
-            localStorage.setItem("email", JSON.stringify(user.email));
-            //Redirigir a la página de inicio de sesión
-            //router.push("/login");
+            //send the user to the database
+            try {
+              const response = await crud_user.createUser(user);
+              console.log(response);
+              //Send email verification
+              //const resEmail = await crud_user.emailVerification(user.email);
+              //console.log(resEmail);
+              //localStorage.setItem("email", JSON.stringify(user.email));
+              //console.log(localStorage.getItem("email"));
+              //redirect to the login page
+              router.push("/login");
+              router.refresh();
+            } catch (error) {
+              console.log(error);
+            }
           } else {
             //Error
             message = "La contraseña y la verificación no coinciden";
           }
         } else {
-          //Contraseña inválida
+          //password error
           message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial";
         }
       } else {
@@ -129,9 +137,44 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   }
 
-  //Manejo del botón de actualizar perfil
-  const handleUpdateProfile = () => {
-    console.log("Perfil actualizado");
+  //manage the update profile button
+  const handleUpdateProfile = async (e: FormEvent) => {
+    try {
+      e.preventDefault();
+      // obtain the session token from the user object
+      const session_token = user.session_token;
+      
+      // make sure the session token is available
+      if (session_token) {
+        // update the user
+        const response = await crud_user.updateUser(user, session_token);
+        console.log(response);
+        // update the user in the session storage
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        // redirect to the explore page
+        router.push("/common/profile");
+        router.refresh();
+      } else {
+        console.error('No hay token disponible. El usuario probablemente no ha iniciado sesión.');
+      }
+    } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+    }
+  };
+
+  //manage the logout button
+  const handleLogOut = async (e: FormEvent) => {
+    try {
+      e.preventDefault();
+      //Logout
+      const response = await crud_user.logout(user);
+      console.log(response);
+      //redirect to the explore page
+      router.push("/common/explore");
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -166,17 +209,17 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.email}
             className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${type === 'new-user' ? '' : 'disabled cursor-not-allowed '}`}
-            readOnly={type !== 'new-user'} 
+            readOnly={type !== 'new-user'}
             required />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Semestre:</p>
-          <select 
+          <select
             name="semester"
-            onChange={handleChange} 
-            value={user.semester} 
+            onChange={handleChange}
+            value={user.semester}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            >
+          >
             <option value="1ro">1er semestre</option>
             <option value="2do">2do semestre</option>
             <option value="3ro">3er semestre</option>
@@ -188,7 +231,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             <option value="9no">9no semestre</option>
           </select>
         </div>
-        <div className="flex items-center justify-between w-full mx-2 p-2">
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
           <p className="font-bold">Contraseña:</p>
           <input
             type="password"
@@ -230,9 +273,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="text"
             name="approve_teacher"
             onChange={handleChange}
-            value={user.approve_teacher ? user.approve_teacher : ""} 
+            value={user.approve_teacher ? user.approve_teacher : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
+          />
         </div>
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || type === "profile-instructor" ? "" : "hidden"}`}>
           <p className="font-bold">Correo del profesor:</p>
@@ -242,7 +285,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.approve_teacher_email ? user.approve_teacher_email : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
+          />
         </div>
         <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
           <Link
@@ -265,7 +308,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             name="user_description"
             rows={7}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
+          />
         </div>
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
           <p className="font-bold">Foto de perfil:</p>
@@ -274,11 +317,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             /*value={user.profilePhoto}*/
             type="file"
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
+          />
         </div>
       </div>
       <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
-        <Link key="SignOut" href="/common/explore" className={`p-2 md:p-0`}>
+        <Link key="SignOut" href="/common/explore" className={`p-2 md:p-0`} onClick={handleLogOut}>
           <Button
             text="Cerrar sesión"
             icon={icons.faRightToBracket}
@@ -286,13 +329,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="big"
           />
         </Link>
-        <Link key="Explore" href="/common/profile" className={`p-2 md:p-0`}>
+        <Link key="Explore" href="/common/profile" className={`p-2 md:p-0`} onClick={handleUpdateProfile}>
           <Button
             text="Guardar cambios"
             icon={icons.faFloppyDisk}
             color="blue"
             type="big"
-            onClick={handleUpdateProfile}
           />
         </Link>
         <Link key="newCourse" href="/common/categories/category/course" className={`p-2 md:p-0 ${type === "profile-instructor" ? '' : 'hidden'}`}>
@@ -305,7 +347,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </Link>
       </div>
       {alertMessage && (
-        <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} text-white p-2 rounded-md mb-4`}>
+        <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--gray] p-2 rounded-md mb-4`}>
           {alertMessage}
         </div>
       )}
