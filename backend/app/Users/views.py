@@ -142,15 +142,7 @@ def sign_in(request):
                         if user_serializer.is_valid():
                             user_serializer.save()
 
-                        aux_user = {
-                            "email": user_serializer.data.get("email"),
-                            "name": user_serializer.data.get("name"),
-                            "last_name": user_serializer.data.get("lastname"),
-                            "semester": user_serializer.data.get("semester"),
-                            "password": user_serializer.data.get("password"),
-                            "session_token": user_session_token
-                        }
-                        return JsonResponse(aux_user, safe=False)
+                        return JsonResponse(user_serializer.data, safe=False)
                     else:
                         return JsonResponse({"mensaje": "Contraseña incorrecta"}, status=401)
 
