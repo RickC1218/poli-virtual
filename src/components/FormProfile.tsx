@@ -14,9 +14,7 @@ interface FormProfileProps {
 
 const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
-  const email = "ricardo.erazo@epn.edu.ec";
   const router = useRouter();
-  const params = useParams();
 
   const loginlink = {
     href: "/login",
@@ -29,12 +27,31 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     lastname: "",
     email: "",
     password: "",
+    role: "student",
     semester: "",
     approve_teacher: "",
     approve_teacher_email: "",
     user_description: "",
     //profilePhoto: ""
   });
+
+  useEffect(() => {
+    console.log(sessionStorage.getItem("currentUser"));
+    const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+    setUser({
+      ...user,
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      semester: user.semester,
+      approve_teacher: user.approve_teacher,
+      approve_teacher_email: user.approve_teacher_email,
+      user_description: user.user_description,
+      //profilePhoto: user.profilePhoto
+    });
+  }, []);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setUser({
@@ -70,12 +87,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 5000); // Cerrar el alert después de 5 segundos
+    }, 3000); // Cerrar el alert después de 3 segundos
   };
 
   //Manejo del botón de registro
   const handleRegister = async (e: FormEvent) => {
     try {
+      const role = "student";
+      user.role = role;
       let message = "";
       e.preventDefault();
       // verificar que todos los campos estén llenos
@@ -89,10 +108,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             const response = await crud_user.createUser(user);
             console.log(response);
             //Envio de correo de verificación
-            //const resEmail = await crud_user.sendVerificationEmail(newUser.email);
+            //const resEmail = await crud_user.emailVerification(user.email);
             //console.log(resEmail);
+            localStorage.setItem("email", JSON.stringify(user.email));
             //Redirigir a la página de inicio de sesión
-            router.push("/login");
+            //router.push("/login");
           } else {
             //Error
             message = "La contraseña y la verificación no coinciden";
@@ -114,30 +134,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const handleUpdateProfile = () => {
     console.log("Perfil actualizado");
   };
-
-  useEffect(() => {
-    console.log(params);
-    const fetchUser = async () => {
-      try {
-        const userData = await crud_user.getUser(email);
-        console.log(userData);
-        setUser({
-          ...user,
-          name: userData.name,
-          lastname: userData.lastname,
-          email: userData.email,
-          semester: userData.semester,
-          approve_teacher: userData.approve_teacher,
-          approve_teacher_email: userData.approve_teacher_email,
-          user_description: userData.user_description,
-          // profilePhoto: userData.profilePhoto,
-        });
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-    fetchUser();
-  }, []);
 
   return (
     <form onSubmit={handleRegister} className={`col-span-4 md:col-span-2 ${type === 'new-user' ? 'w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'w-full'} p-3 md:p-5 flex flex-col justify-center items-center`}>
@@ -235,9 +231,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="text"
             name="approve_teacher"
             onChange={handleChange}
-            value={user.approve_teacher}
+            value={user.approve_teacher ? user.approve_teacher : ""} 
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required />
+            />
         </div>
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || type === "profile-instructor" ? "" : "hidden"}`}>
           <p className="font-bold">Correo del profesor:</p>
@@ -245,9 +241,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="email"
             name="approve_teacher_email"
             onChange={handleChange}
-            value={user.approve_teacher_email}
+            value={user.approve_teacher_email ? user.approve_teacher_email : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required />
+            />
         </div>
         <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
           <Link
@@ -266,11 +262,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           <p className="font-bold">Descripción:</p>
           <textarea
             onChange={handleChange}
-            value={user.user_description}
+            value={user.user_description ? user.user_description : ""}
             name="user_description"
             rows={7}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required />
+            />
         </div>
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
           <p className="font-bold">Foto de perfil:</p>
@@ -279,7 +275,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             /*value={user.profilePhoto}*/
             type="file"
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required />
+            />
         </div>
       </div>
       <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
@@ -310,7 +306,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </Link>
       </div>
       {alertMessage && (
-        <div className={`bg-${alertMessage.startsWith("Registro exitoso") ? 'green' : 'red'}-500 text-white p-2 rounded-md mb-4`}>
+        <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} text-white p-2 rounded-md mb-4`}>
           {alertMessage}
         </div>
       )}

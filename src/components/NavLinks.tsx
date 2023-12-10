@@ -10,9 +10,11 @@ interface NavLink {
   label: string;
 }
 
-const links = //isLoggedIn
+const isLoggedIn = sessionStorage.getItem('currentUser') !== null;
+
+const links = isLoggedIn
   /* Enlaces para usuarios autenticados */
-  /*? [
+  ? [
     {
       href: '/common/explore',
       name: 'Explorar',
@@ -39,7 +41,7 @@ const links = //isLoggedIn
       label: 'Perfil',
     }
   ]
-  :*/
+  :
   /* Enlaces para usuarios no autenticados */
   [
     {

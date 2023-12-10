@@ -3,6 +3,12 @@ import axios from 'axios';
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 const crud_user = {
+    
+    // Obtener valor de localStorage
+    getLocalStorageValue: (key: string) => {     
+        return localStorage.getItem(key);   
+    },
+
     // Operación CREATE (POST)
     createUser: async (userData: any) => {
         try {
@@ -12,13 +18,21 @@ const crud_user = {
             throw error
         }
     },
+    
+    // Setear email de verificación
+    emailVerification : async (email: string) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/user/set-email-verification/`, {email: email, });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 
     // Operación READ (GET)
-    getUser: async (userData: any) => {
+    login: async (userData: any) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/user//`, {
-                params: { __id: userData._id},
-            });
+            const response = await axios.post(`${API_BASE_URL}/user/sign-in/`, userData);
             return response.data;
         } catch (error) {
             throw error;

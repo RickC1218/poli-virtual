@@ -215,7 +215,7 @@ def set_email_verification(request):
 def send_email_verification(email, name, lastname):
     subject = "Verificación de correo electrónico"
 
-    message = f"Hola {name} {lastname},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:8000/verify-email/{email}/\n\nGracias,\n\nEl equipo de Virtual Poli."
+    message = f"Hola {name} {lastname},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
 
     email = EmailMessage(
         subject,

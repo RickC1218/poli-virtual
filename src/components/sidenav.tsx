@@ -10,6 +10,8 @@ import icons from "./icons/icons";
 import Button from "./buttons/Button";
 
 export default function SideNav() {
+
+  const sessionActive = sessionStorage.getItem("currentUser") !== null;
   const [menuOpen, setMenuOpen] = useState(false);
   const loginLink = {
     href: "/login",
@@ -46,7 +48,7 @@ export default function SideNav() {
           </button>
         </div>
         <div className={`flex lg:flex justify-between ${menuOpen ? 'flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl' : 'hidden'}`}>
-          <div className={`flex items-center hidden px-5 ${menuOpen ? 'flex-col space-y-1 pt-6' : 'flex-row space-x-1'}`}>
+          <div className={`flex items-center ${sessionActive ? '' : 'hidden'}  px-5 ${menuOpen ? 'flex-col space-y-1 pt-6' : 'flex-row space-x-1'}`}>
             <div className="flex justify-start">
               <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
                 <FontAwesomeIcon
@@ -62,32 +64,32 @@ export default function SideNav() {
           <div className={`flex items-center px-5 ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
             <NavLinks />
           </div>
-          <div className={`flex items-center px-5 ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
-          <Link
-            key={loginLink.name}
-            href={loginLink.href}
-            className={`block md:flex-none ${menuOpen ? "my-2" : "mx-2"}`}
-          >
-            <Button
-              text={loginLink.name}
-              icon={icons.faUser}
-              color="blue"
-              type="small"
-            />
-          </Link>
-          <Link
-            key={registerLink.name}
-            href={registerLink.href}
-            className={`block md:flex-none ${menuOpen ? "my-2" : "mx-2"}`}
-          >
-            <Button
-              text={registerLink.name}
-              icon={icons.faRightToBracket}
-              color="red"
-              type="small"
-            />
-          </Link>
-        </div>
+          <div className={`flex items-center px-5 ${sessionActive ? '' : 'hidden'} ${menuOpen ? 'flex-col space-y-1' : 'flex-row space-x-1'}`}>
+            <Link
+              key={loginLink.name}
+              href={loginLink.href}
+              className={`block md:flex-none ${menuOpen ? "my-2" : "mx-2"}`}
+            >
+              <Button
+                text={loginLink.name}
+                icon={icons.faUser}
+                color="blue"
+                type="small"
+              />
+            </Link>
+            <Link
+              key={registerLink.name}
+              href={registerLink.href}
+              className={`block md:flex-none ${menuOpen ? "my-2" : "mx-2"}`}
+            >
+              <Button
+                text={registerLink.name}
+                icon={icons.faRightToBracket}
+                color="red"
+                type="small"
+              />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
