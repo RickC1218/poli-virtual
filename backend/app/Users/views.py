@@ -69,7 +69,6 @@ def user_api(request):
         # Delete user
         elif request.method == 'DELETE':
             try:
-                data = JSONParser().parse(request)
                 user = User.objects.get(email=user_token)
                 user.delete()
                 return JsonResponse("Usuario eliminado", safe=False, status=200)
@@ -176,6 +175,35 @@ def sign_out(request):
                     return JsonResponse("Sesión cerrada", safe=False, status=200)
                 else:
                     return JsonResponse("Error al cerrar sesión", safe=False, status=400)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
+# Update password
+@csrf_exempt
+@api_view(['PUT'])
+def change_password(request):
+    user_token = verify_token(request)
+    if user_token is False:
+        return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+    else:
+        if request.method == 'PUT':
+            try:
+                user = User.objects.get(email=user_token)
+
+                data = JSONParser().parse(request)
+                # Hash the password with a random salt
+                data["password"] = make_password(data["password"])
+
+                user_serializer = UserSerializer(user, data=data, partial=True)
+
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Contraseña actualizada", safe=False, status=200)
+                else:
+                    return JsonResponse("Error al actualizar la contraseña", safe=False, status=400)
 
             except User.DoesNotExist:
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
