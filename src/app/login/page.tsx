@@ -46,7 +46,7 @@ export default function Page() {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 2000); // close the alert after 3 seconds
+    }, 2000); // close the alert after 2 seconds
   };
 
   const handleSubmit = async (e: FormEvent) => {

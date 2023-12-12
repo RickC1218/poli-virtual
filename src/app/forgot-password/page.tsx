@@ -26,10 +26,19 @@ export default function Page() {
     setEmail(e.target.value);
   }
 
-  const sendEmail = () => {
-    const response = crud_user.restorePassword(email);
-    console.log("response", response);
-  }
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+  const showAlert = (message: string) => {
+    setAlertMessage(message);
+    setTimeout(() => {
+      setAlertMessage(null);
+    }, 2000); // close the alert after 2 seconds
+  };
+
+  const sendEmail = async() => {
+    const response = await crud_user.restorePassword(email);
+    showAlert(response);
+  };
 
   return (
     <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
@@ -56,6 +65,11 @@ export default function Page() {
               onChange={handleChange}
               className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
           </div>
+          {alertMessage && (
+          <div className={`${alertMessage.startsWith("Correo electrónico enviado") ? 'bg-green-500' : 'bg-red-500'} text-[--light] z-40 p-2 rounded-md text-center`}>
+            {alertMessage}
+          </div>
+        )}
           <div className="flex items-center justify-center w-full m-5 p-2">
           <Button
             text={text}

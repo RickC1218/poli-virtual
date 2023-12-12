@@ -45,7 +45,7 @@ const crud_user = {
     // Restore password
     restorePassword: async (email: string) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/user/restore-password/`, { email: email, });
+            const response = await axios.put(`${API_BASE_URL}/user/restore-password/`, { email: email, });
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
