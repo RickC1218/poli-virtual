@@ -225,7 +225,7 @@ def restore_password(request):
 
             # Send email to reset password
             subject = "Restablecer contraseña"
-            message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/reset-password/\n\nGracias,\n\nEl equipo de Virtual Poli."
+            message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/forgot-password/\n\nGracias,\n\nEl equipo de Virtual Poli."
             send_email(user.email, subject, message)
 
             return JsonResponse("Correo electrónico enviado", safe=False)
