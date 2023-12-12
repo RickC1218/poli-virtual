@@ -1,7 +1,8 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 import crud_user from "@/app/api/crud_user"
 import Button from "../buttons/Button";
@@ -34,7 +35,23 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     user_description: "",
     //profilePhoto: ""
   });
-  
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setUser({
+      ...user,
+      [event.target.name]: event.target.value
+    });
+  }
+
+  /*  const handleFileChange = (event: ChangeEvent<HTMLImageElement>) => {
+    if (event.target.image && event.target.image[0]) {
+      setUser({
+        ...user,
+        profilePhoto: event.target.files[0]
+      });
+    }
+  }*/
+
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
     if (type !== "new-user") {
@@ -55,22 +72,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   }, []);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setUser({
-      ...user,
-      [event.target.name]: event.target.value
-    });
-  }
-
-  /*  const handleFileChange = (event: ChangeEvent<HTMLImageElement>) => {
-    if (event.target.image && event.target.image[0]) {
-      setUser({
-        ...user,
-        profilePhoto: event.target.files[0]
-      });
-    }
-  }*/
-
   const [verification, setVerification] = useState("")
 
   const handleVerification = (event: ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +90,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 5000); // close the alert after 5 seconds
+    }, 3000); // close the alert after 5 seconds
   };
 
   //manage the register button
@@ -141,6 +142,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   //manage the update profile button
   const handleUpdateProfile = async (e: FormEvent) => {
     try {
+      let message = "";
       e.preventDefault();
       // obtain the session token from the user object
       const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
@@ -158,37 +160,59 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       if (session_token) {
         // update the user
         const response = await crud_user.updateUser(userData, session_token);
-        console.log(response);
+        message = response;
         // update the user in the session storage
         sessionStorage.setItem('currentUser', JSON.stringify(userData));
         // redirect to the explore page
+        showAlert(message);
         router.push("/common/profile");
         router.refresh();
       } else {
-        console.error('No hay token disponible. El usuario probablemente no ha iniciado sesión.');
+        message = 'Probablemente no has iniciado sesión.';
+        showAlert(message);
       }
     } catch (error) {
-      console.error('Error al actualizar el perfil:', error);
+      showAlert('Error al actualizar el perfil.');
     }
   };
 
   //manage the logout button
   const handleLogOut = async (e: FormEvent) => {
     try {
+      let message = "";
       e.preventDefault();
       const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
-      //Logout
-      console.log(session_token);
-      const response = await crud_user.logout(session_token);
-      console.log(response);
-      //Remove the token
-      localStorage.removeItem('token');
-      //Remove the user from the session storage
-      sessionStorage.removeItem('currentUser');
-      //redirect to the explore page
-      router.push("/common/explore");
-      router.refresh();
+      const userData = {
+        name: user.name,
+        lastname: user.lastname,
+        semester: user.semester,
+        email: user.email,
+        approve_teacher: user.approve_teacher,
+        approve_teacher_email: user.approve_teacher_email,
+        user_description: user.user_description,
+        //profilePhoto: user.profilePhoto
+      }
+      // make sure the session token is available
+      if (session_token) {
+        //Logout
+        const response = await crud_user.logout(userData,session_token);
+        console.log(response);
+        //Remove the token
+        localStorage.removeItem('token');
+        //Remove the user from the session storage
+        sessionStorage.removeItem('currentUser');
+        //closing the session
+        message = "Cerrando sesión...";
+        showAlert(message);
+        //redirect to the explore page
+        router.push("/common/explore");
+        router.refresh();
+      } else {
+        message = 'Probablemente no has iniciado sesión.';
+        showAlert(message);
+      }
     } catch (error) {
+      showAlert('Error al cerrar sesión.');
       console.log(error);
     }
   };
@@ -283,6 +307,13 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             {loginlink.name}
           </Link>
         </p>
+        {alertMessage && (
+          <div className={`${type === 'new-user' ? '':'hidden'}`}>
+            <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center mb-4`}>
+              {alertMessage}
+            </div>
+          </div>
+        )}
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || type === "profile-instructor" ? "" : "hidden"}`}>
           <p className="font-bold">Profesor que te aprueba:</p>
           <input
@@ -316,6 +347,13 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             />
           </Link>
         </div>
+        {alertMessage && (
+          <div className={`${type === 'be-instructor' ? '':'hidden'}`}>
+            <div className={`${alertMessage.startsWith("Se envió el correo al profesor") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center mb-4`}>
+              {alertMessage}
+            </div>
+          </div>
+        )}
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
           <p className="font-bold">Descripción:</p>
           <textarea
@@ -336,6 +374,13 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </div>
       </div>
+      {alertMessage && (
+        <div className={`${type === 'profile' || type === 'profile-instructor'  ? '':'hidden'}`}>
+          <div className={`${alertMessage.startsWith("Usuario actualizado")  ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40  p-2 rounded-md text-center mb-4`}>
+            {alertMessage}
+          </div>
+        </div>
+      )}
       <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
         <Link key="SignOut" href="/common/explore" className={`p-2 md:p-0`} onClick={handleLogOut}>
           <Button
@@ -362,11 +407,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </Link>
       </div>
-      {alertMessage && (
-        <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center mb-4`}>
-          {alertMessage}
-        </div>
-      )}
     </form>
   );
 };

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { AuthProvider } from '@/context/AuthContext';
 
 export default function Page() {
   const router = useRouter();
@@ -14,7 +15,9 @@ export default function Page() {
     return () => clearTimeout(redirectTimeout);
   }, [router]);
   return (
-    <main>
-    </main>
+    <AuthProvider>
+      <main>
+      </main>
+    </AuthProvider>
   );
 }

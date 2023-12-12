@@ -15,12 +15,6 @@ export default function Page() {
     label: "Registrarse",
   };
 
-  const loginlink = {
-    href: "/login",
-    name: "Iniciar sesión",
-    label: "Iniciar sesión",
-  };
-
   return (
     <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
       <div className="col-span-2 hidden md:block">

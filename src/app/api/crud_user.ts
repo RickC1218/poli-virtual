@@ -38,12 +38,12 @@ const crud_user = {
             throw error;
         }
     },
-    logout: async (session_token: string) => {
+    logout: async (userData: any, session_token: string) => {
         try {
             const headers = {
                 'Authorization': `Bearer ${session_token}`,
             };
-            const response = await axios.put(`${API_BASE_URL}/user/sign-out/`, {headers});
+            const response = await axios.put(`${API_BASE_URL}/user/sign-out/`, userData, {headers});
             return response.data;
         } catch (error) {
             throw error;
@@ -56,7 +56,6 @@ const crud_user = {
             const headers = {
                 'Authorization': `Bearer ${session_token}`,
             };
-    
             const response = await axios.put(`${API_BASE_URL}/user/`, userData, { headers });
             return response.data;
         } catch (error) {
