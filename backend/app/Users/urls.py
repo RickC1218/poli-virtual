@@ -8,4 +8,5 @@ urlpatterns = [
     path('user/sign-out/', views.sign_out, name='user-sign-out'), # User sign out
     path('user/set-email-verification/', views.set_email_verification, name='user-set-email-verification'), # Set email verification
     path('user/change-password/', views.change_password, name='user-change-password'), # Change password
+    path('user/restore-password/', views.restore_password, name='user-restore-password'), # Reset password
 ]

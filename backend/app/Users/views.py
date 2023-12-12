@@ -101,7 +101,9 @@ def sign_up(request):
                 user = user_serializer.data
 
                 # Send email to verify
-                send_email_verification(user.get("email"), user.get("name"), user.get("lastname"))
+                subject = "Verificación de correo electrónico"
+                message = f"Hola {user.get('name')} {user.get('lastname')},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
+                send_email(user.get("email"), subject, message)
 
                 response_data = {'mensaje': f'Usuario agregado'}
             else:
@@ -209,6 +211,29 @@ def change_password(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
+# Reset password
+@csrf_exempt
+@api_view(['PUT'])
+def restore_password(request):
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        email = data.get("email")
+
+        try:
+            # Veirfy if the user exists
+            user = User.objects.get(email=email)
+
+            # Send email to reset password
+            subject = "Restablecer contraseña"
+            message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/reset-password/\n\nGracias,\n\nEl equipo de Virtual Poli."
+            send_email(user.email, subject, message)
+
+            return JsonResponse("Correo electrónico enviado", safe=False)
+
+        except User.DoesNotExist:
+            return JsonResponse("Usuario no encontrado", safe=False)
+
+
 # Set email verification
 @csrf_exempt
 @api_view(['POST'])
@@ -229,12 +254,8 @@ def set_email_verification(request):
             return JsonResponse("Usuario no encontrado", safe=False)
 
 
-# Verify email
-def send_email_verification(email, name, lastname):
-    subject = "Verificación de correo electrónico"
-
-    message = f"Hola {name} {lastname},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
-
+# Send an email
+def send_email(email, subject, message):
     email = EmailMessage(
         subject,
         message,
