@@ -14,7 +14,7 @@ from Users.models import User
 from Users.serializers import UserSerializer
 
 
-# API views (Update and delete user)
+# API views (Update and delete user - Get enrolled courses)
 @csrf_exempt
 @api_view(['GET', 'PUT', 'DELETE'])
 def user_api(request):
