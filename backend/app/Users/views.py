@@ -90,6 +90,7 @@ def sign_up(request):
         if existing_user is not None:
             # Existing user
             response_data = {'mensaje': f'Este usuario ya existe'}
+            status = 402
         else:
             # Hash the password with a random salt
             data["password"] = make_password(data["password"])
@@ -100,16 +101,18 @@ def sign_up(request):
                 user_serializer.save()
                 user = user_serializer.data
 
+                response_data = {'mensaje': f'Usuario agregado'}
+                status = 200
+
                 # Send email to verify
                 subject = "Verificación de correo electrónico"
                 message = f"Hola {user.get('name')} {user.get('lastname')},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
                 send_email(user.get("email"), subject, message)
-
-                response_data = {'mensaje': f'Usuario agregado'}
             else:
                 response_data = {'mensaje': f'Error al guardar el usuario'}
+                status = 400
 
-        return JsonResponse(response_data, safe=False)
+        return JsonResponse(response_data, safe=False, status=status)
 
 
 # Sign in
@@ -228,10 +231,10 @@ def restore_password(request):
             message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/forgot-password/\n\nGracias,\n\nEl equipo de Virtual Poli."
             send_email(user.email, subject, message)
 
-            return JsonResponse("Correo electrónico enviado", safe=False)
+            return JsonResponse("Correo electrónico enviado", safe=False, status=200)
 
         except User.DoesNotExist:
-            return JsonResponse("Usuario no encontrado", safe=False)
+            return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Set email verification
@@ -248,10 +251,10 @@ def set_email_verification(request):
 
             if user_serializer.is_valid():
                 user_serializer.save()
-                return JsonResponse("Correo electrónico verificado", safe=False)
+                return JsonResponse("Correo electrónico verificado", safe=False, status=200)
 
         except User.DoesNotExist:
-            return JsonResponse("Usuario no encontrado", safe=False)
+            return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Send an email
