@@ -6,7 +6,7 @@ import Link from "next/link";
 import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
 import { ChangeEvent, FormEvent, useState } from "react";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import crud_user from "@/app/api/crud_user";
 
 export default function Page() {
@@ -21,7 +21,7 @@ export default function Page() {
   };
 
   const forgotlink = {
-    href: "/forgot",
+    href: "/forgot-password",
     name: "¿Olvidaste tu contraseña?",
     label: "¿Olvidaste tu contraseña?",
   };
@@ -39,13 +39,34 @@ export default function Page() {
   };
 
   const router = useRouter();
-  
+
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+  const showAlert = (message: string) => {
+    setAlertMessage(message);
+    setTimeout(() => {
+      setAlertMessage(null);
+    }, 2000); // close the alert after 3 seconds
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    let message = "";
     const response = await crud_user.login(user);
     sessionStorage.setItem("currentUser", JSON.stringify(response));
-    router.push("/common/explore");
-    router.refresh();
+    localStorage.setItem("token", JSON.stringify(response.session_token));
+    if (response.session_token) {
+      message = "Inicio de sesión exitoso";
+      showAlert(message);
+      setTimeout(() => {
+        // Redirect to the explore page after the delay
+        router.push("/common/explore");
+        router.refresh();
+      }, 2000);
+    } else {
+      message = response;
+      showAlert(message);
+    }
   };
 
   return (
@@ -90,6 +111,11 @@ export default function Page() {
         >
           {forgotlink.name}
         </Link>
+        {alertMessage && (
+          <div className={`${alertMessage.startsWith("Inicio de sesión exitoso") ? 'bg-green-500' : 'bg-red-500'} text-[--light] z-40 p-2 rounded-md text-center`}>
+            {alertMessage}
+          </div>
+        )}
         <div className="flex items-center justify-center w-full m-5 p-2">
           <Button
             text={text}

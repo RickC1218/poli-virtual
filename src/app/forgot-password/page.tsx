@@ -31,7 +31,7 @@ export default function Page() {
         </Link>
       </div>
       <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center ">
-      <h1 className="text-[38px] mb-5">Recuperar cuenta</h1>
+      <h1 className="text-[38px] mb-5 text-center">Recuperar cuenta</h1>
           <div className="flex items-center justify-between w-full mx-2 p-2">
             <p className="font-bold">Correo institucional:</p>
             <input

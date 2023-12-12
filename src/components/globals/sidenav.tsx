@@ -54,7 +54,7 @@ export default function SideNav() {
             <FontAwesomeIcon icon={menuOpen ? icons.faCircleXmark : icons.faBars} className={`text-3xl ${menuOpen ? 'z-10' : ''}`} />
           </button>
         </div>
-        <div className={`flex lg:flex justify-between w-full ${menuOpen ? 'flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl' : 'hidden'}`}>
+        <div className={`flex lg:flex justify-between w-full ${menuOpen ? 'flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl w-[50%] md:w-[25%]' : 'hidden'}`}>
           <div suppressHydrationWarning={true} className={`items-center ${sessionActive ? 'grow' : 'hidden'} px-5 ${menuOpen ? 'flex-col space-y-1 pt-6' : 'flex-row space-x-1'}`}>
             <div className="flex justify-start w-full">
               <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">

@@ -35,7 +35,17 @@ const crud_user = {
             const response = await axios.post(`${API_BASE_URL}/user/sign-in/`, userData);
             return response.data;
         } catch (error) {
-            throw error;
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            switch (responseError?.response?.status) {
+                case 401:
+                    return "Contraseña incorrecta";
+                case 404:
+                    return "Usuario no encontrado";
+                case 400:
+                    return "Correo electrónico y contraseña no ingresados";
+                default:
+                    return "Error desconocido";
+            }
         }
     },
     logout: async (userData: any, session_token: string) => {
@@ -43,7 +53,7 @@ const crud_user = {
             const headers = {
                 'Authorization': `Bearer ${session_token}`,
             };
-            const response = await axios.put(`${API_BASE_URL}/user/sign-out/`, userData, {headers});
+            const response = await axios.put(`${API_BASE_URL}/user/sign-out/`, userData, { headers });
             return response.data;
         } catch (error) {
             throw error;
@@ -62,7 +72,17 @@ const crud_user = {
             throw error;
         }
     },
-
+    updatePassword: async (userData: any, session_token: string) => {
+        try {
+            const headers = {
+                'Authorization': `Bearer ${session_token}`,
+            };
+            const response = await axios.put(`${API_BASE_URL}/user/change-password/`, userData, { headers });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
     // Operación DELETE (DELETE)
     deleteUser: async (email: string) => {
         try {
