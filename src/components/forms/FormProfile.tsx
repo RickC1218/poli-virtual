@@ -247,8 +247,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         // make sure the session token is available
         if (session_token) {
           //Logout
-          const response = await crud_user.logout(userData, session_token);
-          console.log(response);
+          await crud_user.logout(userData, session_token);
           //Remove the token
           localStorage.removeItem('token');
           //Remove the user from the session storage

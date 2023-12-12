@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
+
+import crud_user from "@/app/api/crud_user";
+import { ChangeEvent, useState } from "react";
 
 export default function Page() {
   const text = "Enviar correo";
@@ -14,6 +19,17 @@ export default function Page() {
     name: "Registrarse",
     label: "Registrarse",
   };
+
+  const [email, setEmail] = useState("");
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  }
+
+  const sendEmail = () => {
+    const response = crud_user.restorePassword(email);
+    console.log("response", response);
+  }
 
   return (
     <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
@@ -36,6 +52,8 @@ export default function Page() {
             <p className="font-bold">Correo institucional:</p>
             <input
               type="mail"
+              name="email"
+              onChange={handleChange}
               className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
           </div>
           <div className="flex items-center justify-center w-full m-5 p-2">
@@ -44,6 +62,7 @@ export default function Page() {
             icon={icons.faEnvelope}
             color={color}
             type={size}
+            onClick={sendEmail}
           />
         </div>
         <p className="text-base flex">
