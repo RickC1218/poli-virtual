@@ -36,8 +36,11 @@ export default function Page() {
   };
 
   const sendEmail = async() => {
-    const response = await crud_user.restorePassword(email);
+    const response = await crud_user.sendEmailToRestorePassword(email);
     showAlert(response);
+    if (response.startsWith("Correo electrónico enviado")) {
+      localStorage.setItem("email", email);
+    }
   };
 
   return (

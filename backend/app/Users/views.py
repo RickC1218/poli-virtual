@@ -214,10 +214,10 @@ def change_password(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
-# Reset password
+# Send an email to restore password
 @csrf_exempt
 @api_view(['PUT'])
-def restore_password(request):
+def send_email_to_restore_password(request):
     if request.method == 'PUT':
         data = JSONParser().parse(request)
         email = data.get("email")
@@ -228,10 +228,37 @@ def restore_password(request):
 
             # Send email to reset password
             subject = "Restablecer contraseña"
-            message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/forgot-password/\n\nGracias,\n\nEl equipo de Virtual Poli."
+            message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/restore-account/\n\nGracias,\n\nEl equipo de Virtual Poli."
             send_email(user.email, subject, message)
 
             return JsonResponse("Correo electrónico enviado", safe=False, status=200)
+
+        except User.DoesNotExist:
+            return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
+# Restore password
+@csrf_exempt
+@api_view(['PUT'])
+def restore_password(request):
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        email = data.get("email")
+
+        try:
+            # Verify if the user exists
+            user = User.objects.get(email=email)
+
+            # Hash the password with a random salt
+            data["password"] = make_password(data["password"])
+
+            user_serializer = UserSerializer(user, data=data, partial=True)
+
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return JsonResponse("Contraseña actualizada", safe=False, status=200)
+            else:
+                return JsonResponse("Error al actualizar la contraseña", safe=False, status=400)
 
         except User.DoesNotExist:
             return JsonResponse("Usuario no encontrado", safe=False, status=404)

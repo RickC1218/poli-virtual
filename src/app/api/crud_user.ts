@@ -42,10 +42,10 @@ const crud_user = {
         }
     },
 
-    // Restore password
-    restorePassword: async (email: string) => {
+    // Send email to restore password
+    sendEmailToRestorePassword: async (email: string) => {
         try {
-            const response = await axios.put(`${API_BASE_URL}/user/restore-password/`, { email: email, });
+            const response = await axios.put(`${API_BASE_URL}/user/send-email-to-restore-password/`, { email: email, });
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
@@ -53,6 +53,24 @@ const crud_user = {
                 return "Usuario no encontrado";
             } else {
                 return "Error desconocido";
+            }
+        }
+    },
+
+    // Restore password
+    restorePassword: async (userData: any) => {
+        try {
+            const response = await axios.put(`${API_BASE_URL}/user/restore-password/`, userData);
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            switch (responseError?.response?.status) {
+                case 400:
+                    return "Error al restaurar la contraseña";
+                case 404:
+                    return "Usuario no encontrado";
+                default:
+                    return "Error desconocido";
             }
         }
     },
