@@ -151,7 +151,7 @@ def sign_in(request):
                         return JsonResponse({"mensaje": "Contraseña incorrecta"}, status=401)
 
                 else:
-                    return JsonResponse({"mensaje": "Correo electrónico no verificado"}, status=401)
+                    return JsonResponse({"mensaje": "Correo electrónico no verificado"}, status=403)
 
             except User.DoesNotExist:
                 return JsonResponse({"mensaje": "Usuario no encontrado"}, status=404)

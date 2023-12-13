@@ -69,6 +69,8 @@ const crud_user = {
                     return "Correo electrónico y contraseña no ingresados";
                 case 401:
                     return "Contraseña incorrecta";
+                case 403:
+                    return "Correo electrónico no verificado";
                 case 404:
                     return "Usuario no encontrado";
                 default:
@@ -76,7 +78,7 @@ const crud_user = {
             }
         }
     },
-    
+
     // Operation log out
     logout: async (userData: any, session_token: string) => {
         try {
