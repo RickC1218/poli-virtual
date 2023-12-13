@@ -243,7 +243,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           approve_teacher_email: user.approve_teacher_email,
           user_description: user.user_description,
           //profilePhoto: user.profilePhoto
-        }
+        };
         // make sure the session token is available
         if (session_token) {
           //Logout

@@ -1,9 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
-import Button from '@/components/buttons/Button';
-import icons from '@/components/icons/icons';
 import StarRating from '@/components/tools/StarRating';
 import BannerThemeCard from '@/components/cards/BannerThemeCard';
 
