@@ -15,9 +15,7 @@ export default function Page() {
     return () => clearTimeout(redirectTimeout);
   }, [router]);
   return (
-    <AuthProvider>
-      <main>
-      </main>
-    </AuthProvider>
+    <main>
+    </main>
   );
 }

@@ -258,7 +258,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           // Introduce a delay using setTimeout
           setTimeout(() => {
             // Redirect to the explore page after the delay
-            router.push("/common/explore");
+            router.push("/login");
             router.refresh();
           }, 3000);
         } else {
@@ -443,7 +443,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           </div>
         )}
         <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
-          <Link key="SignOut" href="/common/explore" className={`p-2 md:p-0`} onClick={handleLogOut}>
+          <Link key="SignOut" href="/login" className={`p-2 md:p-0`} onClick={handleLogOut}>
             <Button
               text="Cerrar sesión"
               icon={icons.faRightToBracket}
