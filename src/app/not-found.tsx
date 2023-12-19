@@ -21,9 +21,11 @@ export default function NotFound() {
       </div>
       <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center">
         <h1 className="text-[38px] m-5 text-center align-middle">
-          Página
-          <DifferentText color="--principal-red"> no </DifferentText>
-          encontrada
+          Página no encontrada
+        </h1>
+        <h1 className="text-[38px] m-5 text-center align-middle">
+          Error
+          <DifferentText  color="--principal-red"> 404</DifferentText>
         </h1>
       </div>
     </div>
