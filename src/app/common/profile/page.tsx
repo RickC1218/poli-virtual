@@ -9,7 +9,8 @@ import icons from "@/components/icons/icons";
 import FormProfile from "@/components/forms/FormProfile";
 
 export default function Page() {
-  const typeUser = "student";
+  const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+  const typeUser = user.role;
   return (
     <>
       <div className="grid grid-cols-4 gap-2 bg-[--light] place-items-center p-10">

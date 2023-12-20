@@ -210,10 +210,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             handleCloseModal();
             router.push("/common/profile");
             router.refresh();
-          }else {
+          } else {
             message = 'Probablemente no has iniciado sesión.';
           }
-        }  else {
+        } else {
           //Error
           message = "La contraseña y la verificación no coinciden.";
         }
@@ -224,296 +224,296 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         showAlert(message);
       }
     } catch (error) {
-        showAlert('Error al actualizar la contraseña.');
+      showAlert('Error al actualizar la contraseña.');
+    }
+  };
+
+  //manage the logout button
+  const handleLogOut = async (e: FormEvent) => {
+    try {
+      let message = "";
+      e.preventDefault();
+      const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
+      const userData = {
+        name: user.name,
+        lastname: user.lastname,
+        semester: user.semester,
+        email: user.email,
+        approve_teacher: user.approve_teacher,
+        approve_teacher_email: user.approve_teacher_email,
+        user_description: user.user_description,
+        //profilePhoto: user.profilePhoto
+      };
+      // make sure the session token is available
+      if (session_token) {
+        //Logout
+        await crud_user.logout(userData, session_token);
+        //Remove the token
+        localStorage.removeItem('token');
+        //Remove the user from the session storage
+        sessionStorage.removeItem('currentUser');
+        //closing the session
+        message = "Cerrando sesión...";
+        showAlert(message);
+        // Introduce a delay using setTimeout
+        setTimeout(() => {
+          // Redirect to the explore page after the delay
+          router.push("/login");
+          router.refresh();
+        }, 3000);
+      } else {
+        message = 'Probablemente no has iniciado sesión.';
+        showAlert(message);
       }
-    };
+    } catch (error) {
+      showAlert('Error al cerrar sesión.');
+    }
+  };
 
-    //manage the logout button
-    const handleLogOut = async (e: FormEvent) => {
-      try {
-        let message = "";
-        e.preventDefault();
-        const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
-        const userData = {
-          name: user.name,
-          lastname: user.lastname,
-          semester: user.semester,
-          email: user.email,
-          approve_teacher: user.approve_teacher,
-          approve_teacher_email: user.approve_teacher_email,
-          user_description: user.user_description,
-          //profilePhoto: user.profilePhoto
-        };
-        // make sure the session token is available
-        if (session_token) {
-          //Logout
-          await crud_user.logout(userData, session_token);
-          //Remove the token
-          localStorage.removeItem('token');
-          //Remove the user from the session storage
-          sessionStorage.removeItem('currentUser');
-          //closing the session
-          message = "Cerrando sesión...";
-          showAlert(message);
-          // Introduce a delay using setTimeout
-          setTimeout(() => {
-            // Redirect to the explore page after the delay
-            router.push("/login");
-            router.refresh();
-          }, 3000);
-        } else {
-          message = 'Probablemente no has iniciado sesión.';
-          showAlert(message);
-        }
-      } catch (error) {
-        showAlert('Error al cerrar sesión.');
-      }
-    };
+  //manage the modal
+  const [isOpen, setIsOpen] = useState(false);
 
-    //manage the modal
-    const [isOpen, setIsOpen] = useState(false);
+  const handleOpenModal = () => setIsOpen(true);
+  const handleCloseModal = () => setIsOpen(false);
 
-    const handleOpenModal = () => setIsOpen(true);
-    const handleCloseModal = () => setIsOpen(false);
-
-    return (
-      <form onSubmit={handleRegister} className={`col-span-4 md:col-span-2 ${type === 'new-user' ? 'w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'w-full'} p-3 md:p-5 flex flex-col justify-center items-center`}>
-        <h1 className={`text-[38px] ${type === 'new-user' ? '' : 'hidden'}`}>Registrarse</h1>
-        <div className={`${type === "profile-instructor" ? "md:col-span-3" : "md:col-span-2"} w-full p-3 flex flex-col justify-center items-center`}>
-          <div className="flex items-center justify-between w-full mx-2 p-2">
-            <p className="font-bold">Nombre:</p>
-            <input
-              type="text"
-              name="name"
-              onChange={handleChange}
-              value={user.name}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-              required />
-          </div>
-          <div className="flex items-center justify-between w-full mx-2 p-2">
-            <p className="font-bold">Apellido:</p>
-            <input
-              type="text"
-              name="lastname"
-              onChange={handleChange}
-              value={user.lastname}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-              required />
-          </div>
-          <div className="flex items-center justify-between w-full mx-2 p-2">
-            <p className="font-bold">Correo institucional:</p>
-            <input
-              type="email"
-              name="email"
-              onChange={handleChange}
-              value={user.email}
-              className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${type === 'new-user' ? '' : 'disabled cursor-not-allowed '}`}
-              readOnly={type !== 'new-user'}
-              required />
-          </div>
-          <div className="flex items-center justify-between w-full mx-2 p-2">
-            <p className="font-bold">Semestre:</p>
-            <select
-              name="semester"
-              onChange={handleChange}
-              value={user.semester}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            >
-              <option value="1ro">1er semestre</option>
-              <option value="2do">2do semestre</option>
-              <option value="3ro">3er semestre</option>
-              <option value="4to">4to semestre</option>
-              <option value="5to">5to semestre</option>
-              <option value="6to">6to semestre</option>
-              <option value="7mo">7mo semestre</option>
-              <option value="8vo">8vo semestre</option>
-              <option value="9no">9no semestre</option>
-            </select>
-          </div>
-          <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
-            <p className="font-bold">Contraseña:</p>
-            <input
-              type="password"
-              name="password"
-              onChange={handleChange}
-              value={user.password}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-              required={type === 'new-user'} />
-          </div>
-          <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
-            <p className="font-bold">Verificación:</p>
-            <input
-              type="password"
-              name="verification"
-              onChange={handleVerification}
-              value={verification}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-              required={type === 'new-user'} />
-          </div>
-          <div className={`flex items-center justify-center w-full m-5 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
-            <Button
-              text="Registrarse"
-              icon={icons.faRightToBracket}
-              color="red"
-              type="small"
-            />
-          </div>
-          <p className={`text-base flex ${type === 'new-user' ? '' : 'hidden'}`}>
-            ¿Ya tienes cuenta? &nbsp;
-            <Link
-              key={loginlink.name}
-              href={loginlink.href}
-              className="block md:flex-none hover:text-[--principal-blue] hover:drop-shadow"
-            >
-              {loginlink.name}
-            </Link>
-          </p>
-          {alertMessage && (
-            <div className={`${type === 'new-user' ? '' : 'hidden'}`}>
-              <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
-                {alertMessage}
-              </div>
-            </div>
-          )}
-          <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || type === "profile-instructor" ? "" : "hidden"}`}>
-            <p className="font-bold">Profesor que te aprueba:</p>
-            <input
-              type="text"
-              name="approve_teacher"
-              onChange={handleChange}
-              value={user.approve_teacher ? user.approve_teacher : ""}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
-          </div>
-          <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || type === "profile-instructor" ? "" : "hidden"}`}>
-            <p className="font-bold">Correo del profesor:</p>
-            <input
-              type="email"
-              name="approve_teacher_email"
-              onChange={handleChange}
-              value={user.approve_teacher_email ? user.approve_teacher_email : ""}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
-          </div>
-          <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
-            <Link
-              key="sendMail"
-              href="/common/profile"
-            >
-              <Button
-                text="Enviar correo"
-                icon={icons.faChevronRight}
-                color="blue"
-                type="small"
-              />
-            </Link>
-          </div>
-          {alertMessage && (
-            <div className={`${type === 'be-instructor' ? '' : 'hidden'}`}>
-              <div className={`${alertMessage.startsWith("Se envió el correo al profesor") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
-                {alertMessage}
-              </div>
-            </div>
-          )}
-          <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
-            <p className="font-bold">Descripción:</p>
-            <textarea
-              onChange={handleChange}
-              value={user.user_description ? user.user_description : ""}
-              name="user_description"
-              rows={7}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
-          </div>
-          <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "profile-instructor" ? "" : "hidden"}`}>
-            <p className="font-bold">Foto de perfil:</p>
-            <input
-              /*onChange={handleFileChange}*/
-              /*value={user.profilePhoto}*/
-              type="file"
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            />
-          </div>
+  return (
+    <form onSubmit={handleRegister} className={`col-span-4 md:col-span-2 ${type === 'new-user' ? 'w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'w-full'} p-3 md:p-5 flex flex-col justify-center items-center`}>
+      <h1 className={`text-[38px] ${type === 'new-user' ? '' : 'hidden'}`}>Registrarse</h1>
+      <div className={`${user.role === "instructor" ? "md:col-span-3" : "md:col-span-2"} w-full p-3 flex flex-col justify-center items-center`}>
+        <div className="flex items-center justify-between w-full mx-2 p-2">
+          <p className="font-bold">Nombre:</p>
+          <input
+            type="text"
+            name="name"
+            onChange={handleChange}
+            value={user.name}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required />
         </div>
-        {alertMessage && !isOpen && (
-          <div className={`${type === 'profile' || type === 'profile-instructor' ? '' : 'hidden'}`}>
-            <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
+        <div className="flex items-center justify-between w-full mx-2 p-2">
+          <p className="font-bold">Apellido:</p>
+          <input
+            type="text"
+            name="lastname"
+            onChange={handleChange}
+            value={user.lastname}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required />
+        </div>
+        <div className="flex items-center justify-between w-full mx-2 p-2">
+          <p className="font-bold">Correo institucional:</p>
+          <input
+            type="email"
+            name="email"
+            onChange={handleChange}
+            value={user.email}
+            className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${type === 'new-user' ? '' : 'disabled cursor-not-allowed '}`}
+            readOnly={type !== 'new-user'}
+            required />
+        </div>
+        <div className="flex items-center justify-between w-full mx-2 p-2">
+          <p className="font-bold">Semestre:</p>
+          <select
+            name="semester"
+            onChange={handleChange}
+            value={user.semester}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+          >
+            <option value="1ro">1er semestre</option>
+            <option value="2do">2do semestre</option>
+            <option value="3ro">3er semestre</option>
+            <option value="4to">4to semestre</option>
+            <option value="5to">5to semestre</option>
+            <option value="6to">6to semestre</option>
+            <option value="7mo">7mo semestre</option>
+            <option value="8vo">8vo semestre</option>
+            <option value="9no">9no semestre</option>
+          </select>
+        </div>
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
+          <p className="font-bold">Contraseña:</p>
+          <input
+            type="password"
+            name="password"
+            onChange={handleChange}
+            value={user.password}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required={type === 'new-user'} />
+        </div>
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
+          <p className="font-bold">Verificación:</p>
+          <input
+            type="password"
+            name="verification"
+            onChange={handleVerification}
+            value={verification}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required={type === 'new-user'} />
+        </div>
+        <div className={`flex items-center justify-center w-full m-5 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
+          <Button
+            text="Registrarse"
+            icon={icons.faRightToBracket}
+            color="red"
+            type="small"
+          />
+        </div>
+        <p className={`text-base flex ${type === 'new-user' ? '' : 'hidden'}`}>
+          ¿Ya tienes cuenta? &nbsp;
+          <Link
+            key={loginlink.name}
+            href={loginlink.href}
+            className="block md:flex-none hover:text-[--principal-blue] hover:drop-shadow"
+          >
+            {loginlink.name}
+          </Link>
+        </p>
+        {alertMessage && (
+          <div className={`${type === 'new-user' ? '' : 'hidden'}`}>
+            <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
               {alertMessage}
             </div>
           </div>
         )}
-        <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
-          <Link key="SignOut" href="/login" className={`p-2 md:p-0`} onClick={handleLogOut}>
-            <Button
-              text="Cerrar sesión"
-              icon={icons.faRightToBracket}
-              color="red"
-              type="big"
-            />
-          </Link>
-          <Link key="Explore" href="/common/profile" className={`p-2 md:p-0`} onClick={handleUpdateProfile}>
-            <Button
-              text="Guardar cambios"
-              icon={icons.faFloppyDisk}
-              color="blue"
-              type="big"
-            />
-          </Link>
-          <Button
-            text="Cambiar contraseña"
-            icon={icons.faLock}
-            color="neutral"
-            type="big"
-            onClick={handleOpenModal}
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor" ? "" : "hidden"}`}>
+          <p className="font-bold">Profesor que te aprueba:</p>
+          <input
+            type="text"
+            name="approve_teacher"
+            onChange={handleChange}
+            value={user.approve_teacher ? user.approve_teacher : ""}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           />
-          <Modal isOpen={isOpen} onClose={handleCloseModal}>
-            <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
-              <h1 className="text-[38px] mb-5 text-center">Cambio de contraseña</h1>
-              <div className="flex items-center justify-between w-full mx-2 p-2">
-                <p className="font-bold">Nueva contraseña:</p>
-                <input
-                  type="password"
-                  name="password_new"
-                  onChange={handleChange}
-                  className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
-              </div>
-              <div className="flex items-center justify-between w-full mx-2 p-2">
-                <p className="font-bold">Verificación:</p>
-                <input
-                  type="password"
-                  name="verification_new"
-                  onChange={handleVerification}
-                  className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
-              </div>
-              {alertMessage && isOpen && (
-              <div className={`${type === 'profile' || type === 'profile-instructor' ? '' : 'hidden'}`}>
+        </div>
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor" ? "" : "hidden"}`}>
+          <p className="font-bold">Correo del profesor:</p>
+          <input
+            type="email"
+            name="approve_teacher_email"
+            onChange={handleChange}
+            value={user.approve_teacher_email ? user.approve_teacher_email : ""}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+          />
+        </div>
+        <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
+          <Link
+            key="sendMail"
+            href="/common/profile"
+          >
+            <Button
+              text="Enviar correo"
+              icon={icons.faChevronRight}
+              color="blue"
+              type="small"
+            />
+          </Link>
+        </div>
+        {alertMessage && (
+          <div className={`${type === 'be-instructor' ? '' : 'hidden'}`}>
+            <div className={`${alertMessage.startsWith("Se envió el correo al profesor") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
+              {alertMessage}
+            </div>
+          </div>
+        )}
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"}`}>
+          <p className="font-bold">Descripción:</p>
+          <textarea
+            onChange={handleChange}
+            value={user.user_description ? user.user_description : ""}
+            name="user_description"
+            rows={7}
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+          />
+        </div>
+        <div className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"}`}>
+          <p className="font-bold">Foto de perfil:</p>
+          <input
+            /*onChange={handleFileChange}*/
+            /*value={user.profilePhoto}*/
+            type="file"
+            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+          />
+        </div>
+      </div>
+      {alertMessage && !isOpen && (
+        <div className={`${type === 'profile' || user.role === "instructor" ? '' : 'hidden'}`}>
+          <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
+            {alertMessage}
+          </div>
+        </div>
+      )}
+      <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
+        <Link key="SignOut" href="/login" className={`p-2 md:p-0`} onClick={handleLogOut}>
+          <Button
+            text="Cerrar sesión"
+            icon={icons.faRightToBracket}
+            color="red"
+            type="big"
+          />
+        </Link>
+        <Link key="Explore" href="/common/profile" className={`p-2 md:p-0`} onClick={handleUpdateProfile}>
+          <Button
+            text="Guardar cambios"
+            icon={icons.faFloppyDisk}
+            color="blue"
+            type="big"
+          />
+        </Link>
+        <Button
+          text="Cambiar contraseña"
+          icon={icons.faLock}
+          color="neutral"
+          type="big"
+          onClick={handleOpenModal}
+        />
+        <Modal isOpen={isOpen} onClose={handleCloseModal}>
+          <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
+            <h1 className="text-[38px] mb-5 text-center">Cambio de contraseña</h1>
+            <div className="flex items-center justify-between w-full mx-2 p-2">
+              <p className="font-bold">Nueva contraseña:</p>
+              <input
+                type="password"
+                name="password_new"
+                onChange={handleChange}
+                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
+            </div>
+            <div className="flex items-center justify-between w-full mx-2 p-2">
+              <p className="font-bold">Verificación:</p>
+              <input
+                type="password"
+                name="verification_new"
+                onChange={handleVerification}
+                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
+            </div>
+            {alertMessage && isOpen && (
+              <div className={`${type === 'profile' || user.role === "instructor" ? '' : 'hidden'}`}>
                 <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
                   {alertMessage}
                 </div>
               </div>
             )}
-              <div className="flex items-center justify-center w-full m-5 p-2">
-                <Link onClick={handleUpdatePassword} href="/common/profile">
-                  <Button
-                    text="Cambiar contraseña"
-                    icon={icons.faLock}
-                    color="red"
-                    type="small"
-                  />
-                </Link>
-              </div>
+            <div className="flex items-center justify-center w-full m-5 p-2">
+              <Link onClick={handleUpdatePassword} href="/common/profile">
+                <Button
+                  text="Cambiar contraseña"
+                  icon={icons.faLock}
+                  color="red"
+                  type="small"
+                />
+              </Link>
             </div>
-          </Modal>
-          <Link key="newCourse" href="/common/categories/category/course" className={`p-2 md:p-0 ${type === "profile-instructor" ? '' : 'hidden'}`}>
-            <Button
-              text="Crear un curso"
-              icon={icons.faBookOpen}
-              color="neutral"
-              type="big"
-            />
-          </Link>
-        </div>
-      </form>
-    );
-  };
-  export default FormProfile;
+          </div>
+        </Modal>
+      </div>
+      <Link key="newCourse" href="/common/categories/category/course" className={`p-2 md:p-0 ${user.role === "instructor" ? '' : 'hidden'}`}>
+        <Button
+          text="Crear un curso"
+          icon={icons.faBookOpen}
+          color="neutral"
+          type="big"
+        />
+      </Link>
+    </form>
+  );
+};
+export default FormProfile;
