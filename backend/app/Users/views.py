@@ -314,6 +314,8 @@ def verify_token(request):
     token = request.headers.get('Authorization', '').split(' ')[1]
     try:
         decoded_payload = jwt.decode(token, config('SECRET_KEY_TOKEN'), algorithms=['HS256'])
+        # Verify exp of the generated token
+
         user_email = decoded_payload['user_email']
 
         # Verify the current session token
