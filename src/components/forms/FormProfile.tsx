@@ -395,7 +395,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           />
         </div>
-        <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
+        <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' && user.role !== "instructor" ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
           <Link
             key="sendMail"
             href="/common/profile"
