@@ -84,35 +84,39 @@ def sign_up(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
 
-        # Check if the user is registered
-        existing_user = User.objects.filter(email=data.get("email")).first()
-
-        if existing_user is not None:
-            # Existing user
-            response_data = {'mensaje': f'Este usuario ya existe'}
-            status = 402
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
         else:
-            # Hash the password with a random salt
-            data["password"] = make_password(data["password"])
+            # Check if the user is registered
+            existing_user = User.objects.filter(email=data.get("email")).first()
 
-            # If you are not registered, add user
-            user_serializer = UserSerializer(data=data)
-            if user_serializer.is_valid():
-                user_serializer.save()
-                user = user_serializer.data
-
-                response_data = {'mensaje': f'Usuario agregado'}
-                status = 200
-
-                # Send email to verify
-                subject = "Verificación de correo electrónico"
-                message = f"Hola {user.get('name')} {user.get('lastname')},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
-                send_email(user.get("email"), subject, message)
+            if existing_user is not None:
+                # Existing user
+                response_data = {'mensaje': f'Este usuario ya existe'}
+                status = 402
             else:
-                response_data = {'mensaje': f'Error al guardar el usuario'}
-                status = 400
+                # Hash the password with a random salt
+                data["password"] = make_password(data["password"])
 
-        return JsonResponse(response_data, safe=False, status=status)
+                # If you are not registered, add user
+                user_serializer = UserSerializer(data=data)
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    user = user_serializer.data
+
+                    response_data = {'mensaje': f'Usuario agregado'}
+                    status = 200
+
+                    # Send email to verify
+                    subject = "Verificación de correo electrónico"
+                    message = f"Hola {user.get('name')} {user.get('lastname')},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
+                    send_email(user.get("email"), subject, message)
+                else:
+                    response_data = {'mensaje': f'Error al guardar el usuario'}
+                    status = 400
+
+            return JsonResponse(response_data, safe=False, status=status)
 
 
 # Sign in
@@ -121,43 +125,48 @@ def sign_up(request):
 def sign_in(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        # Get the email and password from the request
-        email = data.get("email")
-        password = data.get("password")
 
-        # Verify if email is not empty
-        if email !="" and password != "":
-            try:
-                user = User.objects.get(email=email) # Get the user of the BD
-                email_verification = user.email_verification
-
-                if email_verification:
-                    password_user = user.password
-
-                    # Compare hashed password with the password entered by the user
-                    if check_password(password, password_user):
-                        user_serializer = UserSerializer(user)
-
-                        # Generate JWT token
-                        user_session_token = generate_token(user_serializer.data.get("email"))
-
-                        # Update the session token of the user
-                        user_serializer = UserSerializer(user, data={'session_token': user_session_token}, partial=True)
-                        if user_serializer.is_valid():
-                            user_serializer.save()
-
-                        return JsonResponse(user_serializer.data, safe=False)
-                    else:
-                        return JsonResponse({"mensaje": "Contraseña incorrecta"}, status=401)
-
-                else:
-                    return JsonResponse({"mensaje": "Correo electrónico no verificado"}, status=403)
-
-            except User.DoesNotExist:
-                return JsonResponse({"mensaje": "Usuario no encontrado"}, status=404)
-
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
         else:
-            return JsonResponse({"mensaje": "Correo electrónico y contraseña no ingresados"}, status=400)
+            # Get the email and password from the request
+            email = data.get("email")
+            password = data.get("password")
+
+            # Verify if email is not empty
+            if email !="" and password != "":
+                try:
+                    user = User.objects.get(email=email) # Get the user of the BD
+                    email_verification = user.email_verification
+
+                    if email_verification:
+                        password_user = user.password
+
+                        # Compare hashed password with the password entered by the user
+                        if check_password(password, password_user):
+                            user_serializer = UserSerializer(user)
+
+                            # Generate JWT token
+                            user_session_token = generate_token(user_serializer.data.get("email"))
+
+                            # Update the session token of the user
+                            user_serializer = UserSerializer(user, data={'session_token': user_session_token}, partial=True)
+                            if user_serializer.is_valid():
+                                user_serializer.save()
+
+                            return JsonResponse(user_serializer.data, safe=False)
+                        else:
+                            return JsonResponse({"mensaje": "Contraseña incorrecta"}, status=401)
+
+                    else:
+                        return JsonResponse({"mensaje": "Correo electrónico no verificado"}, status=403)
+
+                except User.DoesNotExist:
+                    return JsonResponse({"mensaje": "Usuario no encontrado"}, status=404)
+
+            else:
+                return JsonResponse({"mensaje": "Correo electrónico y contraseña no ingresados"}, status=400)
 
 
 # Sign out
@@ -220,21 +229,26 @@ def change_password(request):
 def send_email_to_restore_password(request):
     if request.method == 'PUT':
         data = JSONParser().parse(request)
-        email = data.get("email")
 
-        try:
-            # Veirfy if the user exists
-            user = User.objects.get(email=email)
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
+        else:
+            email = data.get("email")
 
-            # Send email to reset password
-            subject = "Restablecer contraseña"
-            message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/restore-account/\n\nGracias,\n\nEl equipo de Virtual Poli."
-            send_email(user.email, subject, message)
+            try:
+                # Verify if the user exists
+                user = User.objects.get(email=email)
 
-            return JsonResponse("Correo electrónico enviado", safe=False, status=200)
+                # Send email to reset password
+                subject = "Restablecer contraseña"
+                message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/restore-account/\n\nGracias,\n\nEl equipo de Virtual Poli."
+                send_email(user.email, subject, message)
 
-        except User.DoesNotExist:
-            return JsonResponse("Usuario no encontrado", safe=False, status=404)
+                return JsonResponse("Correo electrónico enviado", safe=False, status=200)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Restore password
@@ -243,25 +257,30 @@ def send_email_to_restore_password(request):
 def restore_password(request):
     if request.method == 'PUT':
         data = JSONParser().parse(request)
-        email = data.get("email")
 
-        try:
-            # Verify if the user exists
-            user = User.objects.get(email=email)
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
+        else:
+            email = data.get("email")
 
-            # Hash the password with a random salt
-            data["password"] = make_password(data["password"])
+            try:
+                # Verify if the user exists
+                user = User.objects.get(email=email)
 
-            user_serializer = UserSerializer(user, data=data, partial=True)
+                # Hash the password with a random salt
+                data["password"] = make_password(data["password"])
 
-            if user_serializer.is_valid():
-                user_serializer.save()
-                return JsonResponse("Contraseña actualizada", safe=False, status=200)
-            else:
-                return JsonResponse("Error al actualizar la contraseña", safe=False, status=400)
+                user_serializer = UserSerializer(user, data=data, partial=True)
 
-        except User.DoesNotExist:
-            return JsonResponse("Usuario no encontrado", safe=False, status=404)
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Contraseña actualizada", safe=False, status=200)
+                else:
+                    return JsonResponse("Error al actualizar la contraseña", safe=False, status=400)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Set email verification
@@ -270,18 +289,23 @@ def restore_password(request):
 def set_email_verification(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        email = data.get("email")
 
-        try:
-            user = User.objects.get(email=email)
-            user_serializer = UserSerializer(user, data={'email_verification': True}, partial=True)
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
+        else:
+            email = data.get("email")
 
-            if user_serializer.is_valid():
-                user_serializer.save()
-                return JsonResponse("Correo electrónico verificado", safe=False, status=200)
+            try:
+                user = User.objects.get(email=email)
+                user_serializer = UserSerializer(user, data={'email_verification': True}, partial=True)
 
-        except User.DoesNotExist:
-            return JsonResponse("Usuario no encontrado", safe=False, status=404)
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Correo electrónico verificado", safe=False, status=200)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Send an email
@@ -331,3 +355,14 @@ def verify_token(request):
     except jwt.InvalidTokenError:
         return False
 
+
+# Verify if it is a valid email
+def is_valid_email(email):
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
+
+    try:
+        validate_email(email)
+        return True
+    except ValidationError:
+        return False
