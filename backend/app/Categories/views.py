@@ -27,10 +27,9 @@ def category_api(request, id=0):
 
     # Read
     elif request.method == 'GET':
-        data = JSONParser().parse(request)
-        category_id = data.get('id')
+        category_id = id
 
-        if category_id:
+        if category_id != 0:
             # Get the category by id
             try:
                 category = Category.objects.get(id=category_id)
