@@ -65,3 +65,17 @@ def course_api(request, id=0):
 
         except course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
+
+
+# Get the courses by the category
+@csrf_exempt
+@api_view(['GET'])
+def courses_by_category(request, category):
+    if request.method == 'GET':
+        try:
+            courses = Course.objects.filter(category=category)
+            courses_serializer = CourseSerializer(courses, many=True)
+            return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+        except Course.DoesNotExist:
+            return JsonResponse("No hay cursos disponibles", safe=False, status=404)

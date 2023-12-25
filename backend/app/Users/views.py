@@ -334,11 +334,10 @@ def generate_token(user_email):
 
 # Verify Token
 def verify_token(request):
-    # Verify and decode the token
+    # Verify the expiration and decode the token
     token = request.headers.get('Authorization', '').split(' ')[1]
     try:
         decoded_payload = jwt.decode(token, config('SECRET_KEY_TOKEN'), algorithms=['HS256'])
-        # Verify exp of the generated token
 
         user_email = decoded_payload['user_email']
 
