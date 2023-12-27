@@ -2,14 +2,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import icons from '@/components/icons/icons';
 
 interface StarRatingProps {
-  calification: number;
+  ranking: number;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({ calification }) => {
+const StarRating: React.FC<StarRatingProps> = ({ ranking }) => {
   const renderStars = () => {
     const stars = [];
-    const fullStars = Math.floor(calification);
-    const hasHalfStar = calification % 1 !== 0;
+    const fullStars = Math.floor(ranking);
+    const hasHalfStar = ranking % 1 !== 0;
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(<FontAwesomeIcon key={i} icon={icons.faStar} className="w-[18px] text-[--principal-red]" />);
@@ -32,7 +32,7 @@ const StarRating: React.FC<StarRatingProps> = ({ calification }) => {
     <>
       {renderStars()}
       <div className='px-2 font-bold'>
-        {calification.toFixed(1)}
+        {typeof ranking === 'number' ? ranking.toFixed(1) : 'N/A'}
       </div>
     </>
   );

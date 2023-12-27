@@ -17,7 +17,6 @@ export default function Page() {
   const getCategories = async () => {
     try {
       const allCategories = await crud_category.getCategories(0);
-      console.log("fetchedCategories", allCategories);
       setCategories(Array.isArray(allCategories) ? allCategories : []);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -39,6 +38,7 @@ export default function Page() {
           {categories.map((category: Category) => (
             <div className="col-span-1 py-2 md:py-0" key={category.id}>
               <CategoryCard
+                id={category.id}
                 name={category.name}
                 description={category.description}
               />

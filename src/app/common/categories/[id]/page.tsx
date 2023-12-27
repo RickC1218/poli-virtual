@@ -4,11 +4,43 @@ import BigSection from '@/components/sections/BigSection';
 import Breadcrumbs from '@/components/tools/Breadcrumbs';
 import DifferentText from '@/components/tools/DifferentText';
 import Section from '@/components/sections/Section';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import crud_category from '@/app/api/crud_category';
+
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+}
 
 export default function Page() {
+
+  const params = useParams();
+
+  const [category, setCategory] = useState<Category>({
+    id: 0,
+    name: '',
+    description: '',
+  });
+
+
+  const getCategory = async () => {
+    try {
+      const category = await crud_category.getCategoryById(params.id);
+      setCategory(category);
+    } catch (error) {
+      console.error("Error fetching category:", error);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+  
   const breadcrumbs = [
     { name: 'Categorías', path: '/common/categories' },
-    { name: 'Nombre Categoría', path: `/common/categories/category` },
+    { name: `${category.name}`, path: `/common/categories/${category.id}` },
   ];
 
   return (
@@ -19,11 +51,10 @@ export default function Page() {
       <BigSection
         title={
           <>
-            Fundamentos de
-            <DifferentText color="--principal-blue"> programación</DifferentText>
+            {category.name}
           </>
         }
-        description="Cursos que cubren diversos lenguajes de programación, metodologías de desarrollo de software."
+        description={category.description}
         enrolled="none"
         sectionType="courses"
       />

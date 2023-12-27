@@ -3,18 +3,18 @@ import Button from '../buttons/Button';
 import Link from 'next/link';
 
 interface CategoryCardProps {
-  name: string;
-  description: string;
+    id: number;
+    name: string;
+    description: string;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ name, description }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ id, name, description }) => {
   const color = "blue";
   const size = "big";
 
-  const coursesLink = {
+  const categoryLink = {
     name: "Cursos relacionados",
-    path: "/common/categories/category",
-
+    path: `/common/categories/${id}`,
   };
 
   return (
@@ -25,12 +25,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ name, description }) => {
       </div>
       <div>
         <Link
-          key={coursesLink.name}
-          href={coursesLink.path}
+          key={categoryLink.name}
+          href={categoryLink.path}
           className="block mx-2 md:flex-none"
         >
           <Button
-            text={coursesLink.name}
+            text={categoryLink.name}
             icon={icons.faBookOpen}
             type={size}
             color={color}
