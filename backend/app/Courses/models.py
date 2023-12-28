@@ -1,13 +1,13 @@
-from djongo import models
+from django.db import models
 
 class Course(models.Model):
     name = models.CharField(max_length=500)
     description = models.TextField()
     category = models.CharField(max_length=100)
-    instructors = models.JSONField(default=[], blank=True)
-    modules = models.JSONField(default=[], blank=True)
-    comments = models.JSONField(default=[], blank=True)
-    assessment = models.IntegerField()
+    instructors = models.JSONField(default=dict, blank=True)
+    modules = models.JSONField(default=dict, blank=True)
+    comments = models.JSONField(default=dict, blank=True)
+    assessment = models.FloatField(default=0.0)
     publication_course_date = models.CharField(max_length=30)
 
     def __str__(self):

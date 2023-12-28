@@ -1,4 +1,4 @@
-from djongo import models
+from django.db import models
 from django.contrib.auth.hashers import make_password
 
 class User(models.Model):
@@ -11,7 +11,7 @@ class User(models.Model):
     approve_teacher = models.CharField(max_length=100, blank=True)
     approve_teacher_email = models.EmailField(max_length=100, blank=True)
     user_description = models.TextField(blank=True)
-    enrolled_courses = models.JSONField(default=[], blank=True)
+    enrolled_courses = models.JSONField(default=dict, blank=True)
     email_verification = models.BooleanField(default=False)
     session_token = models.CharField(max_length=300, default="")
 
