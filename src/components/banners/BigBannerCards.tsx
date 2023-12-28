@@ -3,11 +3,16 @@ import CourseCard from "../cards/CourseCard";
 import { useEffect, useState } from "react";
 import crud_course from "@/app/api/crud_course";
 
+interface Instructor {
+  name: string;
+  email: string;
+}
+
 interface Course {
   id: string;
-  title: string;
+  instructors: Instructor[];
   name: string;
-  ranking: number;
+  assessment: number;
   image: string;
   category: BigBannerCardsProps["category"];
   enrolled: "none" | "enrolled" | "completed" | "in-progress";
@@ -37,10 +42,10 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category }) => {
       {courses.map((course: Course) => (
         <div className="col-span-1 py-2 md:py-0" key={course.id}>
           <CourseCard
-            title={course.title}
-            name={course.name}
-            ranking={course.ranking}
-            image="/public/course.jpg"
+            title={course.name}
+            instructors={Array.isArray(course.instructors) ? course.instructors.map((instructor) => instructor.name).join(", ") : "Nombres no encontrados"}
+            assessment={course.assessment}
+            image="/course.jpg"
             category={category}
             enrolled={course.enrolled}
           />

@@ -7,14 +7,14 @@ import StarRating from '../tools/StarRating';
 
 interface CourseCardProps {
   title: string;
-  name: string;
-  ranking: number;
+  instructors: string;
+  assessment: number;
   image: string;
   category: string;
   enrolled: 'none' | 'enrolled' | 'completed' | 'in-progress';
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ title, name, ranking, image, category, enrolled }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment, image, category, enrolled }) => {
 
   const courseLink = {
     name: "Cursos relacionados",
@@ -56,10 +56,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ title, name, ranking, image, ca
           <div className={`pt-2.5 col-span-3 ${enrolled !== 'none' ? 'col-span-2' : ''} `}>
             <div className="mb-5 px-0.5 w-[100%]">
               <h3 className="font-bold truncate">{title}</h3>
-              <p className="font-normal">{name}</p>
+              <p className="font-normal">{instructors}</p>
             </div>
             <div className="flex w-full">
-              <StarRating ranking={ranking}/>
+              <StarRating ranking={assessment}/>
             </div>
           </div>
           {enrolled !== 'none' && (
