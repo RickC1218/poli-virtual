@@ -47,6 +47,15 @@ const BannerCards: React.FC<BannerCardsProps> = ({ enrolled, type }) => {
               enrolled={enrolled}
             />
           </div> 
+          <div className="w-full">
+            <CourseCard
+              title="Curso 5"
+              name="Ricardo Erazo"
+              calification={4}
+              image='/course.jpg'
+              enrolled={enrolled}
+            />
+          </div> 
         </div>
       ) : (
         <div className="flex overflow-x-auto space-x-2 py-5">

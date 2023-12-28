@@ -27,6 +27,7 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category }) => {
   const getCourses = async () => {
     try {
       const allCourses = await crud_course.getCourses(category);
+      console.log(allCourses)
       setCourses(Array.isArray(allCourses) ? allCourses : []);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -38,9 +39,9 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category }) => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 gap-0 md:gap-8 lg:grid-cols-2 2xl:grid-cols-3 py-5 justify-items-center items-center">
+    <div className="flex flex-wrap py-5 items-center">
       {courses.map((course: Course) => (
-        <div className="col-span-1 py-2 md:py-0" key={course.id}>
+        <div className="md:w-full/3 p-2" key={course.id}>
           <CourseCard
             title={course.name}
             instructors={Array.isArray(course.instructors) ? course.instructors.map((instructor) => instructor.name).join(", ") : "Nombres no encontrados"}
