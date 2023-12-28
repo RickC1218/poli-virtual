@@ -29,10 +29,7 @@ def user_api(request):
             try:
                 user = User.objects.get(email=user_token)
 
-                # Transform the list to a regular dictionary
-                json_str = json.dumps(user.enrolled_courses)
-                regular_dict = json.loads(json_str)
-                return JsonResponse(regular_dict, safe=False)
+                return JsonResponse(user.enrolled_courses, safe=False)
 
             except User.DoesNotExist:
                 return JsonResponse("Error al retornar los cursos del usuario", safe=False, status=404)
@@ -45,11 +42,7 @@ def user_api(request):
 
             # Update only enrolled courses
             if "enrolled_courses" in data:
-                # Transform the list to a regular dictionary
-                json_str = json.dumps(user.enrolled_courses)
-                regular_dict = json.loads(json_str)
-
-                user_serializer = UserSerializer(user, data={'enrolled_courses': regular_dict + data["enrolled_courses"]}, partial=True)
+                user_serializer = UserSerializer(user, data={'enrolled_courses': user.enrolled_courses + data["enrolled_courses"]}, partial=True)
 
                 if user_serializer.is_valid():
                     user_serializer.save()

@@ -79,3 +79,31 @@ def courses_by_category(request, category):
 
         except Course.DoesNotExist:
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
+
+
+# Get featured courses
+@csrf_exempt
+@api_view(['GET'])
+def featured_courses(request):
+    if request.method == 'GET':
+        try:
+            courses = Course.objects.filter(featured=True)
+            courses_serializer = CourseSerializer(courses, many=True)
+            return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+        except Course.DoesNotExist:
+            return JsonResponse("No hay cursos disponibles", safe=False, status=404)
+
+
+# Get recently added courses
+@csrf_exempt
+@api_view(['GET'])
+def recently_added_courses(request):
+    if request.method == 'GET':
+        try:
+            courses = Course.objects.order_by('-id')[:5]
+            courses_serializer = CourseSerializer(courses, many=True)
+            return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+        except Course.DoesNotExist:
+            return JsonResponse("No hay cursos disponibles", safe=False, status=404)
