@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from 'next/link';
 
@@ -8,13 +8,90 @@ import icons from '@/components/icons/icons';
 import StarRating from '@/components/tools/StarRating';
 import BannerThemeCard from '@/components/cards/BannerThemeCard';
 import CommentCard from '@/components/cards/CommentCard';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import crud_category from '@/app/api/crud_category';
+import DifferentText from '@/components/tools/DifferentText';
 
+interface Category {
+  id: number;
+  name: string;
+}
+interface Course {
+  id: number;
+  name: string;
+}
 
 export default function Page() {
+  const params = useParams();  
+  const routeNotFound = useRouter(); 
+  const id = params.id;
+
+  const [category, setCategory] = useState<Category>(() => {
+    const initializeCategory = async () => {
+      if (id) {
+        try {
+          const categoryData = await crud_category.getCategoryById(id);
+          if (categoryData === "Categoria no encontrada" || categoryData === "Error desconocido") {
+            routeNotFound.push('/common/not-found');
+          }
+          return categoryData as Category 
+        } catch (error) {
+          return { id: 0, name: '', description: '' };
+        }
+      }
+    };
+    return initializeCategory();
+  });
+  /*
+  const [course, setCourse] = useState<Course>(() => {
+    const initializeCourse = async () => {
+      if (id) {
+        try {
+          // ! aqui debe mostrarse el curso que se esta viendo
+          const courseData = await crud_category.getCourseById(id);
+          if (courseData === "Curso no encontrado" || courseData === "Error desconocido") {
+            routeNotFound.push('/common/not-found');
+          }
+          return courseData as Course 
+        } catch (error) {
+          return { id: 0, name: '' };
+        }
+      }
+    };
+    return initializeCourse();
+  });*/
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryData = await crud_category.getCategoryById(id);
+        setCategory(categoryData as Category);
+        //const courseData = await crud_category.getCourseById(id);
+        //setCourse(courseData as Course);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
+  }, [id]);
+
+  if (!category.id || category !== undefined && category.id === 0) {
+    return  <div className={`flex flex-between w-full h-full flex-col justify-center`}>
+              <div className='w-full p-6 md:px-20 md:py-10 self-center'>
+                <h1 className="text-[32px] xl:text-[38px] text-center lg:text-start">
+                  <DifferentText color="--principal-blue">Loading...</DifferentText>
+                </h1>
+              </div>
+            </div>;
+  }
   const breadcrumbs = [
     { name: 'Categorías', path: '/common/categories' },
-    { name: 'Nombre Categoría', path: `/common/categories/category` },
-    { name: 'Nombre Curso', path: `/common/categories/category/course` }
+    { name: `${category.name}`, path: `/common/categories/${category.id}` },
+    { name: `$course.name`, path: `/common/categories/${category.id}/course` },
   ];
 
   return (

@@ -34,9 +34,9 @@ export default function Page() {
           <DifferentText color="--principal-red">Categorías </DifferentText>
           principales
         </h1>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-0 md:gap-4 py-10 px-10 md:px-8 justify-items-center items-center">
+        <div className="flex flex-wrap py-5 items-center justify-center">
           {categories.map((category: Category) => (
-            <div className="col-span-1 py-2 md:py-0" key={category.id}>
+            <div className="p-2" key={category.id}>
               <CategoryCard
                 id={category.id}
                 name={category.name}

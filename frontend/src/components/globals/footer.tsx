@@ -4,7 +4,7 @@ import icons from "@/components/icons/icons";
 
 const BigBanner: React.FC = () => {
   return (
-    <div className={`flex flex-col w-full h-[250px] md:h-[300px] bg-[--gray] text-[--light] p-6 md:py-6 md:px-20 justify-between`}>
+    <div className={`flex flex-col w-full h-[150px] md:h-[200px] bg-[--gray] text-[--light] p-6 md:py-6 md:px-20 justify-between`}>
       <p>Para mayor información del proyecto, por favor contáctanos</p>
       <div>
         <div className="flex py-3">

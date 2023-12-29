@@ -19,6 +19,39 @@ const crud_course = {
       }
     }
   },
+  // Obtain featured courses
+  getFeaturedCourses: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/course/featured-courses/`);
+      return response.data;
+    } catch (error) {
+      const responseError = error as {
+        response?: { status?: number; data?: { mensaje?: string } };
+      };
+      if (responseError?.response?.status === 404) {
+        return "Cursos no encontrados";
+      } else {
+        return "Error desconocido al obtener cursos";
+      }
+    }
+  },
+  // Obtain course recently added
+  getRecentlyAddedCourses: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/course/recently-added-courses/`);
+      return response.data;
+    } catch (error) {
+      const responseError = error as {
+        response?: { status?: number; data?: { mensaje?: string } };
+      };
+      if (responseError?.response?.status === 404) {
+        return "Cursos no encontrados";
+      } else {
+        return "Error desconocido al obtener cursos";
+      }
+    }
+  },
+
 };
 
 export default crud_course;

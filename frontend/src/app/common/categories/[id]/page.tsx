@@ -74,6 +74,7 @@ export default function Page() {
       <BigSection
         title={category.name}
         description={category.description}
+        enrolled="none"
       />
       <Section
         title={

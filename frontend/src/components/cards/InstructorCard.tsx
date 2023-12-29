@@ -5,11 +5,11 @@ interface InstructorCardProps {
   name: string;
   description: string;
   tutor: string;
-  calification: number;
+  ranking: number;
   image: string;
 }
 
-const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tutor, calification, image }) => {
+const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tutor, ranking, image }) => {
   const instructorLink = {
     name: "Perfil del instructor",
     path: "/common/profile/instructor",
@@ -31,7 +31,7 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tuto
               <p className="text-base">{tutor}</p>
             </div>
             <div className="flex justify-center items-center w-full">
-              <StarRating calification={calification} />
+              <StarRating ranking={ranking} />
             </div>
           </div>
         </div>

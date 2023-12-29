@@ -14,7 +14,6 @@ export default function Page() {
         }
         description="Explora y administra tu aprendizaje de manera comoda."
         enrolled="enrolled"
-        sectionType="courses"
       />
     </div>
   );

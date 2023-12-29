@@ -45,6 +45,7 @@ export default function Page() {
             description="Explora y administra tu aprendizaje de manera comoda."
             enrolled="enrolled"
             sectionType="courses"
+            subtype="your-learning"
           />
         )}
       <Section
@@ -58,6 +59,7 @@ export default function Page() {
         description="Te ofrecemos una amplia gama de cursos emocionantes impartidos por estudiantes apasionados como tú."
         enrolled="none"
         sectionType="courses"
+        subtype="featured"
       />
       <Section
         title={
@@ -69,6 +71,7 @@ export default function Page() {
         description="Te ofrecemos una amplia gama de cursos emocionantes impartidos por estudiantes apasionados como tú."
         enrolled="none"
         sectionType="courses"
+        subtype="daily"
       />
       <Section
         title={

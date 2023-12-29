@@ -120,6 +120,24 @@ const crud_user = {
         }
     },
 
+    // Obtain user courses
+    getEnrolledCourses: async (session_token: string) => {
+        try{
+            const headers = {
+                'Authorization': `Bearer ${session_token}`,
+            };
+            const response = await axios.get(`${API_BASE_URL}/user/`, { headers });
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Cursos no encontrados";
+            } else {
+                return "Cursos desconocido";
+            }
+        }
+    },
+
     // Operation update user
     updateUser: async (userData: any, session_token: string) => {
         try {

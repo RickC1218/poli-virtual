@@ -11,10 +11,10 @@ interface CourseCardProps {
   assessment: number;
   image: string;
   category: string;
-  enrolled: 'none' | 'enrolled' | 'completed' | 'in-progress';
+  state: 'none' | 'enrolled' | 'completed' | 'in-progress';
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment, image, category, enrolled }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment, image, category, state }) => {
 
   const courseLink = {
     name: "Cursos relacionados",
@@ -23,7 +23,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment,
 
   const getTipeStyle = () => {
     let style = '';
-    switch (enrolled) {
+    switch (state) {
       case 'enrolled':
         style += 'bg-[--principal-red] ';
         break;
@@ -53,7 +53,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment,
           className="rounded-2xl"
         />
         <div className='grid grid-cols-4 gap-1'>
-          <div className={`pt-2.5 col-span-3 ${enrolled !== 'none' ? 'col-span-2' : ''} `}>
+          <div className={`pt-2.5 col-span-3 ${state !== 'none' ? 'col-span-2' : ''} `}>
             <div className="mb-5 px-0.5 w-[100%]">
               <h3 className="font-bold truncate">{title}</h3>
               <p className="font-normal">{instructors}</p>
@@ -62,21 +62,21 @@ const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment,
               <StarRating ranking={assessment}/>
             </div>
           </div>
-          {enrolled !== 'none' && (
+          {state !== 'none' && (
             <div className={`flex flex-col items-center justify-center text-[--light] text-base font-bold rounded-2xl my-2 ${getTipeStyle()}`}>
-              {enrolled === 'enrolled' &&
+              {state === 'enrolled' &&
                 <>
                   <FontAwesomeIcon icon={icons.faPlay} className="w-[18px]" />
                   <p>Sin iniciar</p>
                 </>
               }
-              {enrolled === 'completed' &&
+              {state === 'completed' &&
                 <>
                   <FontAwesomeIcon icon={icons.faCheck} className="w-[18px]" />
                   <p>Completado</p>
                 </>
               }
-              {enrolled === 'in-progress' &&
+              {state === 'in-progress' &&
                 <>
                   <FontAwesomeIcon icon={icons.faPause} className="w-[18px]" />
                   <p>Completar</p>
