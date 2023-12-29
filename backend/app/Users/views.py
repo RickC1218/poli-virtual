@@ -336,6 +336,45 @@ def contact_with_us(request):
             return JsonResponse("Correo electrónico enviado", safe=False, status=200)
 
 
+# Send an email to the approve teacher to verify if he/she permits the user to be a teacher
+# and update the fields: approve_teacher_email and approve_teacher
+@csrf_exempt
+@api_view(['PUT'])
+def send_email_to_approve_teacher(request):
+    if request.method == 'PUT':
+        user_token = verify_token(request)
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+        else:
+            data = JSONParser().parse(request)
+
+            # Verify if the email is valid
+            if is_valid_email(data.get("approve_teacher_email")) is False:
+                return JsonResponse("Correo electrónico del profesor inválido", safe=False, status=400)
+            else:
+                approve_teacher_name = data.get("approve_teacher")
+                approve_teacher_email = data.get("approve_teacher_email")
+
+                try:
+                    # Verify if the user exists
+                    user = User.objects.get(email=user_token)
+                    user_serializer = UserSerializer(user, data={'approve_teacher': approve_teacher_name, 'approve_teacher_email': approve_teacher_email}, partial=True)
+
+                    if user_serializer.is_valid():
+                        user_serializer.save()
+
+                        # Send email to approve teacher
+                        subject = "Solicitud para ser Instructor en la plataforma Poli Virtual"
+                        message = f"Saludos cordiales {approve_teacher_name},\n\nNos comunicamos con usted para completar el proceso de SER UN INSTRUCTOR en la plataforma Poli Virtual, del estudiante:\n\nEstudiante: {user.name} {user.lastname}\n\nCorreo institucional: {user.email}\n\nPor favor, autoriza que el estudiante pueda ser un Instructor, en el caso de si hacerlo, haga clic en el siguiente enlace:\n\n{config('URL_FRONTEND')}/approve-to-be-teacher/\n\nCaso contrario, ignore este correo.\n\nGracias,\n\nEl equipo de Poli Virtual."
+                        send_email(approve_teacher_email, subject, message)
+
+                        return JsonResponse("Correo electrónico enviado", safe=False, status=200)
+
+                except User.DoesNotExist:
+                    return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
 # Be an instructor
 @csrf_exempt
 @api_view(['PUT'])
@@ -352,10 +391,35 @@ def be_an_instructor(request):
 
                 if user_serializer.is_valid():
                     user_serializer.save()
+
+                    # Send an email to the user to notify that he/she is a teacher
+                    subject = "Solicitud para ser Instructor en la plataforma Poli Virtual"
+                    message = f"Saludos cordiales {user.name} {user.lastname},\n\nNos comunicamos con usted para notificarle que su solicitud para ser Instructor en la plataforma Poli Virtual ha sido aprobada.\n\nGracias,\n\nEl equipo de Poli Virtual."
+                    send_email(user.email, subject, message)
+
                     return JsonResponse("Rol actualizado", safe=False, status=200)
 
             except User.DoesNotExist:
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
+# Get the featured teachers
+@csrf_exempt
+@api_view(['GET'])
+def featured_teachers(request):
+    if request.method == 'GET':
+        try:
+            # Get the teachers with an assessment greater than 4.0
+            teachers = User.objects.filter(score_teacher__gte=4.0)
+
+            if len(teachers) != 0:
+                teachers_serializer = UserSerializer(teachers, many=True)
+                return JsonResponse(teachers_serializer.data, safe=False, status=200)
+            else:
+                return JsonResponse("No hay instructores destacados", safe=False, status=404)
+
+        except User.DoesNotExist:
+            return JsonResponse("No hay instructores disponibles", safe=False, status=404)
 
 
 # Send an email

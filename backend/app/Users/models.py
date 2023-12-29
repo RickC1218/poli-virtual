@@ -11,6 +11,7 @@ class User(models.Model):
     approve_teacher = models.CharField(max_length=100, blank=True)
     approve_teacher_email = models.EmailField(max_length=100, blank=True)
     user_description = models.TextField(blank=True)
+    score_teacher = models.FloatField(default=0.0)
     enrolled_courses = models.JSONField(default=dict, blank=True)
     email_verification = models.BooleanField(default=False)
     session_token = models.CharField(max_length=300, default="")
