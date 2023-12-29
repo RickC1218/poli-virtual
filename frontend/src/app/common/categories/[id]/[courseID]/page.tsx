@@ -25,7 +25,7 @@ interface Course {
 export default function Page() {
   const params = useParams();  
   const routeNotFound = useRouter(); 
-  const id = params.id;
+  const id = params.courseID;
 
   const [category, setCategory] = useState<Category>(() => {
     const initializeCategory = async () => {

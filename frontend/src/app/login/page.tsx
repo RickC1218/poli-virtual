@@ -5,9 +5,10 @@ import Link from "next/link";
 
 import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
+import crud_user from "@/app/api/crud_user";
+
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import crud_user from "@/app/api/crud_user";
 
 export default function Page() {
   const text = "Iniciar sesión";
@@ -49,23 +50,57 @@ export default function Page() {
     }, 2000); // close the alert after 2 seconds
   };
 
+  const escapeHTML = (unsafe: string): string => {
+    return unsafe.replace(/[&<">']/g, (match) => {
+      switch (match) {
+        case "&":
+          return "&amp;";
+        case "<":
+          return "&lt;";
+        case '"':
+          return "&quot;";
+        case "'":
+          return "&#x27;";
+        case ">":
+          return "&gt;";
+        default:
+          return match;
+      }
+    });
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     let message = "";
+
+    //sanitize inputs
+    user.email = escapeHTML(user.email);
+    user.password = escapeHTML(user.password);
+
+    // make login request
     const response = await crud_user.login(user);
-    sessionStorage.setItem("currentUser", JSON.stringify(response));
-    localStorage.setItem("token", JSON.stringify(response.session_token));
-    if (response.session_token) {
-      message = "Inicio de sesión exitoso";
-      showAlert(message);
-      setTimeout(() => {
-        // Redirect to the explore page after the delay
-        router.push("/common/explore");
-        router.refresh();
-      }, 2000);
-    } else {
+    if (response === "Contraseña incorrecta" || response === "Usuario no encontrado" || response === "Usuario no verificado" || response === "Correo electrónico y contraseña no ingresados"){
       message = response;
       showAlert(message);
+      setUser({
+        email: "",
+        password: "",
+      });
+    } else {
+      sessionStorage.setItem("currentUser", JSON.stringify(response));
+      localStorage.setItem("token", JSON.stringify(response.session_token));
+      if (response.session_token) {
+        message = "Inicio de sesión exitoso";
+        showAlert(message);
+        setTimeout(() => {
+          // Redirect to the explore page after the delay
+          router.push("/common/explore");
+          router.refresh();
+        }, 2000);
+      } else {
+        message = response;
+        showAlert(message);
+      }
     }
   };
 
