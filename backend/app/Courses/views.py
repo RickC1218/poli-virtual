@@ -87,9 +87,14 @@ def courses_by_category(request, category):
 def featured_courses(request):
     if request.method == 'GET':
         try:
-            courses = Course.objects.filter(featured=True)
-            courses_serializer = CourseSerializer(courses, many=True)
-            return JsonResponse(courses_serializer.data, safe=False, status=200)
+            # Get the courses with an assessment greater than 4.0
+            courses = Course.objects.filter(assessment__gte=4.0)
+
+            if len(courses) != 0:
+                courses_serializer = CourseSerializer(courses, many=True)
+                return JsonResponse(courses_serializer.data, safe=False, status=200)
+            else:
+                return JsonResponse("No hay cursos destacados", safe=False, status=404)
 
         except Course.DoesNotExist:
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
@@ -101,7 +106,12 @@ def featured_courses(request):
 def recently_added_courses(request):
     if request.method == 'GET':
         try:
-            courses = Course.objects.order_by('-id')[:5]
+            # Get the last 3 courses added
+            courses = Course.objects.order_by('-id')[:3]
+
+            # Reverse the order of the courses
+            courses = courses[::-1]
+
             courses_serializer = CourseSerializer(courses, many=True)
             return JsonResponse(courses_serializer.data, safe=False, status=200)
 
