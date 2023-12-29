@@ -1,30 +1,25 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+
 import crud_user from "@/app/api/crud_user";
-import { useEffect, useState } from "react";
 import DifferentText from "@/components/tools/DifferentText";
 
 export default function Page() {
   
-  /*const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(
-    crud_user.getLocalStorageValue('user')
-  );   
+  const verifyEmail = async () => {
+    const sessionToken = localStorage.getItem("emailVerify");
+    const email = await crud_user.emailVerification(sessionToken ?? "");
+    console.log(email);
 
-  useEffect(() => {     // Función que se ejecutará cuando haya cambios en el localStorage    
-    const handleStorageChange = () => {       
-      setCurrentUserEmail(
-        crud_user.getLocalStorageValue('user')
-      );     
-    };
-  });
-  */
-  /*const verifyEmail = async () => {
-    const response = await crud_user.getLocalStorageValue('user');
-    console.log(response);
-  }
+    if (email === "Correo electrónico verificado") {
+      localStorage.removeItem("emailVerify")
+    } else {
+      alert("Error al verificar el correo electrónico");
+    }
+  };
 
-  verifyEmail();*/
+  verifyEmail();
 
   return (
     <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
@@ -47,6 +42,9 @@ export default function Page() {
         <DifferentText color="--principal-red"> correo </DifferentText>
         fue verificado exitosamente
       </h1>
+      <div className="flex items-center justify-center w-full m-5 p-2">
+        <h1 className="m-5 text-center align-middle">Regresa a la pestaña anterior para iniciar sesión</h1>
+        </div>
       </div>
     </div>
   );
