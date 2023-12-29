@@ -4,7 +4,6 @@ import CourseCard from "../cards/CourseCard";
 import InstructorCard from "../cards/InstructorCard";
 import crud_user from "@/app/api/crud_user";
 import crud_course from "@/app/api/crud_course";
-import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "../icons/icons";
 
@@ -49,7 +48,6 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
     try {
       const sessionToken = JSON.parse(localStorage.getItem('token') ?? "{}");
       const enrolledCourses = await crud_user.getEnrolledCourses(sessionToken);
-      console.log(enrolledCourses)
       setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
     } catch (error) {
       console.error("Error fetching categories:", error);
