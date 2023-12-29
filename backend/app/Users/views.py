@@ -120,7 +120,7 @@ def sign_up(request):
 
                     # Send email to verify
                     subject = "Verificación de correo electrónico"
-                    message = f"Hola {user.get('name')} {user.get('lastname')},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
+                    message = f"Hola {user.get('name')} {user.get('lastname')},\n\nPor favor, verifica tu correo electrónico haciendo click en el siguiente enlace:\n\n{config('URL_FRONTEND')}/verify-email/\n\nGracias,\n\nEl equipo de Virtual Poli."
                     send_email(user.get("email"), subject, message)
                 else:
                     response_data = {'mensaje': f'Error al guardar el usuario'}
@@ -252,7 +252,7 @@ def send_email_to_restore_password(request):
 
                 # Send email to reset password
                 subject = "Restablecer contraseña"
-                message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\nhttp://localhost:3000/restore-account/\n\nGracias,\n\nEl equipo de Virtual Poli."
+                message = f"Hola {user.name} {user.lastname},\n\nPor favor, restablece tu contraseña haciendo click en el siguiente enlace:\n\n{config('URL_FRONTEND')}/restore-account/\n\nGracias,\n\nEl equipo de Virtual Poli."
                 send_email(user.email, subject, message)
 
                 return JsonResponse("Correo electrónico enviado", safe=False, status=200)
