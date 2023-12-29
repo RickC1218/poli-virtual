@@ -121,13 +121,17 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             message = "Registro exitoso";
             //send the user to the database
             try {
-              const response = await crud_user.createUser(user);
-              console.log(response);
-              //Send email verification
-              //const resEmail = await crud_user.emailVerification(user.email);
-              //console.log(resEmail);
-              //localStorage.setItem("email", JSON.stringify(user.email));
-              //console.log(localStorage.getItem("email"));
+              //sanitize inputs
+              user.name = escapeHTML(user.name);
+              user.lastname = escapeHTML(user.lastname);
+              user.email = escapeHTML(user.email);
+              user.password = escapeHTML(user.password);
+              user.semester = escapeHTML(user.semester);
+              await crud_user.createUser(user);
+              
+              // temporal email
+              localStorage.setItem("emailVerify", user.email);
+
               //redirect to the login page
               router.push("/login");
               router.refresh();
@@ -149,7 +153,26 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     } catch (error) {
       showAlert("Error al registrar el usuario");
     }
-  }
+  };
+
+  const escapeHTML = (unsafe: string): string => {
+    return unsafe.replace(/[&<">']/g, (match) => {
+      switch (match) {
+        case "&":
+          return "&amp;";
+        case "<":
+          return "&lt;";
+        case '"':
+          return "&quot;";
+        case "'":
+          return "&#x27;";
+        case ">":
+          return "&gt;";
+        default:
+          return match;
+      }
+    });
+  };
 
   //manage the update profile button
   const handleUpdateProfile = async (e: FormEvent) => {
