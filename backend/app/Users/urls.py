@@ -11,4 +11,5 @@ urlpatterns = [
     path('user/send-email-to-restore-password/', views.send_email_to_restore_password, name='user-restore-password'), # Send email to restore password
     path('user/restore-password/', views.restore_password, name='user-restore-password'), # Restore password
     path('user/contact-with-us/', views.contact_with_us, name='user-contact-with-us'), # Contact with us
+    path('user/be-an-instructor/', views.be_an_instructor, name='user-be-an-instructor'), # Be an instructor
 ]

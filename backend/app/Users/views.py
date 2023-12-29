@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from jwt import encode
 from django.core.mail import EmailMessage
 from django.conf import settings
-import json, jwt
+import jwt
 from datetime import datetime, timedelta
 from decouple import config
 from django.forms.models import model_to_dict
@@ -15,7 +15,6 @@ from Users.models import User
 from Users.serializers import UserSerializer
 
 from Courses.models import Course
-from Courses.serializers import CourseSerializer
 
 
 # API views (Update and delete user - Get enrolled courses)
@@ -183,13 +182,13 @@ def sign_in(request):
 @csrf_exempt
 @api_view(['PUT'])
 def sign_out(request):
-    user_token = verify_token(request) # return the email of the user if the token is valid
+    if request.method == 'PUT':
+        user_token = verify_token(request) # return the email of the user if the token is valid
 
-    if user_token is False:
-        return JsonResponse("Acceso no autorizado", safe=False, status=401)
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
 
-    else:
-        if request.method == 'PUT':
+        else:
             try:
                 user = User.objects.get(email=user_token)
                 user_serializer = UserSerializer(user, data={'session_token': 'None'}, partial=True)
@@ -208,12 +207,12 @@ def sign_out(request):
 @csrf_exempt
 @api_view(['PUT'])
 def change_password(request):
-    user_token = verify_token(request)
-    if user_token is False:
-        return JsonResponse("Acceso no autorizado", safe=False, status=401)
+    if request.method == 'PUT':
+        user_token = verify_token(request)
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
 
-    else:
-        if request.method == 'PUT':
+        else:
             try:
                 user = User.objects.get(email=user_token)
 
@@ -335,6 +334,28 @@ def contact_with_us(request):
             send_email(config('EMAIL_HOST_USER'), subject, message)
 
             return JsonResponse("Correo electrónico enviado", safe=False, status=200)
+
+
+# Be an instructor
+@csrf_exempt
+@api_view(['PUT'])
+def be_an_instructor(request):
+    if request.method == 'PUT':
+        user_token = verify_token(request)
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+        else:
+            try:
+                user = User.objects.get(email=user_token)
+                user_serializer = UserSerializer(user, data={'role': 'profesor'}, partial=True)
+
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Rol actualizado", safe=False, status=200)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Send an email
