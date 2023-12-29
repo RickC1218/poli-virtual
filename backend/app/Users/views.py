@@ -318,6 +318,25 @@ def set_email_verification(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
+# Contact with us
+@csrf_exempt
+@api_view(['POST'])
+def contact_with_us(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
+        else:
+            # Send email to contact with us
+            subject = "Contactar con equipo de Poli Virtual"
+            message = f"Nombre: {data.get('name')}\n\nCorreo electrónico: {data.get('email')}\n\nMensaje: {data.get('message')}"
+            send_email(config('EMAIL_HOST_USER'), subject, message)
+
+            return JsonResponse("Correo electrónico enviado", safe=False, status=200)
+
+
 # Send an email
 def send_email(email, subject, message):
     email = EmailMessage(
