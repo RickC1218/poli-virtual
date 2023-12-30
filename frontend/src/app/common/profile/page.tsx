@@ -1,6 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 
 import Banner from "@/components/banners/Banner";
 import Section from "@/components/sections/Section";
@@ -9,8 +10,12 @@ import icons from "@/components/icons/icons";
 import FormProfile from "@/components/forms/FormProfile";
 
 export default function Page() {
-  const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
-  const typeUser = user.role;
+  const [typeUser, setTypeUser] = useState("");
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("token") ?? "{}");
+    setTypeUser(user.type);
+  }, []);
+  
   return (
     <>
       <div className="grid grid-cols-4 gap-2 bg-[--light] place-items-center p-10">
@@ -20,7 +25,7 @@ export default function Page() {
         </h1>
         {typeUser === "student" ? (
           <>
-            <div className="col-span-2 hidden md:block">
+            <div className="col-span-1 hidden md:block">
               <FontAwesomeIcon
                 icon={icons.faUser}
                 className="w-[300px] h-[300px] text-[--principal-blue]"

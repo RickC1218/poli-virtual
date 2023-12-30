@@ -10,7 +10,7 @@ export default function Page() {
       <h1 className="text-[38px] col-span-4 text-center">Formulario para ser
         <DifferentText color="--principal-red"> instructor</DifferentText>
       </h1>
-      <div className="col-span-2 hidden md:block">
+      <div className="col-span-1 hidden md:block">
         <FontAwesomeIcon icon={icons.faUser} className="w-[300px] h-[300px] text-[--principal-blue]" />
       </div>
       <FormProfile type="be-instructor" />

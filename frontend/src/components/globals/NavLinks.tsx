@@ -1,8 +1,8 @@
-"use client"
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
 
 interface NavLink {
   href: string;
@@ -10,80 +10,92 @@ interface NavLink {
   label: string;
 }
 
-const isClient = typeof window !== 'undefined';
+const isClient = typeof window !== "undefined";
 
 const NavLinks = () => {
   const [sessionActive, setSessionActive] = useState(false);
   const pathname = usePathname();
 
+  const [userRole, setUserRole] = useState("");
+
   useEffect(() => {
     // Verificar el sessionStorage para determinar si hay una sesión activa
-    const isSessionActive = isClient && sessionStorage.getItem('currentUser') !== null;
+    const isSessionActive = isClient && localStorage.getItem("token") !== null;
     setSessionActive(isSessionActive);
+
+    const storedUser = JSON.parse(
+      sessionStorage.getItem("currentUser") || "{}"
+    );
+    setUserRole(storedUser.role || "");
   }, []);
 
   const links: NavLink[] = sessionActive
     ? [
         /* Enlaces para usuarios autenticados */
-      {
-        href: '/common/explore',
-        name: 'Explorar',
-        label: 'Inicio',
-      },
-      {
-        href: '/common/categories',
-        name: 'Categorías',
-        label: 'Categorías',
-      },
-      {
-        href: '/common/your-learning',
-        name: 'Tu aprendizaje',
-        label: 'Tu aprendizaje',
-      },
-      {
-        href: '/common/be-instructor',
-        name: 'Ser instructor',
-        label: 'Ser instructor',
-      },
-      {
-        href: '/common/profile',
-        name: 'Tu perfil',
-        label: 'Perfil',
-      }
-    ]
+        {
+          href: "/common/explore",
+          name: "Explorar",
+          label: "Inicio",
+        },
+        {
+          href: "/common/categories",
+          name: "Categorías",
+          label: "Categorías",
+        },
+        {
+          href: "/common/your-learning",
+          name: "Tu aprendizaje",
+          label: "Tu aprendizaje",
+        },
+        userRole !== "instructor" 
+        ? {
+          href: "/common/be-instructor",
+          name: "Ser instructor",
+          label: "Ser instructor",
+        } : {
+          href: "/common/create-course",
+          name: "Crear curso",
+          label: "Crear curso",
+        },
+        {
+          href: "/common/profile",
+          name: "Tu perfil",
+          label: "Perfil",
+        },
+      ]
     : [
         /* Enlaces para usuarios no autenticados */
-      {
-        href: '/common/explore',
-        name: 'Explorar',
-        label: 'Explorar',
-      },
-      {
-        href: '/common/categories',
-        name: 'Categorías',
-        label: 'Categorías',
-      },
-      {
-        href: '/common/us',
-        name: 'Nosotros',
-        label: 'Nosotros',
-      },
-      {
-        href: '/common/contact',
-        name: 'Contacto',
-        label: 'Contacto',
-      }
-    ];
+        {
+          href: "/common/explore",
+          name: "Explorar",
+          label: "Explorar",
+        },
+        {
+          href: "/common/categories",
+          name: "Categorías",
+          label: "Categorías",
+        },
+        {
+          href: "/common/us",
+          name: "Nosotros",
+          label: "Nosotros",
+        },
+        {
+          href: "/common/contact",
+          name: "Contacto",
+          label: "Contacto",
+        },
+      ];
 
   const renderLink = (link: NavLink) => (
     <Link
       key={link.name}
       href={link.href}
       className={clsx(
-        'block p-3 cursor-pointer hover:text-[--principal-blue] hover:drop-shadow md:flex-none',
+        "block p-3 cursor-pointer hover:text-[--principal-blue] hover:drop-shadow md:flex-none",
         {
-          'drop-shadow text-[--principal-red]': pathname === link.href,
-        },
+          "drop-shadow text-[--principal-red]": pathname === link.href,
+        }
       )}
     >
       <p className="block text-base">{link.name}</p>

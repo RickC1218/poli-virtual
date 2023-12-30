@@ -31,6 +31,9 @@ export default function Page() {
     email: "",
     password: "",
   });
+  
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUser({
@@ -39,9 +42,7 @@ export default function Page() {
     });
   };
 
-  const router = useRouter();
-
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  
 
   const showAlert = (message: string) => {
     setAlertMessage(message);

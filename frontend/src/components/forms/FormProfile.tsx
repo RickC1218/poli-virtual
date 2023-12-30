@@ -1,17 +1,30 @@
 "use client";
 
-import crud_user from "@/app/api/crud_user"
-import Button from "../buttons/Button";
-import Link from "next/link";
-import icons from "../icons/icons";
-import Modal from "../tools/Modal";
-
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Button from "../buttons/Button";
+import Modal from "../tools/Modal";
+import icons from "../icons/icons";
+import crud_user from "@/app/api/crud_user";
 
 interface FormProfileProps {
   type: "new-user" | "be-instructor" | "profile" | "profile-instructor";
 }
+
+// Define the initial state for a new user
+const initialUserState = {
+  name: "",
+  lastname: "",
+  email: "",
+  password: "",
+  role: "student",
+  semester: "",
+  approve_teacher: "",
+  approve_teacher_email: "",
+  user_description: "",
+  score_teacher: 0,
+};
 
 const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
@@ -22,50 +35,28 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     name: "Iniciar sesión",
     label: "Iniciar sesión",
   };
-
   
   //manage the modal
+  // State variables
   const [isOpen, setIsOpen] = useState(false);
-  const handleOpenModal = () => setIsOpen(true);
-  const handleCloseModal = () => setIsOpen(false);
-
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [verification, setVerification] = useState("")
-  const [verification_new, setVerification_new] = useState("")
-  const [user, setUser] = useState({
-    name: "",
-    lastname: "",
-    email: "",
-    password: "",
-    role: "student",
-    semester: "",
-    approve_teacher: "",
-    approve_teacher_email: "",
-    user_description: "",
-    score_teacher: 0,
-    //profilePhoto: ""
-  });
-  
+  const [verification, setVerification] = useState("");
+  const [verificationNew, setVerificationNew] = useState("");
+  const [user, setUser] = useState(initialUserState);
+
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
+    // Load user data from session storage when the component mounts
+    const storedUser = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
     if (type !== "new-user") {
-      setUser({
-        ...user,
-        name: user.name,
-        lastname: user.lastname,
-        email: user.email,
-        role: user.role,
-        semester: user.semester,
-        approve_teacher: user.approve_teacher,
-        approve_teacher_email: user.approve_teacher_email,
-        user_description: user.user_description,
-        score_teacher: user.score_teacher,
-        //profilePhoto: user.profilePhoto
-      });
+      setUser({ ...initialUserState, ...storedUser });
     }
   }, []);
 
-  // verification of change with inputs
+  // Open and close the modal
+  const handleOpenModal = () => setIsOpen(true);
+  const handleCloseModal = () => setIsOpen(false);
+
+  // Handle inputs changes
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (event.target.name !== "password_new") {
       setUser({
@@ -96,7 +87,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     if (type === 'new-user') {
       setVerification(event.target.value)
     } else {
-      setVerification_new(event.target.value)
+      setVerificationNew(event.target.value)
     }
   }
 
@@ -122,7 +113,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       let message = "";
       e.preventDefault();
       // verify that all fields are filled
-      if (user.name && user.lastname && user.email && user.semester && user.password && (verification || verification_new)) {
+      if (user.name && user.lastname && user.email && user.semester && user.password && (verification || verificationNew)) {
         //Validate password
         if (validatePassword(user.password)) {
           if (user.password === verification) {
@@ -197,30 +188,34 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       lastname: user.lastname,
       semester: user.semester,
       email: user.email,
+      role: user.role,
       approve_teacher: user.approve_teacher,
       approve_teacher_email: user.approve_teacher_email,
       user_description: user.user_description,
+      score_teacher: user.score_teacher || 0,
       //profilePhoto: user.profilePhoto
     }
     return userData;
   }
 
   //manage the be instructor button
-  /*const handleBeInstructor = async (e: FormEvent) => {
+  const handleBeInstructor = async (e: FormEvent) => {
     try {
       let message = "";
       e.preventDefault();
       // obtain the session token from the user object
       const session_token = await getToken();
+      // obtain the user data from the user object
+      const userData = getUserData();
       // make sure the session token is available
       if (session_token) {
         // update the user
-        const response = await crud_user.beInstructor(session_token);
+        const response = await crud_user.sendEmailToBeInstructor(userData, session_token);
         message = response;
-        console.log(message);
-        // redirect to the explore page
         showAlert(message);
-        handleUpdateProfile(e);
+
+        // update the user
+        await crud_user.updateUser(userData, session_token);
       } else {
         message = 'Probablemente no has iniciado sesión.';
         showAlert(message);
@@ -228,7 +223,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     } catch (error) {
       showAlert('Error al actualizar el perfil.');
     }
-  };*/
+  };
 
   //manage the update profile button
   const handleUpdateProfile = async (e: FormEvent) => {
@@ -238,7 +233,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       // obtain the session token from the user object
       const session_token = await getToken();
       const userData = getUserData();
-      console.log(userData);
       // make sure the session token is available
       if (session_token) {
         // update the user
@@ -267,7 +261,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       const session_token = await getToken();
       //Validate password
       if (validatePassword(user.password)) {
-        if (user.password === verification_new) {
+        if (user.password === verificationNew) {
           const userData = {
             password: user.password,
           }
@@ -333,7 +327,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   };
 
   return (
-    <form onSubmit={handleRegister} className={`col-span-4 md:col-span-2 ${type === 'new-user' ? 'w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'w-full'} p-3 md:p-5 flex flex-col justify-center items-center`}>
+    <form onSubmit={handleRegister} className={`${type === 'new-user' ? 'col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'col-span-3 md:col-span-3 w-full '} p-3 md:p-5 flex flex-col justify-center items-center`}>
       <h1 className={`text-[38px] ${type === 'new-user' ? '' : 'hidden'}`}>Registrarse</h1>
       <div className={`${user.role === "instructor" ? "md:col-span-3" : "md:col-span-2"} w-full p-3 flex flex-col justify-center items-center`}>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -453,8 +447,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             required={type === 'be-instructor' || user.role === 'instructor'}
           />
         </div>
-        <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' && user.role !== "instructor" ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
-          <Link key="sendMail" href="/common/profile" className={`p-2 md:p-0`} >
+        <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
+          <Link key="sendMail" href="/common/profile" className={`p-2 md:p-0`} onClick={handleBeInstructor}>
             <Button
               text="Enviar correo"
               icon={icons.faChevronRight}
@@ -465,7 +459,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </div>
         {alertMessage && (
           <div className={`${type === 'be-instructor' ? '' : 'hidden'}`}>
-            <div className={`${alertMessage.startsWith("Se envió el correo al profesor") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
+            <div className={`${alertMessage.startsWith("Correo electrónico enviado") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
               {alertMessage}
             </div>
           </div>
@@ -492,7 +486,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </div>
       </div>
       {alertMessage && !isOpen && (
-        <div className={`${type === 'profile' || user.role === "instructor" ? '' : 'hidden'}`}>
+        <div className={`${type === 'profile' ? '' : 'hidden'}`}>
           <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
             {alertMessage}
           </div>
@@ -538,12 +532,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
               <p className="font-bold">Verificación:</p>
               <input
                 type="password"
-                name="verification_new"
+                name="verificationNew"
                 onChange={handleVerification}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
             </div>
             {alertMessage && isOpen && (
-              <div className={`${type === 'profile' || user.role === "instructor" ? '' : 'hidden'}`}>
+              <div className={`${type === 'profile' ? '' : 'hidden'}`}>
                 <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
                   {alertMessage}
                 </div>

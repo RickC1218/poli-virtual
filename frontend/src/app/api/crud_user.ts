@@ -209,17 +209,36 @@ const crud_user = {
         }
     },
 
-    //be instructor
-    beInstructor: async (session_token: string) => {
+    //send mail to be instructor
+    sendEmailToBeInstructor: async (userData: any, session_token: string) => {
         try{
             const headers = {
                 'Authorization': `Bearer ${session_token}`,
             };
-            const response = await axios.put(`${API_BASE_URL}/user/send-email-to-approve-teacher/`, { headers } );
+            const response = await axios.put(`${API_BASE_URL}/user/send-email-to-approve-teacher/`, userData ,{ headers } );
+            console.log(response.data);
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
 
+            if (responseError?.response?.status === 404) {
+                return "Error al enviar el correo";
+            } else {
+                return "Error desconocido";
+            }
+        }
+    },
+    
+    // active the instructor site
+    beInstructor : async (emailData: any, session_token: string) => {
+        try{
+            const headers = {
+                'Authorization': `Bearer ${session_token}`,
+            };
+            const response = await axios.put(`${API_BASE_URL}/user/be-an-instructor/`, emailData,{headers});
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
             if (responseError?.response?.status === 404) {
                 return "Error al enviar el correo";
             } else {
