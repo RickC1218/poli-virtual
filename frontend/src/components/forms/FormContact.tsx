@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import DifferentText from '../tools/DifferentText';
 import { useState } from 'react';
+import crud_user from '@/app/api/crud_user';
 
 
 const FormContact: React.FC = () => {
@@ -60,7 +61,6 @@ const FormContact: React.FC = () => {
       const message = escapeHTML(formData.message);
       // send email
       sendEmail(name, email, message);
-      showAlert("Correo enviado a nuestro equipo de soporte");
       setFormData({
         name: '',
         email: '',
@@ -69,9 +69,16 @@ const FormContact: React.FC = () => {
     }
   };
 
-  // TODO: send email
+  // send email
   const sendEmail = async (name: string, email: string, message: string) => {
-    const res = "Correo enviado a nuestro equipo de soporte";
+    const res = {
+      name,
+      email,
+      message,
+    }
+    const response = await crud_user.sendEmailContact(res);
+    console.log(response);
+    showAlert("Correo enviado a nuestro equipo de soporte");
   };
 
   return (

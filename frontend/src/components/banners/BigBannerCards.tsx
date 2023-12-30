@@ -79,7 +79,7 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
               assessment={course.assessment}
               image="/course.jpg"
               category={category}
-              state={state}
+              state={course.state}
             />
           </div>
         ))

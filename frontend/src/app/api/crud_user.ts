@@ -3,7 +3,6 @@ import axios from 'axios';
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 const crud_user = {
-
     // Obtain session token
     getLocalStorageValue: (key: string) => {
         return localStorage.getItem(key);
@@ -182,17 +181,52 @@ const crud_user = {
     // Operación get (GET all featured instructors)
     getfeaturedInstructors: async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/user/`);
+            const response = await axios.get(`${API_BASE_URL}/user/featured-teachers`);
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
             if (responseError?.response?.status === 404) {
-                return "Usuarios no encontrados";
+                return "Instructores no encontrados";
             } else {
                 return "Error desconocido";
             }
         }
     },
+
+    // contact with us
+    sendEmailContact: async (formData: any) => {
+        try{
+            const response = await axios.post(`${API_BASE_URL}/user/contact-with-us/`, formData);
+
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Error al enviar el correo";
+            } else {
+                return "Error desconocido";
+            }
+        }
+    },
+
+    //be instructor
+    beInstructor: async (session_token: string) => {
+        try{
+            const headers = {
+                'Authorization': `Bearer ${session_token}`,
+            };
+            const response = await axios.put(`${API_BASE_URL}/user/send-email-to-approve-teacher/`, { headers } );
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+
+            if (responseError?.response?.status === 404) {
+                return "Error al enviar el correo";
+            } else {
+                return "Error desconocido";
+            }
+        }
+    }
 };
 
 export default crud_user;

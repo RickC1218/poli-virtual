@@ -23,6 +23,15 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     label: "Iniciar sesión",
   };
 
+  
+  //manage the modal
+  const [isOpen, setIsOpen] = useState(false);
+  const handleOpenModal = () => setIsOpen(true);
+  const handleCloseModal = () => setIsOpen(false);
+
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [verification, setVerification] = useState("")
+  const [verification_new, setVerification_new] = useState("")
   const [user, setUser] = useState({
     name: "",
     lastname: "",
@@ -33,9 +42,30 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     approve_teacher: "",
     approve_teacher_email: "",
     user_description: "",
+    score_teacher: 0,
     //profilePhoto: ""
   });
+  
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
+    if (type !== "new-user") {
+      setUser({
+        ...user,
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+        role: user.role,
+        semester: user.semester,
+        approve_teacher: user.approve_teacher,
+        approve_teacher_email: user.approve_teacher_email,
+        user_description: user.user_description,
+        score_teacher: user.score_teacher,
+        //profilePhoto: user.profilePhoto
+      });
+    }
+  }, []);
 
+  // verification of change with inputs
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (event.target.name !== "password_new") {
       setUser({
@@ -61,27 +91,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   }
   */
 
-  useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
-    if (type !== "new-user") {
-      setUser({
-        ...user,
-        name: user.name,
-        lastname: user.lastname,
-        email: user.email,
-        role: user.role,
-        semester: user.semester,
-        approve_teacher: user.approve_teacher,
-        approve_teacher_email: user.approve_teacher_email,
-        user_description: user.user_description,
-        //profilePhoto: user.profilePhoto
-      });
-    }
-  }, []);
-
-  const [verification, setVerification] = useState("")
-  const [verification_new, setVerification_new] = useState("")
-
+  // verification of change with input of veify password
   const handleVerification = (event: ChangeEvent<HTMLInputElement>) => {
     if (type === 'new-user') {
       setVerification(event.target.value)
@@ -96,8 +106,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     return regex.test(password);
   }
 
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-
+  //Alert message
   const showAlert = (message: string) => {
     setAlertMessage(message);
     setTimeout(() => {
@@ -155,6 +164,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   };
 
+  //sanitize inputs
   const escapeHTML = (unsafe: string): string => {
     return unsafe.replace(/[&<">']/g, (match) => {
       switch (match) {
@@ -174,23 +184,61 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     });
   };
 
+  //obtain session token
+  const getToken = async () => {
+    const session_token = await JSON.parse(localStorage.getItem('token') ?? "{}");
+    return session_token;
+  }
+
+  //obtain userData 
+  const getUserData = () => {
+    const userData = {
+      name: user.name,
+      lastname: user.lastname,
+      semester: user.semester,
+      email: user.email,
+      approve_teacher: user.approve_teacher,
+      approve_teacher_email: user.approve_teacher_email,
+      user_description: user.user_description,
+      //profilePhoto: user.profilePhoto
+    }
+    return userData;
+  }
+
+  //manage the be instructor button
+  /*const handleBeInstructor = async (e: FormEvent) => {
+    try {
+      let message = "";
+      e.preventDefault();
+      // obtain the session token from the user object
+      const session_token = await getToken();
+      // make sure the session token is available
+      if (session_token) {
+        // update the user
+        const response = await crud_user.beInstructor(session_token);
+        message = response;
+        console.log(message);
+        // redirect to the explore page
+        showAlert(message);
+        handleUpdateProfile(e);
+      } else {
+        message = 'Probablemente no has iniciado sesión.';
+        showAlert(message);
+      }
+    } catch (error) {
+      showAlert('Error al actualizar el perfil.');
+    }
+  };*/
+
   //manage the update profile button
   const handleUpdateProfile = async (e: FormEvent) => {
     try {
       let message = "";
       e.preventDefault();
       // obtain the session token from the user object
-      const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
-      const userData = {
-        name: user.name,
-        lastname: user.lastname,
-        semester: user.semester,
-        email: user.email,
-        approve_teacher: user.approve_teacher,
-        approve_teacher_email: user.approve_teacher_email,
-        user_description: user.user_description,
-        //profilePhoto: user.profilePhoto
-      }
+      const session_token = await getToken();
+      const userData = getUserData();
+      console.log(userData);
       // make sure the session token is available
       if (session_token) {
         // update the user
@@ -216,7 +264,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       let message = "";
       e.preventDefault();
       // obtain the session token from the user object
-      const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
+      const session_token = await getToken();
       //Validate password
       if (validatePassword(user.password)) {
         if (user.password === verification_new) {
@@ -256,17 +304,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     try {
       let message = "";
       e.preventDefault();
-      const session_token = JSON.parse(localStorage.getItem('token') ?? "{}");
-      const userData = {
-        name: user.name,
-        lastname: user.lastname,
-        semester: user.semester,
-        email: user.email,
-        approve_teacher: user.approve_teacher,
-        approve_teacher_email: user.approve_teacher_email,
-        user_description: user.user_description,
-        //profilePhoto: user.profilePhoto
-      };
+      const session_token = await getToken();
+      const userData = getUserData();
       // make sure the session token is available
       if (session_token) {
         //Logout
@@ -292,12 +331,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       showAlert('Error al cerrar sesión.');
     }
   };
-
-  //manage the modal
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOpenModal = () => setIsOpen(true);
-  const handleCloseModal = () => setIsOpen(false);
 
   return (
     <form onSubmit={handleRegister} className={`col-span-4 md:col-span-2 ${type === 'new-user' ? 'w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'w-full'} p-3 md:p-5 flex flex-col justify-center items-center`}>
@@ -406,6 +439,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.approve_teacher ? user.approve_teacher : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required={type === 'be-instructor' || user.role === 'instructor'}
           />
         </div>
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor" ? "" : "hidden"}`}>
@@ -416,13 +450,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.approve_teacher_email ? user.approve_teacher_email : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required={type === 'be-instructor' || user.role === 'instructor'}
           />
         </div>
         <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' && user.role !== "instructor" ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
-          <Link
-            key="sendMail"
-            href="/common/profile"
-          >
+          <Link key="sendMail" href="/common/profile" className={`p-2 md:p-0`} >
             <Button
               text="Enviar correo"
               icon={icons.faChevronRight}
@@ -446,6 +478,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             name="user_description"
             rows={7}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            required={user.role === 'instructor'}
           />
         </div>
         <div className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"}`}>
@@ -498,7 +531,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
                 type="password"
                 name="password_new"
                 onChange={handleChange}
-                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
+                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" 
+                required />
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Verificación:</p>

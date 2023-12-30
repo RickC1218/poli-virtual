@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
 import CourseCard from "../cards/CourseCard";
 import InstructorCard from "../cards/InstructorCard";
 import crud_user from "@/app/api/crud_user";
 import crud_course from "@/app/api/crud_course";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "../icons/icons";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface BannerCardsProps {
   state: "none" | "enrolled";
@@ -13,8 +14,13 @@ interface BannerCardsProps {
   subtype?: "featured" | "daily" | "your-learning";
 }
 interface Instructor {
-  name: string;
   email: string;
+  name: string;
+  lastname: string;
+  semester: string;
+  approve_teacher: string;
+  score_teacher: number;
+  image: string;
 }
 interface Course {
   id: string;
@@ -29,75 +35,53 @@ interface Course {
 const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const mounted = useRef(true);
 
-  // Obtain courses by type
-  const getCoursesByType = async (type: "featured" | "daily") => {
-    try {
-      const allCourses =
-        type === "featured"
-          ? await crud_course.getFeaturedCourses()
-          : await crud_course.getRecentlyAddedCourses();
-      setCourses(Array.isArray(allCourses) ? allCourses : []);
-    } catch (error) {
-      console.error("Error fetching courses:", error);
-    }
-  };
-
-  //get courses by your learning
-  const getEnrolled = async () => {
-    try {
-      const sessionToken = JSON.parse(localStorage.getItem('token') ?? "{}");
-      const enrolledCourses = await crud_user.getEnrolledCourses(sessionToken);
-      setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
+    let courses = [];
+    let enrolledCourses = [];
+    let instructors = [];
+  
     switch (subtype) {
       case "featured":
       case "daily":
-        getCoursesByType(subtype);
+        courses =
+          subtype === "featured"
+            ? await crud_course.getFeaturedCourses()
+            : await crud_course.getRecentlyAddedCourses();
+        setCourses(Array.isArray(courses) ? courses : []);
         break;
       case "your-learning":
-        getEnrolled();
+        enrolledCourses = await crud_user.getEnrolledCourses(getToken());
+        setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
         break;
       default:
         break;
     }
+    instructors = await crud_user.getfeaturedInstructors();
+    setInstructors(Array.isArray(instructors) ? instructors : []);
   }, [subtype]);
+  
+  useEffect(() => {
+    fetchData();
+    return () => {
+      mounted.current = false;
+    };
+  }, [fetchData]);
+
+  const getToken = () => {
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+    return sessionToken;
+  };
 
   return (
-    <div>
+    <>
       {type === "courses" ? (
         <div className="flex overflow-x-auto space-x-2 py-5">
-          {state === "enrolled"
-            ? enrolledCourses.length > 0
-              ? enrolledCourses.map((course) => (
-                  <div className="p-1" key={course.id}>
-                    <CourseCard
-                      title={course.name}
-                      instructors={
-                        Array.isArray(course.instructors)
-                          ? course.instructors
-                              .map((instructor) => instructor.name)
-                              .join(", ")
-                          : "Nombres no encontrados"
-                      }
-                      assessment={course.assessment}
-                      image="/course.jpg"
-                      category={course.category}
-                      state={course.state}
-                    />
-                  </div>
-                ))
-              : <button className="font-bold text-[--principal-red] hover:drop-shadow">
-                <FontAwesomeIcon icon={icons.faChevronRight} className="mx-3 text-[--principal-red]" />
-                No has iniciado a aprender, busca cursos según tus gustos.
-                </button>
-            : courses.length > 0
-            ? courses.map((course) => (
+          {state === "enrolled" ? (
+            enrolledCourses.length > 0 ? (
+              enrolledCourses.map((course: Course) => (
                 <div className="p-1" key={course.id}>
                   <CourseCard
                     title={course.name}
@@ -111,27 +95,63 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
                     assessment={course.assessment}
                     image="/course.jpg"
                     category={course.category}
-                    state={state}
+                    state={course.state}
                   />
                 </div>
               ))
-            : <h1>No hay cursos agregados todavía.</h1>
-          }
+            ) : (
+              <button className="font-bold text-[--principal-red] hover:drop-shadow">
+                <FontAwesomeIcon
+                  icon={icons.faChevronRight}
+                  className="mx-3 text-[--principal-red]"
+                />
+                No has iniciado a aprender, busca cursos según tus gustos.
+              </button>
+            )
+          ) : courses.length > 0 ? (
+            courses.map((course: Course) => (
+              <div className="p-1" key={course.id}>
+                <CourseCard
+                  title={course.name}
+                  instructors={
+                    Array.isArray(course.instructors)
+                      ? course.instructors
+                          .map((instructor) => instructor.name)
+                          .join(", ")
+                      : "Nombres no encontrados"
+                  }
+                  assessment={course.assessment}
+                  image="/course.jpg"
+                  category={course.category}
+                  state={state}
+                />
+              </div>
+            ))
+          ) : (
+            <h1>No hay cursos agregados todavía.</h1>
+          )}
         </div>
       ) : (
         <div className="flex overflow-x-auto space-x-2 py-5">
-          <div className="p-1">
-            <InstructorCard
-              name="Ricardo Erazo"
-              description="Estudiante de 9no semestre"
-              tutor="Ing. Ordoñez"
-              ranking={3.8}
-              image="/PeterParker.jpg"
-            />
-          </div>
+          {instructors.length > 0 ? (
+            instructors.map((instructor: Instructor) => (
+              <div className="p-1" key={instructor.email}>
+                <InstructorCard
+                  name={instructor.name}
+                  lastname={instructor.lastname}
+                  semester={`Estudiante de ${instructor.semester} semestre`}
+                  tutor={`Ing. ${instructor.approve_teacher}`}
+                  image="/PeterParker.jpg"
+                  ranking={instructor.score_teacher}
+                />
+              </div>
+            ))
+          ) : (
+            <h1>No hay instructor agregados todavía.</h1>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

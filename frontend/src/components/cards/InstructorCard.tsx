@@ -3,13 +3,14 @@ import Link from 'next/link';
 
 interface InstructorCardProps {
   name: string;
-  description: string;
+  lastname: string;
+  semester: string;
   tutor: string;
   ranking: number;
   image: string;
 }
 
-const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tutor, ranking, image }) => {
+const InstructorCard: React.FC<InstructorCardProps> = ({ name, lastname, semester, tutor, ranking, image }) => {
   const instructorLink = {
     name: "Perfil del instructor",
     path: "/common/profile/instructor",
@@ -26,8 +27,8 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ name, description, tuto
         <div className='flex justify-center items-center'>
           <div className="pt-2.5 text-center">
             <div className='mb-3'>
-              <p className="font-bold">{name}</p>
-              <p className="text-base">{description}</p>
+              <p className="font-bold">{name + " " + lastname}</p>
+              <p className="text-base">{semester}</p>
               <p className="text-base">{tutor}</p>
             </div>
             <div className="flex justify-center items-center w-full">
