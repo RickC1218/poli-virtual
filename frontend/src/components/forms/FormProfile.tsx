@@ -213,9 +213,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         const response = await crud_user.sendEmailToBeInstructor(userData, session_token);
         message = response;
         showAlert(message);
-
-        // update the user
-        await crud_user.updateUser(userData, session_token);
+        
+        //update the user in the session storage
+        setTimeout(() => {
+          handleUpdateProfile(e);
+        }, 3000);
       } else {
         message = 'Probablemente no has iniciado sesión.';
         showAlert(message);

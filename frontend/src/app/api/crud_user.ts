@@ -230,12 +230,9 @@ const crud_user = {
     },
     
     // active the instructor site
-    beInstructor : async (emailData: any, session_token: string) => {
+    beInstructor : async (emailData: any) => {
         try{
-            const headers = {
-                'Authorization': `Bearer ${session_token}`,
-            };
-            const response = await axios.put(`${API_BASE_URL}/user/be-an-instructor/`, emailData,{headers});
+            const response = await axios.put(`${API_BASE_URL}/user/be-an-instructor/`, emailData);
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };

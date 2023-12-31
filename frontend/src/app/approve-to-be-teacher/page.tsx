@@ -18,7 +18,7 @@ export default function Page() {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 2000); // close the alert after 2 seconds
+    }, 3000); // close the alert after 2 seconds
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,12 +31,11 @@ export default function Page() {
     try {
       //sanitize input
       const email = escapeHTML(emailVerification);
-      const storedUser = JSON.parse(localStorage.getItem("token") ?? "{}");      
-      const response = await crud_user.beInstructor(email, storedUser);
+      const response = await crud_user.beInstructor({email});
       message = response;
-      showAlert(message);
       //redirect to confirm page
       if(message === "Rol actualizado") {
+        showAlert(message);
         setTimeout(() => {
           // Redirect to the explore page after the delay
           router.push("/approve-to-be-teacher/confirm");

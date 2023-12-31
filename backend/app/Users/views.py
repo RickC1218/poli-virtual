@@ -388,7 +388,7 @@ def be_an_instructor(request):
         else:
             try:
                 user = User.objects.get(email=data.get("email"))
-                user_serializer = UserSerializer(user, data={'role': 'profesor'}, partial=True)
+                user_serializer = UserSerializer(user, data={'role': 'instructor'}, partial=True)
 
                 if user_serializer.is_valid():
                     user_serializer.save()
