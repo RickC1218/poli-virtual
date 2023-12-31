@@ -54,13 +54,33 @@ http://localhost:3000/approve-to-be-teacher/
 
 # Esta vista puede ser similar a la que se creo cuando el usuario verifica su correo electronico, pero el mensaje debe cambiar, la logica de esta vista es que cuando un usuario decida ser un instructor, le va a llegar un correo al profesor que le aprueba, con el siguiente formato:
 ```
-![Alt text](image.png)
+Saludos cordiales Alejandro Teran,
+
+Nos comunicamos con usted para completar el proceso de SER UN INSTRUCTOR en la plataforma Poli Virtual, del estudiante:
+
+Estudiante: Jhosel Alexander Guillin Fierro
+
+Correo institucional: jhosel.guillin@epn.edu.ec
+
+Por favor, autoriza que el estudiante pueda ser un Instructor, en el caso de si hacerlo, haga clic en el siguiente enlace:
+
+http://localhost:3000/approve-to-be-teacher/
+
+Caso contrario, ignore este correo.
+
+Gracias,
+
+El equipo de Poli Virtual.
 
 ```bash
 # En el caso que el profesor decida dar clic, es decir aprobar al estudiante como instructor dentro de la nueva vista creada se debe llamar al último endpoint /user/be-an-instructor/.
 ```
 - Endpoint /user/be-an-instructor/:
 ```bash
-# Para utilizar este endpoint es necesario utilizar un metodo PUT y enviar en la cabecera el token (AUTHORIZATION) y nada mas.
+# Para utilizar este endpoint es necesario utilizar un metodo PUT y enviar el email del estudiante en formato json.
+
+{
+  "email": "jhosel.guillin@epn.edu.ec"
+}
 ```
 . NOTA: Si todo esta bien en cada endpoint se regresa un status 200, caso contrario me avisas al Whatsapp.

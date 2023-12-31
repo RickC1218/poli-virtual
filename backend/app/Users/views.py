@@ -380,13 +380,14 @@ def send_email_to_approve_teacher(request):
 @api_view(['PUT'])
 def be_an_instructor(request):
     if request.method == 'PUT':
-        user_token = verify_token(request)
-        if user_token is False:
-            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+        data = JSONParser().parse(request)
 
+        # Verify if the email is valid
+        if is_valid_email(data.get("email")) is False:
+            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
         else:
             try:
-                user = User.objects.get(email=user_token)
+                user = User.objects.get(email=data.get("email"))
                 user_serializer = UserSerializer(user, data={'role': 'profesor'}, partial=True)
 
                 if user_serializer.is_valid():
