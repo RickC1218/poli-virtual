@@ -404,6 +404,29 @@ def be_an_instructor(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
+# Get the user profile
+@csrf_exempt
+@api_view(['GET'])
+def get_user_profile(request):
+    if request.method == 'GET':
+        user_token = verify_token(request) # return the email of the user if the token is valid
+
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+        else:
+            try:
+                user = User.objects.get(email=user_token)
+                user_serializer = UserSerializer(user)
+
+                # Remove the field session_token
+                user_data = user_serializer.data
+                del user_data['session_token']
+                return JsonResponse(user_data, safe=False, status=200)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
 # Get the featured teachers
 @csrf_exempt
 @api_view(['GET'])
