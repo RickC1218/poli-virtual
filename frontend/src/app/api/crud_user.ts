@@ -216,7 +216,6 @@ const crud_user = {
                 'Authorization': `Bearer ${session_token}`,
             };
             const response = await axios.put(`${API_BASE_URL}/user/send-email-to-approve-teacher/`, userData ,{ headers } );
-            console.log(response.data);
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
@@ -238,6 +237,24 @@ const crud_user = {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
             if (responseError?.response?.status === 404) {
                 return "Error al enviar el correo";
+            } else {
+                return "Error desconocido";
+            }
+        }
+    },
+
+    //obtain data of user
+    getUser : async (session_token: string) => {
+        try{
+            const headers = {
+                'Authorization': `Bearer ${session_token}`,
+            };
+            const response = await axios.get(`${API_BASE_URL}/user/get-user-profile/` ,{ headers } );
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Error al enviar de datos";
             } else {
                 return "Error desconocido";
             }

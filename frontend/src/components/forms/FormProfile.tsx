@@ -43,13 +43,20 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const [verification, setVerification] = useState("");
   const [verificationNew, setVerificationNew] = useState("");
   const [user, setUser] = useState(initialUserState);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     // Load user data from session storage when the component mounts
-    const storedUser = JSON.parse(sessionStorage.getItem("currentUser") ?? "{}");
-    if (type !== "new-user") {
-      setUser({ ...initialUserState, ...storedUser });
+    //verify user state
+    async function fetchData() {
+      const sessionToken = JSON.parse(localStorage.getItem("token") || "");
+      const storedUser = await crud_user.getUser(sessionToken || ""); 
+      if (type !== "new-user") {
+        setUser({ ...initialUserState, ...storedUser });
+      }
     }
+
+    fetchData();
   }, []);
 
   // Open and close the modal
@@ -136,7 +143,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
               router.push("/login");
               router.refresh();
             } catch (error) {
-              console.log(error);
+              console.error(error);
             }
           } else {
             //Error
@@ -203,6 +210,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     try {
       let message = "";
       e.preventDefault();
+
+      // If the email is already sent, do nothing
+      if (emailSent) {
+        return;
+      }
+      
       // obtain the session token from the user object
       const session_token = await getToken();
       // obtain the user data from the user object
@@ -213,7 +226,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         const response = await crud_user.sendEmailToBeInstructor(userData, session_token);
         message = response;
         showAlert(message);
-        
+
+        setEmailSent(true);
+
         //update the user in the session storage
         setTimeout(() => {
           handleUpdateProfile(e);
@@ -234,14 +249,16 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       e.preventDefault();
       // obtain the session token from the user object
       const session_token = await getToken();
-      const userData = getUserData();
+      //const userData = getUserData();
+      const userData = await crud_user.getUser(session_token);
       // make sure the session token is available
       if (session_token) {
         // update the user
         const response = await crud_user.updateUser(userData, session_token);
         message = response;
-        // update the user in the session storage
-        sessionStorage.setItem('currentUser', JSON.stringify(userData));
+        // update the user in the local storage with token
+        const storedUser = await crud_user.getUser(session_token);
+        setUser(storedUser)
         // redirect to the explore page
         showAlert(message);
         router.push("/common/profile");
@@ -308,8 +325,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         await crud_user.logout(userData, session_token);
         //Remove the token
         localStorage.removeItem('token');
-        //Remove the user from the session storage
-        sessionStorage.removeItem('currentUser');
         //closing the session
         message = "Cerrando sesión...";
         showAlert(message);
@@ -450,7 +465,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </div>
         <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
-          <Link key="sendMail" href="/common/profile" className={`p-2 md:p-0`} onClick={handleBeInstructor}>
+          <Link key="sendMail" href="/common/profile" className={`p-2 md:p-0${!emailSent ? '' : 'hidden'}`} onClick={handleBeInstructor}>
             <Button
               text="Enviar correo"
               icon={icons.faChevronRight}
@@ -461,7 +476,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </div>
         {alertMessage && (
           <div className={`${type === 'be-instructor' ? '' : 'hidden'}`}>
-            <div className={`${alertMessage.startsWith("Correo electrónico enviado") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
+            <div className={`${alertMessage.startsWith("Correo electrónico enviado" || "Usuario actualizado")  ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
               {alertMessage}
             </div>
           </div>

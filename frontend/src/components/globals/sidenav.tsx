@@ -14,8 +14,8 @@ export default function SideNav() {
   const [sessionActive, setSessionActive] = useState(false);
 
   useEffect(() => {
-    // Verificar el sessionStorage para determinar si hay una sesión activa
-    const isSessionActive = sessionStorage.getItem("currentUser") !== null;
+    // Verify localStorage to determine if there is an active session
+    const isSessionActive = localStorage.getItem("token") !== null;
     setSessionActive(isSessionActive);
   }, []);
 

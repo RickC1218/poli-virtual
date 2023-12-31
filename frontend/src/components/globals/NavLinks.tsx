@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
+import crud_user from "@/app/api/crud_user";
 
 interface NavLink {
   href: string;
@@ -23,10 +24,16 @@ const NavLinks = () => {
     const isSessionActive = isClient && localStorage.getItem("token") !== null;
     setSessionActive(isSessionActive);
 
-    const storedUser = JSON.parse(
-      sessionStorage.getItem("currentUser") || "{}"
-    );
-    setUserRole(storedUser.role || "");
+    async function fetchData() {
+      if(isSessionActive){
+        //verify user state
+        const sessionToken = JSON.parse(localStorage.getItem("token") || "");
+        const storedUser = await crud_user.getUser(sessionToken || ""); 
+        setUserRole(storedUser.role || "");
+      }
+    }
+
+    fetchData();
   }, []);
 
   const links: NavLink[] = sessionActive
