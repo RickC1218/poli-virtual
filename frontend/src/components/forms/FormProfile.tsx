@@ -27,7 +27,6 @@ const initialUserState = {
 };
 
 const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
-
   const router = useRouter();
 
   const loginlink = {
@@ -35,7 +34,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     name: "Iniciar sesión",
     label: "Iniciar sesión",
   };
-  
+
   //manage the modal
   // State variables
   const [isOpen, setIsOpen] = useState(false);
@@ -49,8 +48,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     // Load user data from session storage when the component mounts
     //verify user state
     async function fetchData() {
-      const sessionToken = JSON.parse(localStorage.getItem("token") || "");
-      const storedUser = await crud_user.getUser(sessionToken || ""); 
+      const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
+      const storedUser = await crud_user.getUser(sessionToken || "");
       if (type !== "new-user") {
         setUser({ ...initialUserState, ...storedUser });
       }
@@ -64,19 +63,23 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const handleCloseModal = () => setIsOpen(false);
 
   // Handle inputs changes
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    event: ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     if (event.target.name !== "password_new") {
       setUser({
         ...user,
-        [event.target.name]: event.target.value
+        [event.target.name]: event.target.value,
       });
     } else {
       setUser({
         ...user,
-        password: event.target.value
+        password: event.target.value,
       });
     }
-  }
+  };
 
   /*  
   const handleFileChange = (event: ChangeEvent<HTMLImageElement>) => {
@@ -91,18 +94,18 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
   // verification of change with input of veify password
   const handleVerification = (event: ChangeEvent<HTMLInputElement>) => {
-    if (type === 'new-user') {
-      setVerification(event.target.value)
+    if (type === "new-user") {
+      setVerification(event.target.value);
     } else {
-      setVerificationNew(event.target.value)
+      setVerificationNew(event.target.value);
     }
-  }
+  };
 
   //Validating password
   const validatePassword = (password: string) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$/;
     return regex.test(password);
-  }
+  };
 
   //Alert message
   const showAlert = (message: string) => {
@@ -120,7 +123,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       let message = "";
       e.preventDefault();
       // verify that all fields are filled
-      if (user.name && user.lastname && user.email && user.semester && user.password && (verification || verificationNew)) {
+      if (
+        user.name &&
+        user.lastname &&
+        user.email &&
+        user.semester &&
+        user.password &&
+        (verification || verificationNew)
+      ) {
         //Validate password
         if (validatePassword(user.password)) {
           if (user.password === verification) {
@@ -135,7 +145,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
               user.password = escapeHTML(user.password);
               user.semester = escapeHTML(user.semester);
               await crud_user.createUser(user);
-              
+
               // temporal email
               localStorage.setItem("emailVerify", user.email);
 
@@ -151,7 +161,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           }
         } else {
           //password error
-          message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial.";
+          message =
+            "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial.";
         }
       } else {
         message = "Todos los campos deben estar llenos";
@@ -184,11 +195,13 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
   //obtain session token
   const getToken = async () => {
-    const session_token = await JSON.parse(localStorage.getItem('token') ?? "{}");
+    const session_token = await JSON.parse(
+      localStorage.getItem("token") ?? "{}"
+    );
     return session_token;
-  }
+  };
 
-  //obtain userData 
+  //obtain userData
   const getUserData = () => {
     const userData = {
       name: user.name,
@@ -201,9 +214,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       user_description: user.user_description,
       score_teacher: user.score_teacher || 0,
       //profilePhoto: user.profilePhoto
-    }
+    };
     return userData;
-  }
+  };
 
   //manage the be instructor button
   const handleBeInstructor = async (e: FormEvent) => {
@@ -215,7 +228,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       if (emailSent) {
         return;
       }
-      
+
       // obtain the session token from the user object
       const session_token = await getToken();
       // obtain the user data from the user object
@@ -223,7 +236,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       // make sure the session token is available
       if (session_token) {
         // update the user
-        const response = await crud_user.sendEmailToBeInstructor(userData, session_token);
+        const response = await crud_user.sendEmailToBeInstructor(
+          userData,
+          session_token
+        );
         message = response;
         showAlert(message);
 
@@ -234,11 +250,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           handleUpdateProfile(e);
         }, 3000);
       } else {
-        message = 'Probablemente no has iniciado sesión.';
+        message = "Probablemente no has iniciado sesión.";
         showAlert(message);
       }
     } catch (error) {
-      showAlert('Error al actualizar el perfil.');
+      showAlert("Error al actualizar el perfil.");
     }
   };
 
@@ -258,17 +274,17 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         message = response;
         // update the user in the local storage with token
         const storedUser = await crud_user.getUser(session_token);
-        setUser(storedUser)
+        setUser(storedUser);
         // redirect to the explore page
         showAlert(message);
         router.push("/common/profile");
         router.refresh();
       } else {
-        message = 'Probablemente no has iniciado sesión.';
+        message = "Probablemente no has iniciado sesión.";
         showAlert(message);
       }
     } catch (error) {
-      showAlert('Error al actualizar el perfil.');
+      showAlert("Error al actualizar el perfil.");
     }
   };
 
@@ -283,11 +299,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         if (user.password === verificationNew) {
           const userData = {
             password: user.password,
-          }
+          };
           // make sure the session token is available
           if (session_token) {
             // update the user
-            const response = await crud_user.updatePassword(userData, session_token);
+            const response = await crud_user.updatePassword(
+              userData,
+              session_token
+            );
             message = response;
             // redirect to the explore page
             showAlert(message);
@@ -295,7 +314,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             router.push("/common/profile");
             router.refresh();
           } else {
-            message = 'Probablemente no has iniciado sesión.';
+            message = "Probablemente no has iniciado sesión.";
           }
         } else {
           //Error
@@ -304,11 +323,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         showAlert(message);
       } else {
         //password error
-        message = "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial.";
+        message =
+          "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial.";
         showAlert(message);
       }
     } catch (error) {
-      showAlert('Error al actualizar la contraseña.');
+      showAlert("Error al actualizar la contraseña.");
     }
   };
 
@@ -324,7 +344,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         //Logout
         await crud_user.logout(userData, session_token);
         //Remove the token
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
         //closing the session
         message = "Cerrando sesión...";
         showAlert(message);
@@ -335,18 +355,31 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           router.refresh();
         }, 3000);
       } else {
-        message = 'Probablemente no has iniciado sesión.';
+        message = "Probablemente no has iniciado sesión.";
         showAlert(message);
       }
     } catch (error) {
-      showAlert('Error al cerrar sesión.');
+      showAlert("Error al cerrar sesión.");
     }
   };
 
   return (
-    <form onSubmit={handleRegister} className={`${type === 'new-user' ? 'col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50' : 'col-span-3 md:col-span-3 w-full '} p-3 md:p-5 flex flex-col justify-center items-center`}>
-      <h1 className={`text-[38px] ${type === 'new-user' ? '' : 'hidden'}`}>Registrarse</h1>
-      <div className={`${user.role === "instructor" ? "md:col-span-3" : "md:col-span-2"} w-full p-3 flex flex-col justify-center items-center`}>
+    <form
+      onSubmit={handleRegister}
+      className={`${
+        type === "new-user"
+          ? "col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50"
+          : "col-span-3 md:col-span-3 w-full "
+      } p-3 md:p-5 flex flex-col justify-center items-center`}
+    >
+      <h1 className={`text-[38px] ${type === "new-user" ? "" : "hidden"}`}>
+        Registrarse
+      </h1>
+      <div
+        className={`${
+          user.role === "instructor" ? "md:col-span-3" : "md:col-span-2"
+        } w-full p-3 flex flex-col justify-center items-center`}
+      >
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Nombre:</p>
           <input
@@ -355,7 +388,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.name}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required />
+            required
+          />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Apellido:</p>
@@ -365,7 +399,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.lastname}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required />
+            required
+          />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Correo institucional:</p>
@@ -374,9 +409,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             name="email"
             onChange={handleChange}
             value={user.email}
-            className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${type === 'new-user' ? '' : 'disabled cursor-not-allowed '}`}
-            readOnly={type !== 'new-user'}
-            required />
+            className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${
+              type === "new-user" ? "" : "disabled cursor-not-allowed "
+            }`}
+            readOnly={type !== "new-user"}
+            required
+          />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Semestre:</p>
@@ -397,7 +435,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             <option value="9no">9no semestre</option>
           </select>
         </div>
-        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
+        <div
+          className={`flex items-center justify-between w-full mx-2 p-2 ${
+            type === "new-user" ? "" : "hidden"
+          }`}
+        >
           <p className="font-bold">Contraseña:</p>
           <input
             type="password"
@@ -405,9 +447,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.password}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required={type === 'new-user'} />
+            required={type === "new-user"}
+          />
         </div>
-        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
+        <div
+          className={`flex items-center justify-between w-full mx-2 p-2 ${
+            type === "new-user" ? "" : "hidden"
+          }`}
+        >
           <p className="font-bold">Verificación:</p>
           <input
             type="password"
@@ -415,9 +462,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleVerification}
             value={verification}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required={type === 'new-user'} />
+            required={type === "new-user"}
+          />
         </div>
-        <div className={`flex items-center justify-center w-full m-5 p-2 ${type === 'new-user' ? '' : 'hidden'}`}>
+        <div
+          className={`flex items-center justify-center w-full m-5 p-2 ${
+            type === "new-user" ? "" : "hidden"
+          }`}
+        >
           <Button
             text="Registrarse"
             icon={icons.faRightToBracket}
@@ -425,7 +477,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="small"
           />
         </div>
-        <p className={`text-base flex ${type === 'new-user' ? '' : 'hidden'}`}>
+        <p className={`text-base flex ${type === "new-user" ? "" : "hidden"}`}>
           ¿Ya tienes cuenta? &nbsp;
           <Link
             key={loginlink.name}
@@ -436,13 +488,25 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           </Link>
         </p>
         {alertMessage && (
-          <div className={`${type === 'new-user' ? '' : 'hidden'}`}>
-            <div className={`${alertMessage.startsWith("Registro exitoso") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
+          <div className={`${type === "new-user" ? "" : "hidden"}`}>
+            <div
+              className={`${
+                alertMessage.startsWith("Registro exitoso")
+                  ? "bg-green-500"
+                  : "bg-red-500"
+              } z-40 text-[--light] p-2 rounded-md text-center`}
+            >
               {alertMessage}
             </div>
           </div>
         )}
-        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor" ? "" : "hidden"}`}>
+        <div
+          className={`flex items-center justify-between w-full mx-2 p-2 ${
+            type === "be-instructor" || user.role === "instructor"
+              ? ""
+              : "hidden"
+          }`}
+        >
           <p className="font-bold">Profesor que te aprueba:</p>
           <input
             type="text"
@@ -450,10 +514,16 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.approve_teacher ? user.approve_teacher : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required={type === 'be-instructor' || user.role === 'instructor'}
+            required={type === "be-instructor" || user.role === "instructor"}
           />
         </div>
-        <div className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor" ? "" : "hidden"}`}>
+        <div
+          className={`flex items-center justify-between w-full mx-2 p-2 ${
+            type === "be-instructor" || user.role === "instructor"
+              ? ""
+              : "hidden"
+          }`}
+        >
           <p className="font-bold">Correo del profesor:</p>
           <input
             type="email"
@@ -461,11 +531,20 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.approve_teacher_email ? user.approve_teacher_email : ""}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required={type === 'be-instructor' || user.role === 'instructor'}
+            required={type === "be-instructor" || user.role === "instructor"}
           />
         </div>
-        <div className={`py-10 col-span-4 flex items-center justify-center ${type === 'be-instructor' ? '' : 'hidden'} space-y-2 md:space-x-8 md:space-y-0`}>
-          <Link key="sendMail" href="/common/profile" className={`p-2 md:p-0${!emailSent ? '' : 'hidden'}`} onClick={handleBeInstructor}>
+        <div
+          className={`py-10 col-span-4 flex items-center justify-center ${
+            type === "be-instructor" ? "" : "hidden"
+          } space-y-2 md:space-x-8 md:space-y-0`}
+        >
+          <Link
+            key="sendMail"
+            href="/common/profile"
+            className={`p-2 md:p-0${!emailSent ? "" : "hidden"}`}
+            onClick={handleBeInstructor}
+          >
             <Button
               text="Enviar correo"
               icon={icons.faChevronRight}
@@ -475,13 +554,25 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           </Link>
         </div>
         {alertMessage && (
-          <div className={`${type === 'be-instructor' ? '' : 'hidden'}`}>
-            <div className={`${alertMessage.startsWith("Correo electrónico enviado" || "Usuario actualizado")  ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
+          <div className={`${type === "be-instructor" ? "" : "hidden"}`}>
+            <div
+              className={`${
+                alertMessage.startsWith(
+                  "Correo electrónico enviado" || "Usuario actualizado"
+                )
+                  ? "bg-green-500"
+                  : "bg-red-500"
+              } z-40 text-[--light] p-2 rounded-md text-center`}
+            >
               {alertMessage}
             </div>
           </div>
         )}
-        <div className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"}`}>
+        <div
+          className={`flex items-center justify-between w-full mx-2 p-2 ${
+            user.role === "instructor" ? "" : "hidden"
+          }`}
+        >
           <p className="font-bold">Descripción:</p>
           <textarea
             onChange={handleChange}
@@ -489,10 +580,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             name="user_description"
             rows={7}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
-            required={user.role === 'instructor'}
+            required={user.role === "instructor"}
           />
         </div>
-        <div className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"}`}>
+        <div
+          className={`flex items-center justify-between w-full mx-2 p-2 ${
+            user.role === "instructor" ? "" : "hidden"
+          }`}
+        >
           <p className="font-bold">Foto de perfil:</p>
           <input
             /*onChange={handleFileChange}*/
@@ -503,14 +598,30 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </div>
       </div>
       {alertMessage && !isOpen && (
-        <div className={`${type === 'profile' ? '' : 'hidden'}`}>
-          <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
+        <div className={`${type === "profile" ? "" : "hidden"}`}>
+          <div
+            className={`${
+              alertMessage.startsWith("Usuario actualizado") ||
+              alertMessage.startsWith("Contraseña actualizada")
+                ? "bg-green-500 text-[--light]"
+                : "bg-yellow-500 text-[--gray]"
+            } z-40 p-2 rounded-md text-center`}
+          >
             {alertMessage}
           </div>
         </div>
       )}
-      <div className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${(type !== 'new-user' && type !== 'be-instructor') ? '' : 'hidden'}`}>
-        <Link key="SignOut" href="/login" className={`p-2 md:p-0`} onClick={handleLogOut}>
+      <div
+        className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${
+          type !== "new-user" && type !== "be-instructor" ? "" : "hidden"
+        }`}
+      >
+        <Link
+          key="SignOut"
+          href="/login"
+          className={`p-2 md:p-0`}
+          onClick={handleLogOut}
+        >
           <Button
             text="Cerrar sesión"
             icon={icons.faRightToBracket}
@@ -518,7 +629,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="big"
           />
         </Link>
-        <Link key="Explore" href="/common/profile" className={`p-2 md:p-0`} onClick={handleUpdateProfile}>
+        <Link
+          key="Explore"
+          href="/common/profile"
+          className={`p-2 md:p-0`}
+          onClick={handleUpdateProfile}
+        >
           <Button
             text="Guardar cambios"
             icon={icons.faFloppyDisk}
@@ -535,15 +651,18 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         />
         <Modal isOpen={isOpen} onClose={handleCloseModal}>
           <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
-            <h1 className="text-[38px] mb-5 text-center">Cambio de contraseña</h1>
+            <h1 className="text-[38px] mb-5 text-center">
+              Cambio de contraseña
+            </h1>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Nueva contraseña:</p>
               <input
                 type="password"
                 name="password_new"
                 onChange={handleChange}
-                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" 
-                required />
+                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+                required
+              />
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Verificación:</p>
@@ -551,11 +670,19 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
                 type="password"
                 name="verificationNew"
                 onChange={handleVerification}
-                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
+                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+              />
             </div>
             {alertMessage && isOpen && (
-              <div className={`${type === 'profile' ? '' : 'hidden'}`}>
-                <div className={`${alertMessage.startsWith("Usuario actualizado") || alertMessage.startsWith("Contraseña actualizada") ? 'bg-green-500 text-[--light]' : 'bg-yellow-500 text-[--gray]'} z-40 p-2 rounded-md text-center`}>
+              <div className={`${type === "profile" ? "" : "hidden"}`}>
+                <div
+                  className={`${
+                    alertMessage.startsWith("Usuario actualizado") ||
+                    alertMessage.startsWith("Contraseña actualizada")
+                      ? "bg-green-500 text-[--light]"
+                      : "bg-yellow-500 text-[--gray]"
+                  } z-40 p-2 rounded-md text-center`}
+                >
                   {alertMessage}
                 </div>
               </div>
@@ -573,7 +700,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           </div>
         </Modal>
       </div>
-      <Link key="newCourse" href="/common/categories/category/course" className={`p-2 md:p-0 ${user.role === "instructor" ? '' : 'hidden'}`}>
+      <Link
+        key="newCourse"
+        href="/common/categories/category/course"
+        className={`p-2 md:p-0 ${user.role === "instructor" ? "" : "hidden"}`}
+      >
         <Button
           text="Crear un curso"
           icon={icons.faBookOpen}

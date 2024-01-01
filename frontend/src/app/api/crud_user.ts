@@ -259,6 +259,21 @@ const crud_user = {
                 return "Error desconocido";
             }
         }
+    },
+
+    // !obtain the instructor
+    getInstructor: async (emailData: any) => {
+        try{
+            const response = await axios.put(`${API_BASE_URL}/user/`, emailData);
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Error al encontrar al usuario";
+            } else {
+                return "Error desconocido";
+            }
+        }
     }
 };
 

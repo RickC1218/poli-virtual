@@ -2,6 +2,7 @@ import StarRating from '../tools/StarRating';
 import Link from 'next/link';
 
 interface InstructorCardProps {
+  email: string;
   name: string;
   lastname: string;
   semester: string;
@@ -10,10 +11,12 @@ interface InstructorCardProps {
   image: string;
 }
 
-const InstructorCard: React.FC<InstructorCardProps> = ({ name, lastname, semester, tutor, ranking, image }) => {
+const InstructorCard: React.FC<InstructorCardProps> = ({ email, name, lastname, semester, tutor, ranking, image }) => {
+  
+  const urlInstructor = email;
   const instructorLink = {
     name: "Perfil del instructor",
-    path: "/common/profile/instructor",
+    path: `/common/profile/${urlInstructor}`,
   };
 
   return (

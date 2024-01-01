@@ -189,6 +189,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
             instructors.map((instructor: Instructor) => (
               <div className="p-1" key={instructor.email}>
                 <InstructorCard
+                  email={instructor.email}
                   name={instructor.name}
                   lastname={instructor.lastname}
                   semester={`Estudiante de ${instructor.semester} semestre`}
