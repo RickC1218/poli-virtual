@@ -25,7 +25,7 @@ const initialUserState = {
 export default function Page() {
 
   const [user, setUser] = useState(initialUserState);
-  const isUserLoggedIn = !!localStorage.getItem("token");
+  const isUserLoggedIn = !localStorage.getItem("token");
   const params = useParams();
 
   useEffect(() => {
