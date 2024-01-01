@@ -11,7 +11,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface BannerCardsProps {
   state: "none" | "enrolled";
   type: "courses" | "instructors";
-  subtype?: "featured" | "daily" | "your-learning";
+  subtype?:
+    | "featured"
+    | "daily"
+    | "your-learning"
+    | "your-courses"
+    | "instructor-courses";
 }
 interface Instructor {
   email: string;
@@ -42,7 +47,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
     let courses = [];
     let enrolledCourses = [];
     let instructors = [];
-  
+
     switch (subtype) {
       case "featured":
       case "daily":
@@ -54,7 +59,19 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
         break;
       case "your-learning":
         enrolledCourses = await crud_user.getEnrolledCourses(getToken());
-        setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
+        setEnrolledCourses(
+          Array.isArray(enrolledCourses) ? enrolledCourses : []
+        );
+        break;
+      case "your-courses":
+        courses = await crud_course.getUserCourses(getToken());
+        setCourses(Array.isArray(courses) ? courses : []);
+        break;
+      case "instructor-courses":
+        courses = await crud_course.getInstructorCourses(
+          "ricardoerazoliga@gmail.com"
+        );
+        setCourses(Array.isArray(courses) ? courses : []);
         break;
       default:
         break;
@@ -62,7 +79,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
     instructors = await crud_user.getfeaturedInstructors();
     setInstructors(Array.isArray(instructors) ? instructors : []);
   }, [subtype]);
-  
+
   useEffect(() => {
     fetchData();
     return () => {
@@ -100,13 +117,46 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
                 </div>
               ))
             ) : (
-              <button className="font-bold text-[--principal-red] hover:drop-shadow">
-                <FontAwesomeIcon
-                  icon={icons.faChevronRight}
-                  className="mx-3 text-[--principal-red]"
-                />
-                No has iniciado a aprender, busca cursos según tus gustos.
-              </button>
+              <div className="font-bold text-[--principal-red] hover:drop-shadow">
+                {subtype === "your-courses" && (
+                  <p>
+                    <FontAwesomeIcon
+                      icon={icons.faChevronRight}
+                      className="mx-3 text-[--principal-red]"
+                    />
+                    No has creado ningún curso, crea uno para que los
+                    estudiantes puedan aprender.
+                  </p>
+                )}
+                {subtype === "instructor-courses" && (
+                  <p>
+                    <FontAwesomeIcon
+                      icon={icons.faChevronRight}
+                      className="mx-3 text-[--principal-red]"
+                    />
+                    El instructor no ha creado ningún curso.
+                  </p>
+                )}
+                {subtype === "your-learning" && (
+                  <p>
+                    <FontAwesomeIcon
+                      icon={icons.faChevronRight}
+                      className="mx-3 text-[--principal-red]"
+                    />
+                    No te has inscrito a ningún curso, inscríbete para aprender.
+                  </p>
+                )}
+                {(subtype === "featured" || subtype === "daily")
+                  && (
+                    <p>
+                      <FontAwesomeIcon
+                        icon={icons.faChevronRight}
+                        className="mx-3 text-[--principal-red]"
+                      />
+                      No hay cursos disponibles en este momento.
+                    </p>
+                  )}
+              </div>
             )
           ) : courses.length > 0 ? (
             courses.map((course: Course) => (

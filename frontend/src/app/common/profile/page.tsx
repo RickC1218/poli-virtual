@@ -18,14 +18,14 @@ export default function Page() {
   
   return (
     <>
-      <div className="grid grid-cols-4 gap-2 bg-[--light] place-items-center p-10">
-        <h1 className="text-[38px] col-span-4">
+      <div className="grid grid-cols-4 gap-2 bg-[--light] p-10">
+        <h1 className="text-[38px] text-center col-span-4">
           Tu
           <DifferentText color="--principal-red"> perfil</DifferentText>
         </h1>
         {typeUser === "student" ? (
           <>
-            <div className="col-span-1 hidden md:block">
+            <div className="col-span-1 items-start hidden md:block">
               <FontAwesomeIcon
                 icon={icons.faUser}
                 className="w-[300px] h-[300px] text-[--principal-blue]"
@@ -69,6 +69,7 @@ export default function Page() {
           description="Gracias a tí, brindamos educación a estudiantes que lo necesitan"
           enrolled="enrolled"
           sectionType="courses"
+          subtype="your-courses"
         />
       )}
     </>

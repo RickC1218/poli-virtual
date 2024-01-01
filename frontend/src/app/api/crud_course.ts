@@ -3,7 +3,7 @@ import axios from "axios";
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 const crud_course = {
-  // Obtain courses
+  // Obtain courses by category
   getCourses: async (category: string) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/course/${category}`);
@@ -51,7 +51,41 @@ const crud_course = {
       }
     }
   },
-
+  // !Obtain course by user
+  getUserCourses: async (sessionToken: string) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${sessionToken}`
+      };
+      const response = await axios.get(`${API_BASE_URL}/course/user/`, { headers });
+      return response.data;
+    } catch (error) {
+      const responseError = error as {
+        response?: { status?: number; data?: { mensaje?: string } };
+      };
+      if (responseError?.response?.status === 404) {
+        return "Cursos no encontrados";
+      } else {
+        return "Error desconocido al obtener cursos";
+      }
+    }
+  },
+  // ! Obtain course by id instructor
+  getInstructorCourses: async (id: string) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/course/instructor/${id}`);
+      return response.data;
+    } catch (error) {
+      const responseError = error as {
+        response?: { status?: number; data?: { mensaje?: string } };
+      };
+      if (responseError?.response?.status === 404) {
+        return "Cursos no encontrados";
+      } else {
+        return "Error desconocido al obtener cursos";
+      }
+    }
+  }
 };
 
 export default crud_course;

@@ -47,7 +47,7 @@ export default function Page() {
             <p className='font-bold'>Internet of Things - Cámaras de seguridad</p>
             <p className='pb-4'>Alexander Guillin</p>
             <div className="flex w-full">
-              <StarRating calification={4} />
+              <StarRating ranking={4} />
             </div>
           </div>
           <div className='flex flex-col md:items-start'>

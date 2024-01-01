@@ -8,12 +8,12 @@ import FormProfile from "@/components/forms/FormProfile";
 export default function Page() {
   return (
     <>
-      <div className="grid grid-cols-4 gap-2 bg-[--light] place-items-center p-10">
-        <h1 className="text-[38px] col-span-4">
+      <div className="grid grid-cols-4 gap-2 bg-[--light] p-10">
+        <h1 className="text-[38px] text-center col-span-4">
           Perfil del
           <DifferentText color="--principal-red"> instructor</DifferentText>
         </h1>
-            <div className="col-span-1 hidden md:block">
+            <div className="col-span-1 items-start hidden md:block">
               <Image
                 src="/PeterParker.jpg"
                 width={350}
@@ -35,6 +35,7 @@ export default function Page() {
           description="La educación impartida por el instructor está dejando huella"
           enrolled="enrolled"
           sectionType="courses"
+          subtype="instructor-courses"
         />
     </>
   );
