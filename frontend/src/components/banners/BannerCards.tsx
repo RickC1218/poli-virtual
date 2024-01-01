@@ -28,7 +28,7 @@ interface Instructor {
   image: string;
 }
 interface Course {
-  id: string;
+  id: number;
   instructors: Instructor[];
   name: string;
   assessment: number;
@@ -101,6 +101,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
               enrolledCourses.map((course: Course) => (
                 <div className="p-1" key={course.id}>
                   <CourseCard
+                    courseID={course.id}
                     title={course.name}
                     instructors={
                       Array.isArray(course.instructors)
@@ -162,6 +163,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
             courses.map((course: Course) => (
               <div className="p-1" key={course.id}>
                 <CourseCard
+                  courseID={course.id}
                   title={course.name}
                   instructors={
                     Array.isArray(course.instructors)

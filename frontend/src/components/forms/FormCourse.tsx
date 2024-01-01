@@ -14,12 +14,17 @@ interface Instructor {
   name: string;
   lastname: string;
 }
+interface Content{
+  title: string;
+  video_url: string;
+}
 interface ThemeCardFormData {
   title: string;
   description: string;
   cuantity: number;
   duration: number;
-  action: "add" | "edit";
+  contents: Content[] | null;
+  action: "add" | "edit" | "read";
 }
 
 const FormCourse = () => {
@@ -40,6 +45,7 @@ const FormCourse = () => {
       description: "",
       cuantity: 0,
       duration: 0,
+      contents: [],
       action: "add",
     }
   );
@@ -55,6 +61,7 @@ const FormCourse = () => {
         description: themeCardFormData.description,
         cuantity: themeCardFormData.cuantity,
         duration: themeCardFormData.duration,
+        contents: themeCardFormData.contents,
         onEdit: () => handleEditThemeCard(themeCards.length),
       };
 
@@ -72,6 +79,7 @@ const FormCourse = () => {
         description: themeCardFormData.description,
         cuantity: themeCardFormData.cuantity,
         duration: themeCardFormData.duration,
+        contents: themeCardFormData.contents,
         onEdit: () => handleEditThemeCard(editingIndex),
       };
       setThemeCards(updatedThemeCards);
@@ -108,6 +116,7 @@ const FormCourse = () => {
       description: "",
       cuantity: 0,
       duration: 0,
+      contents: [],
       action: "add",
     });
   };

@@ -5,15 +5,20 @@ import { useState } from 'react';
 import icons from '../icons/icons';
 import BannerSubThemeCard from './BannerSubThemeCard';
 
+interface Content {
+  title: string;
+  video_url: string;
+}
 export interface BannerThemeCardProps {
   title: string;
   description: string;
   cuantity: number;
   duration: number;
+  content: Content[] | null;
   onEdit: () => void;
 }
 
-const BannerThemeCard: React.FC<BannerThemeCardProps> = ({ title, description, cuantity, duration, onEdit }) => {
+const BannerThemeCard: React.FC<BannerThemeCardProps> = ({ title, description, cuantity, duration, content, onEdit }) => {
 
   const [expanded, setExpanded] = useState(false);
 
@@ -29,20 +34,20 @@ const BannerThemeCard: React.FC<BannerThemeCardProps> = ({ title, description, c
             <FontAwesomeIcon icon={icons.faChevronRight} className={`text-[--white] transform ${expanded ? 'rotate-90' : 'rotate-0'}`} />
           </div>
         </button>
-        <div onClick={onEdit} className='text-start grow justify-self-start mx-2 cursor-pointer'>
+        <button onClick={onEdit} className='text-start grow justify-self-start mx-2 cursor-pointer'>
           <p className="text-base line-clamp-2">
             <span className='font-bold'>{title}:</span> {description}</p>
-        </div>
+        </button>
         <div className='pr-16'>
           <p className="text-base font-bold">{cuantity} clases - {duration} minutos</p>
         </div>
       </div>
       {expanded && (
-        <div className="w-full mb-4">
-          <BannerSubThemeCard title="Subtema 1" duration={60} parentId={title} />
-          <BannerSubThemeCard title="Subtema 2" duration={45} parentId={title}/>
-          <BannerSubThemeCard title="Subtema 3" duration={30} parentId={title}/>
-        </div>
+        content?.map((content, index) => (
+          <div key={index} className="w-full mb-1">
+            <BannerSubThemeCard title={content.title} duration={60} parentId={title} />
+          </div>
+        ))
       )}
     </>
   );

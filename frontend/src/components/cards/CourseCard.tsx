@@ -4,8 +4,10 @@ import icons from '../icons/icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import StarRating from '../tools/StarRating';
+import { useParams } from 'next/navigation';
 
 interface CourseCardProps {
+  courseID: number;
   title: string;
   instructors: string;
   assessment: number;
@@ -14,11 +16,12 @@ interface CourseCardProps {
   state: 'none' | 'enrolled' | 'completed' | 'in-progress';
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ title, instructors, assessment, image, category, state }) => {
+const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructors, assessment, image, category, state }) => {
 
+  const {id} = useParams();
   const courseLink = {
     name: "Cursos relacionados",
-    path: "/common/categories/category/course",
+    path: `/common/categories/${id}/${courseID}`,
   };
 
   const getTipeStyle = () => {

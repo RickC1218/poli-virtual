@@ -19,10 +19,29 @@ const crud_course = {
       }
     }
   },
+  //Obtain course by Id
+  getCourseById: async (id: any) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/course/${id}`);
+      return response.data;
+    } catch (error) {
+      const responseError = error as {
+        response?: { status?: number; data?: { mensaje?: string } };
+      };
+      if (responseError?.response?.status === 404) {
+        return "Curso no encontrado";
+      } else {
+        console.log(responseError);
+        return "Error desconocido";
+      }
+    }
+  },
   // Obtain featured courses
   getFeaturedCourses: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/course/featured-courses/`);
+      const response = await axios.get(
+        `${API_BASE_URL}/course/featured-courses/`
+      );
       return response.data;
     } catch (error) {
       const responseError = error as {
@@ -38,7 +57,9 @@ const crud_course = {
   // Obtain course recently added
   getRecentlyAddedCourses: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/course/recently-added-courses/`);
+      const response = await axios.get(
+        `${API_BASE_URL}/course/recently-added-courses/`
+      );
       return response.data;
     } catch (error) {
       const responseError = error as {
@@ -55,9 +76,11 @@ const crud_course = {
   getUserCourses: async (sessionToken: string) => {
     try {
       const headers = {
-        Authorization: `Bearer ${sessionToken}`
+        Authorization: `Bearer ${sessionToken}`,
       };
-      const response = await axios.get(`${API_BASE_URL}/course/user/`, { headers });
+      const response = await axios.get(`${API_BASE_URL}/course/user/`, {
+        headers,
+      });
       return response.data;
     } catch (error) {
       const responseError = error as {
@@ -73,7 +96,9 @@ const crud_course = {
   // ! Obtain course by id instructor
   getInstructorCourses: async (id: string) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/course/instructor/${id}`);
+      const response = await axios.get(
+        `${API_BASE_URL}/course/instructor/${id}`
+      );
       return response.data;
     } catch (error) {
       const responseError = error as {
@@ -85,7 +110,7 @@ const crud_course = {
         return "Error desconocido al obtener cursos";
       }
     }
-  }
+  },
 };
 
 export default crud_course;

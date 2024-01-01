@@ -27,22 +27,21 @@ def course_api(request, id=0):
 
     # Read
     elif request.method == 'GET':
-        data = JSONParser().parse(request)
-        course_id = data.get('id')
+        course_id = id
 
-        if course_id:
+        if course_id != 0:
             # Get the course by id
             try:
                 course = Course.objects.get(id=course_id)
                 course_serializer = CourseSerializer(course)
-                return JsonResponse(course_serializer.data, safe=False)
-            except Course.DoesNotExist:
+                return JsonResponse(course_serializer.data, safe=False, status=200)
+            except course.DoesNotExist:
                 return JsonResponse("Curso no encontrado", safe=False, status=404)
         else:
             # Get all courses
             course = Course.objects.all()
             course_serializer = CourseSerializer(course, many=True)
-            return JsonResponse(course_serializer.data, safe=False)
+            return JsonResponse(course_serializer.data, safe=False, status=200)
 
     # Update
     elif request.method == 'PUT':
