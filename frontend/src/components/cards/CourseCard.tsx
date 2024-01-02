@@ -26,9 +26,9 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructors, as
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await crud_category.getCategoryByName(category);
-      const data = await res.json();
-      setCategoryID(data.id);
+      const res = await crud_category.getCategoryByName(JSON.parse(category));
+      console.log(res)
+      setCategoryID(res);
     };
     fetchData();
   }, []);
