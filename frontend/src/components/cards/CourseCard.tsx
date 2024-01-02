@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import StarRating from '../tools/StarRating';
 import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import crud_category from '@/app/api/crud_category';
 
 interface CourseCardProps {
   courseID: number;
@@ -19,9 +21,21 @@ interface CourseCardProps {
 const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructors, assessment, image, category, state }) => {
 
   const {id} = useParams();
+
+  const [categoryID, setCategoryID] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await crud_category.getCategoryByName(category);
+      const data = await res.json();
+      setCategoryID(data.id);
+    };
+    fetchData();
+  }, []);
+
   const courseLink = {
     name: "Cursos relacionados",
-    path: `/common/categories/${id}/${courseID}`,
+    path: `/common/categories/${categoryID}/${courseID}`,
   };
 
   const getTipeStyle = () => {

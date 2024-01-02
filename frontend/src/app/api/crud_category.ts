@@ -37,6 +37,24 @@ const crud_category = {
       }
     }
   },
+
+  // Obtain category by name
+  getCategoryByName: async (name: any) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/category/${name}`);
+      return response.data;
+    } catch (error) {
+      const responseError = error as {
+        response?: { status?: number; data?: { mensaje?: string } };
+      };
+      if (responseError?.response?.status === 404) {
+        return "Categoria no encontrada";
+      } else {
+        console.log(responseError);
+        return "Error desconocido";
+      }
+    }
+  },
 };
 
 export default crud_category;
