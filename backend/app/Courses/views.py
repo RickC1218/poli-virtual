@@ -116,3 +116,20 @@ def recently_added_courses(request):
 
         except Course.DoesNotExist:
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
+
+
+# Get the courses by the instructor
+@csrf_exempt
+@api_view(['GET'])
+def courses_by_instructor(request):
+    if request.method == 'GET':
+        try:
+            data = JSONParser().parse(request)
+
+            courses = Course.objects.filter(instructor=data['instructor'])
+            courses_serializer = CourseSerializer(courses, many=True)
+
+            return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+        except Course.DoesNotExist:
+            return JsonResponse("No hay cursos disponibles", safe=False, status=404)

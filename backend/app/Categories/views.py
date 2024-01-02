@@ -74,7 +74,7 @@ def get_category_id(request):
         data = JSONParser().parse(request)
         category = Category.objects.get(name=data.get('name'))
         category_serializer = CategorySerializer(category)
-        
+
         return JsonResponse(category_serializer.data.get('id'), safe=False, status=200)
     except category.DoesNotExist:
         return JsonResponse("Categoria no encontrada", safe=False, status=404)
