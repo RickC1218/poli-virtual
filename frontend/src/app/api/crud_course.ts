@@ -72,33 +72,15 @@ const crud_course = {
       }
     }
   },
-  // !Obtain course by user
-  getUserCourses: async (sessionToken: string) => {
+  // !Obtain course by user or instructor
+  getUserCourses: async (instructor: string) => {
     try {
       const headers = {
-        Authorization: `Bearer ${sessionToken}`,
-      };
-      const response = await axios.get(`${API_BASE_URL}/course/user/`, {
+        instructor: instructor,
+      }
+      const response = await axios.get(`${API_BASE_URL}/course/courses-by-instructor/`, {
         headers,
       });
-      return response.data;
-    } catch (error) {
-      const responseError = error as {
-        response?: { status?: number; data?: { mensaje?: string } };
-      };
-      if (responseError?.response?.status === 404) {
-        return "Cursos no encontrados";
-      } else {
-        return "Error desconocido al obtener cursos";
-      }
-    }
-  },
-  // ! Obtain course by id instructor
-  getInstructorCourses: async (id: string) => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/course/instructor/${id}`
-      );
       return response.data;
     } catch (error) {
       const responseError = error as {

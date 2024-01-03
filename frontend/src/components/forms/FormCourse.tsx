@@ -144,7 +144,7 @@ const FormCourse = () => {
     description: "",
     assessment: 0,
     category: "",
-    instructors: user.name + " " + user.lastname,
+    instructor: user.name + " " + user.lastname,
     image: "/frontend/public/course.jpg",
     modules: Array.isArray(themeCards) ? themeCards : [],
   });
@@ -158,7 +158,7 @@ const FormCourse = () => {
       setUser(storedUser);
       setFormData({
         ...formData,
-        instructors: storedUser.name + " " + storedUser.lastname,
+        instructor: storedUser.name + " " + storedUser.lastname,
       });
     }
 
@@ -212,9 +212,9 @@ const FormCourse = () => {
               <p className="font-bold">Autor del curso:</p>
               <input
                 type="text"
-                name="instructors"
+                name="instructor"
                 onChange={handleChange}
-                value={formData.instructors}
+                value={formData.instructor}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[60%]"
                 required
                 disabled
@@ -228,18 +228,18 @@ const FormCourse = () => {
                 value={formData.category}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[60%]"
               >
-                <option value="1">Fundamentos de programación</option>
-                <option value="2">Inteligencia Artificial</option>
-                <option value="3">Bases de datos</option>
-                <option value="4">Seguridad informática</option>
-                <option value="5">Arquitectura de computadoras</option>
-                <option value="6">Redes y comunicación de datos</option>
-                <option value="7">Desarrollo Front-End</option>
-                <option value="8">Desarrollo Back-End</option>
-                <option value="9">Desarrollo móvil</option>
-                <option value="10">Desarrollo de juegos</option>
-                <option value="11">DevOps y automatización</option>
-                <option value="12">Testing y Q/A</option>
+                <option value="Fundamentos de programación">Fundamentos de programación</option>
+                <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+                <option value="Bases de datos">Bases de datos</option>
+                <option value="Seguridad informática">Seguridad informática</option>
+                <option value="Arquitectura de computadoras">Arquitectura de computadoras</option>
+                <option value="Redes y comunicación de datos">Redes y comunicación de datos</option>
+                <option value="Desarrollo Front-End">Desarrollo Front-End</option>
+                <option value="Desarrollo Back-End">Desarrollo Back-End</option>
+                <option value="Desarrollo móvil">Desarrollo móvil</option>
+                <option value="Desarrollo de juegos">Desarrollo de juegos</option>
+                <option value="DevOps y automatización">DevOps y automatización</option>
+                <option value="Testing y Q/A">Testing y Q/A </option>
               </select>
             </div>
             <div

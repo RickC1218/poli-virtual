@@ -29,7 +29,7 @@ interface Instructor {
 }
 interface Course {
   id: number;
-  instructors: Instructor[];
+  instructor: string;
   name: string;
   assessment: number;
   image: string;
@@ -64,13 +64,11 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
         );
         break;
       case "your-courses":
-        courses = await crud_course.getUserCourses(getToken());
+        courses = await crud_course.getUserCourses("Alison Becker");
         setCourses(Array.isArray(courses) ? courses : []);
         break;
       case "instructor-courses":
-        courses = await crud_course.getInstructorCourses(
-          "ricardoerazoliga@gmail.com"
-        );
+        courses = await crud_course.getUserCourses("Jarabe de palo");
         setCourses(Array.isArray(courses) ? courses : []);
         break;
       default:
@@ -103,13 +101,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
                   <CourseCard
                     courseID={course.id}
                     title={course.name}
-                    instructors={
-                      Array.isArray(course.instructors)
-                        ? course.instructors
-                            .map((instructor) => instructor.name)
-                            .join(", ")
-                        : "Nombres no encontrados"
-                    }
+                    instructor={course.instructor}
                     assessment={course.assessment}
                     image="/course.jpg"
                     category={course.category}
@@ -165,13 +157,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
                 <CourseCard
                   courseID={course.id}
                   title={course.name}
-                  instructors={
-                    Array.isArray(course.instructors)
-                      ? course.instructors
-                          .map((instructor) => instructor.name)
-                          .join(", ")
-                      : "Nombres no encontrados"
-                  }
+                  instructor={course.instructor}
                   assessment={course.assessment}
                   image="/course.jpg"
                   category={course.category}

@@ -21,7 +21,7 @@ interface Category {
 interface Comment {
   student: string;
   description: string;
-  ranking: number;
+  assessment: number;
 }
 interface Module {
   title: string;
@@ -171,7 +171,7 @@ export default function Page() {
                 <div key={index} className="col-span-1">
                   <CommentCard
                     name={comment.student}
-                    calification={4}
+                    calification={3}
                     comment={comment.description}
                   />
                 </div>

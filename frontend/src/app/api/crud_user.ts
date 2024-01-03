@@ -261,7 +261,7 @@ const crud_user = {
         }
     },
 
-    // !obtain the instructor
+    // !obtain the instructor information
     getInstructor: async (emailData: any) => {
         try{
             const response = await axios.put(`${API_BASE_URL}/user/`, emailData);
