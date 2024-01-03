@@ -69,10 +69,11 @@ def category_api(request, id=0):
 # Get id of the category
 @csrf_exempt
 @api_view(['GET'])
-def get_category_id(request):
+def get_category_id(request, category_name):
     try:
         data = JSONParser().parse(request)
-        category = Category.objects.get(name=data.get('name'))
+
+        category = Category.objects.get(name=category_name)
         category_serializer = CategorySerializer(category)
 
         return JsonResponse(category_serializer.data.get('id'), safe=False, status=200)
