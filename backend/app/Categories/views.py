@@ -71,8 +71,6 @@ def category_api(request, id=0):
 @api_view(['GET'])
 def get_category_id(request, category_name):
     try:
-        data = JSONParser().parse(request)
-
         category = Category.objects.get(name=category_name)
         category_serializer = CategorySerializer(category)
 
