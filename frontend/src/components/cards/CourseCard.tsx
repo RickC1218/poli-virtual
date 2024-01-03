@@ -4,30 +4,26 @@ import icons from '../icons/icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import StarRating from '../tools/StarRating';
-import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import crud_category from '@/app/api/crud_category';
 
 interface CourseCardProps {
   courseID: number;
   title: string;
-  instructors: string;
+  instructor: string;
   assessment: number;
   image: string;
   category: string;
   state: 'none' | 'enrolled' | 'completed' | 'in-progress';
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructors, assessment, image, category, state }) => {
-
-  const {id} = useParams();
+const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, assessment, image, category, state }) => {
 
   const [categoryID, setCategoryID] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await crud_category.getCategoryByName(JSON.parse(category));
-      console.log(res)
+      const res = await crud_category.getCategoryByName(category);
       setCategoryID(res);
     };
     fetchData();
@@ -73,7 +69,7 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructors, as
           <div className={`pt-2.5 col-span-3 ${state !== 'none' ? 'col-span-2' : ''} `}>
             <div className="mb-5 px-0.5 w-[100%]">
               <h3 className="font-bold truncate">{title}</h3>
-              <p className="font-normal">{instructors}</p>
+              <p className="font-normal">{instructor}</p>
             </div>
             <div className="flex w-full">
               <StarRating ranking={assessment}/>
