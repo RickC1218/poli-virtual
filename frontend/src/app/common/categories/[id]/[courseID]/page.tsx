@@ -18,10 +18,6 @@ interface Category {
   id: number;
   name: string;
 }
-interface Instructor {
-  name: string;
-  email: string;
-}
 interface Comment {
   student: string;
   description: string;
@@ -41,7 +37,7 @@ interface Content {
 interface Course {
   courseID: number;
   name: string;
-  instructors: Instructor[];
+  instructor: string;
   description: string;
   assessment: number;
   image: string;
@@ -126,13 +122,7 @@ export default function Page() {
         <div className="col-span-5 lg:col-span-2 px-4 flex flex-col justify-between items-center sm:items-start">
           <div className="pt-6 md:pt-0">
             <h1 className="text-[32px] xl:text-[38px] pb-4">{course.name}</h1>
-            <p className="pb-4">
-              {Array.isArray(course.instructors)
-                ? course.instructors
-                    .map((instructor) => instructor.name)
-                    .join(", ")
-                : "Nombres no encontrados"}
-            </p>
+            <p className="pb-4">{course.instructor}</p>
             <div className="flex w-full">
               <StarRating ranking={course.assessment} />
             </div>
