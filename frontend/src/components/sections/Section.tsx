@@ -9,9 +9,10 @@ interface SectionProps {
   sectionType: 'courses' | 'instructors';
   addStyle?: string;
   subtype?: 'featured' | 'daily' | 'your-learning' | 'your-courses' | 'instructor-courses';
+  userName?: string;
 }
 
-const Section: React.FC<SectionProps> = ({ title, description, enrolled, sectionType, addStyle, subtype }) => {
+const Section: React.FC<SectionProps> = ({ title, description, enrolled, sectionType, addStyle, subtype, userName }) => {
   return (
     <div className={`flex flex-between w-full h-full flex-col justify-between ${addStyle}`}>
       <div className='w-full p-6 md:px-20 md:py-10 self-center'>
@@ -21,6 +22,7 @@ const Section: React.FC<SectionProps> = ({ title, description, enrolled, section
           state={enrolled}
           type={sectionType}
           subtype={subtype}
+          instructorName={userName ?? ""}
         />
       </div>
     </div>

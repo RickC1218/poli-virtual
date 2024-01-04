@@ -17,6 +17,7 @@ interface BannerCardsProps {
     | "your-learning"
     | "your-courses"
     | "instructor-courses";
+    instructorName?: string;
 }
 interface Instructor {
   email: string;
@@ -37,7 +38,7 @@ interface Course {
   state: "none" | "enrolled" | "completed" | "in-progress";
 }
 
-const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
+const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instructorName }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
@@ -50,30 +51,25 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
 
     switch (subtype) {
       case "featured":
-      case "daily":
-        courses =
-          subtype === "featured"
-            ? await crud_course.getFeaturedCourses()
-            : await crud_course.getRecentlyAddedCourses();
-        setCourses(Array.isArray(courses) ? courses : []);
+        courses = await crud_course.getFeaturedCourses();
         break;
-      case "your-learning":
-        enrolledCourses = await crud_user.getEnrolledCourses(getToken());
-        setEnrolledCourses(
-          Array.isArray(enrolledCourses) ? enrolledCourses : []
-        );
+      case "daily":
+        courses = await crud_course.getRecentlyAddedCourses();
         break;
       case "your-courses":
-        courses = await crud_course.getUserCourses("Alison Becker");
-        setCourses(Array.isArray(courses) ? courses : []);
+        courses = await crud_course.getUserCourses(instructorName ?? "");
         break;
       case "instructor-courses":
-        courses = await crud_course.getUserCourses("Jarabe de palo");
-        setCourses(Array.isArray(courses) ? courses : []);
+        courses = await crud_course.getUserCourses(instructorName ?? "");
+        break;
+        case "your-learning":
+        enrolledCourses = await crud_user.getEnrolledCourses(getToken());
+        setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
         break;
       default:
         break;
     }
+    setCourses(Array.isArray(courses) ? courses : []);
     instructors = await crud_user.getfeaturedInstructors();
     setInstructors(Array.isArray(instructors) ? instructors : []);
   }, [subtype]);
@@ -139,16 +135,15 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
                     No te has inscrito a ningún curso, inscríbete para aprender.
                   </p>
                 )}
-                {(subtype === "featured" || subtype === "daily")
-                  && (
-                    <p>
-                      <FontAwesomeIcon
-                        icon={icons.faChevronRight}
-                        className="mx-3 text-[--principal-red]"
-                      />
-                      No hay cursos disponibles en este momento.
-                    </p>
-                  )}
+                {(subtype === "featured" || subtype === "daily") && (
+                  <p>
+                    <FontAwesomeIcon
+                      icon={icons.faChevronRight}
+                      className="mx-3 text-[--principal-red]"
+                    />
+                    No hay cursos disponibles en este momento.
+                  </p>
+                )}
               </div>
             )
           ) : courses.length > 0 ? (
@@ -166,7 +161,9 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype }) => {
               </div>
             ))
           ) : (
-            <h1>No hay cursos agregados todavía.</h1>
+            <div className="font-bold text-[--principal-red] hover:drop-shadow">
+              <h1>No hay cursos agregados todavía.</h1>
+            </div>
           )}
         </div>
       ) : (

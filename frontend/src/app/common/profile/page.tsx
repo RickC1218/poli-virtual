@@ -8,14 +8,33 @@ import Section from "@/components/sections/Section";
 import DifferentText from "@/components/tools/DifferentText";
 import icons from "@/components/icons/icons";
 import FormProfile from "@/components/forms/FormProfile";
+import crud_user from "@/app/api/crud_user";
 
+// Define the initial state for a new user
+const initialUserState = {
+  name: "",
+  lastname: "",
+  email: "",
+  password: "",
+  role: "student",
+  semester: "",
+  approve_teacher: "",
+  approve_teacher_email: "",
+  user_description: "",
+  score_teacher: 0,
+};
 export default function Page() {
-  const [typeUser, setTypeUser] = useState("");
+  const [user, setUser] = useState(initialUserState);
+
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("token") ?? "{}");
-    setTypeUser(user.type);
+    async function fetchData() {
+      const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+      const user = await crud_user.getUser(sessionToken || "");
+      setUser(user);
+    }
+    fetchData();
   }, []);
-  
+
   return (
     <>
       <div className="grid grid-cols-4 gap-2 bg-[--light] p-10">
@@ -23,7 +42,7 @@ export default function Page() {
           Tu
           <DifferentText color="--principal-red"> perfil</DifferentText>
         </h1>
-        {typeUser === "student" ? (
+        {user.role === "student" ? (
           <>
             <div className="col-span-1 items-start hidden md:block">
               <FontAwesomeIcon
@@ -45,12 +64,14 @@ export default function Page() {
           </>
         )}
       </div>
-      {typeUser === "student" ? (
+      {user.role === "student" ? (
         <Banner
           title={
             <>
               Conviértete en un
-              <DifferentText color="--principal-blue"> instructor </DifferentText>
+              <DifferentText color="--principal-blue">
+                instructor
+              </DifferentText>
             </>
           }
           description="Crear una comunidad en línea donde los estudiantes de diferentes niveles académicos compartan conocimientos y habilidades, promoviendo un ciclo constante de aprendizaje y enseñanza para el crecimiento de todos los usuarios."
@@ -67,9 +88,10 @@ export default function Page() {
             </>
           }
           description="Gracias a tí, brindamos educación a estudiantes que lo necesitan"
-          enrolled="enrolled"
+          enrolled="none"
           sectionType="courses"
           subtype="your-courses"
+          userName={user.name + " " + user.lastname}
         />
       )}
     </>

@@ -5,40 +5,39 @@ import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
 import Section from "@/components/sections/Section";
 import DifferentText from "@/components/tools/DifferentText";
+import StarRating from "@/components/tools/StarRating";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const initialUserState = {
-  name: "nombre del instructor",
-  lastname: "apellido del instructor",
-  email: "example@epn.edu.ec",
+  name: "",
+  lastname: "",
+  email: "",
   role: "instructor",
-  semester: "5to",
-  approve_teacher: "rick erazo",
-  approve_teacher_email: "ricardo.erazo@epn.edu.ec",
-  user_description: "cyvgubhnknbhvgytyvgbuhnj",
+  semester: "",
+  approve_teacher: "",
+  approve_teacher_email: "",
+  user_description: "",
   score_teacher: 0,
 };
 
 export default function Page() {
-
   const [user, setUser] = useState(initialUserState);
-  const isUserLoggedIn = !localStorage.getItem("token");
   const params = useParams();
+  const userName = params.name as string;
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const userName = params.email;
-      console.log(userName);
+      setIsUserLoggedIn(localStorage.getItem("token") !== null);
       // !function of getInstructor
       // !const storedUser = await crud_user.getInstructor(userName || "");
       // !setUser({ ...initialUserState, ...storedUser });
     }
     fetchData();
-  })
-
+  });
 
   return (
     <>
@@ -55,6 +54,9 @@ export default function Page() {
             alt={`Imagen del instructor`}
             className="rounded-2xl justify-self-end"
           />
+          <div className="flex justify-center items-center w-full pt-5">
+            <StarRating ranking={user.score_teacher} />
+          </div>
         </div>
         <div className="col-span-4 block md:hidden bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
         <div
@@ -103,7 +105,12 @@ export default function Page() {
               className={`flex items-center justify-between w-full mx-2 p-2`}
             >
               <p className="font-bold">Descripción:</p>
-              <textarea rows={7} className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" placeholder={user.user_description} disabled/>
+              <textarea
+                rows={7}
+                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+                placeholder={user.user_description}
+                disabled
+              />
             </div>
           </div>
           {!isUserLoggedIn && (
@@ -146,9 +153,10 @@ export default function Page() {
           </>
         }
         description="La educación impartida por el instructor está dejando huella"
-        enrolled="enrolled"
+        enrolled="none"
         sectionType="courses"
         subtype="instructor-courses"
+        userName={userName || ""}
       />
     </>
   );

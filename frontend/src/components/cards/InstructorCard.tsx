@@ -13,7 +13,7 @@ interface InstructorCardProps {
 
 const InstructorCard: React.FC<InstructorCardProps> = ({ email, name, lastname, semester, tutor, ranking, image }) => {
   
-  const urlInstructor = email;
+  const urlInstructor = name + " " + lastname;
   const instructorLink = {
     name: "Perfil del instructor",
     path: `/common/profile/${urlInstructor}`,

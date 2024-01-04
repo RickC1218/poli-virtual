@@ -72,15 +72,10 @@ const crud_course = {
       }
     }
   },
-  // !Obtain course by user or instructor
+  // Obtain course by user or instructor
   getUserCourses: async (instructor: string) => {
     try {
-      const headers = {
-        instructor: instructor,
-      }
-      const response = await axios.get(`${API_BASE_URL}/course/courses-by-instructor/`, {
-        headers,
-      });
+      const response = await axios.get(`${API_BASE_URL}/course/courses-by-instructor/${instructor}`);
       return response.data;
     } catch (error) {
       const responseError = error as {
