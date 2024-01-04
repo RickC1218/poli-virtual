@@ -427,33 +427,29 @@ def get_user_profile(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
-# Get the instructor profile
+# Get the instructor profile by the name and lastname
 @csrf_exempt
 @api_view(['GET'])
-def get_instructor_profile(request, instructor_email):
+def get_instructor_profile(request, name_lastname):
     if request.method == 'GET':
-        # Verify if the email is valid
-        if is_valid_email(instructor_email) is False:
-            return JsonResponse("Correo electrónico inválido", safe=False, status=400)
-        else:
-            try:
-                user = User.objects.get(email=instructor_email)
+        try:
+            name_lastname = name_lastname.split("-")
+            name = name_lastname[0]
+            lastname = name_lastname[1]
 
-                if user.role == "instructor":
-                    user_serializer = UserSerializer(user)
+            instructor = User.objects.get(name=name, lastname=lastname, role='instructor')
+            instructor_serializer = UserSerializer(instructor)
 
-                    user_data = user_serializer.data
-                    del user_data['password'] # Remove the field password
-                    del user_data['role'] # Remove the field role
-                    del user_data['enrolled_courses'] # Remove the field enrolled_courses
-                    del user_data['email_verification'] # Remove the field email_verification
-                    del user_data['session_token'] # Remove the field session_token
-                    return JsonResponse(user_data, safe=False, status=200)
-                else:
-                    return JsonResponse("Usuario no encontrado", safe=False, status=400)
+            instructor_data = instructor_serializer.data
+            del instructor_data['password'] # Remove the field password
+            del instructor_data['role'] # Remove the field role
+            del instructor_data['enrolled_courses'] # Remove the field enrolled_courses
+            del instructor_data['email_verification'] # Remove the field email_verification
+            del instructor_data['session_token'] # Remove the field session_token
+            return JsonResponse(instructor_data, safe=False, status=200)
 
-            except User.DoesNotExist:
-                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+        except User.DoesNotExist:
+            return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
 # Get the featured teachers
