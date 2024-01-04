@@ -15,5 +15,5 @@ urlpatterns = [
     path('user/featured-teachers/', views.featured_teachers, name='user-featured-teachers'), # Get featured teachers
     path('user/send-email-to-approve-teacher/', views.send_email_to_approve_teacher, name='user-sned-email-to-approve-teacher'), # Send email to approve teacher
     path('user/get-user-profile/', views.get_user_profile, name='user-get-user-profile'), # Get user profile
-    path('user/get-instructor-profile/<str:instructor_email>/', views.get_instructor_profile, name='user-get-inst-profile'), # Get instructor profile
+    path('user/get-instructor-profile/<str:name_lastname>/', views.get_instructor_profile, name='user-get-inst-profile'), # Get instructor profile
 ]
