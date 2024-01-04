@@ -171,7 +171,7 @@ export default function Page() {
                 <div key={index} className="col-span-1">
                   <CommentCard
                     name={comment.student}
-                    calification={3}
+                    calification={comment.assessment}
                     comment={comment.description}
                   />
                 </div>
