@@ -121,12 +121,10 @@ def recently_added_courses(request):
 # Get the courses by the instructor
 @csrf_exempt
 @api_view(['GET'])
-def courses_by_instructor(request):
+def courses_by_instructor(request, instructor_name):
     if request.method == 'GET':
         try:
-            data = JSONParser().parse(request)
-
-            courses = Course.objects.filter(instructor=data['instructor'])
+            courses = Course.objects.filter(instructor=instructor_name)
             courses_serializer = CourseSerializer(courses, many=True)
 
             return JsonResponse(courses_serializer.data, safe=False, status=200)
