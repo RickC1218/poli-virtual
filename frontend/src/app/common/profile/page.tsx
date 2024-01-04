@@ -91,7 +91,7 @@ export default function Page() {
           enrolled="none"
           sectionType="courses"
           subtype="your-courses"
-          userName={user.name + " " + user.lastname}
+          userName={user.name + "-" + user.lastname}
         />
       )}
     </>

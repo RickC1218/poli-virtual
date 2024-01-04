@@ -261,10 +261,10 @@ const crud_user = {
         }
     },
 
-    // !obtain the instructor information
-    getInstructor: async (emailData: any) => {
+    // Obtain the instructor information
+    getInstructor: async (userName: string) => {
         try{
-            const response = await axios.put(`${API_BASE_URL}/user/`, emailData);
+            const response = await axios.get(`${API_BASE_URL}/user/get-instructor-profile/${userName}`);
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };

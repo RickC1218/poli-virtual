@@ -48,6 +48,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
     let courses = [];
     let enrolledCourses = [];
     let instructors = [];
+    const instructorCourses = instructorName?.replace(/-/g, ' ');
 
     switch (subtype) {
       case "featured":
@@ -57,10 +58,10 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
         courses = await crud_course.getRecentlyAddedCourses();
         break;
       case "your-courses":
-        courses = await crud_course.getUserCourses(instructorName ?? "");
+        courses = await crud_course.getUserCourses(instructorCourses ?? "");
         break;
       case "instructor-courses":
-        courses = await crud_course.getUserCourses(instructorName ?? "");
+        courses = await crud_course.getUserCourses(instructorCourses ?? "");
         break;
         case "your-learning":
         enrolledCourses = await crud_user.getEnrolledCourses(getToken());

@@ -32,9 +32,8 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       setIsUserLoggedIn(localStorage.getItem("token") !== null);
-      // !function of getInstructor
-      // !const storedUser = await crud_user.getInstructor(userName || "");
-      // !setUser({ ...initialUserState, ...storedUser });
+      const storedUser = await crud_user.getInstructor(userName);
+      setUser({ ...initialUserState, ...storedUser });
     }
     fetchData();
   });
