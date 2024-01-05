@@ -8,14 +8,9 @@ import crud_user from "@/app/api/crud_user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "../icons/icons";
 
-interface Instructor {
-  name: string;
-  email: string;
-}
-
 interface Course {
   id: number;
-  instructors: Instructor[];
+  instructor: string;
   name: string;
   assessment: number;
   image: string;
@@ -65,18 +60,12 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
     <div className="flex flex-wrap py-5 items-center justify-center lg:justify-start">
       {(state === "none" && params.id && courses.length > 0) ||
       (state === "enrolled" && enrolledCourses.length > 0) ? (
-        (state === "none" ? courses : enrolledCourses).map((course: Course) => (
+        ((state === "none")  ? courses : enrolledCourses).map((course: Course) => (
           <div className="p-1" key={course.id}>
             <CourseCard
               courseID={course.id}
               title={course.name}
-              instructors={
-                Array.isArray(course.instructors)
-                  ? course.instructors
-                      .map((instructor) => instructor.name)
-                      .join(", ")
-                  : "Nombres no encontrados"
-              }
+              instructor={course.instructor}
               assessment={course.assessment}
               image="/course.jpg"
               category={category}
