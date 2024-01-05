@@ -48,9 +48,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     // Load user data from session storage when the component mounts
     //verify user state
     async function fetchData() {
-      const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
-      const storedUser = await crud_user.getUser(sessionToken || "");
       if (type !== "new-user") {
+        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
+        const storedUser = await crud_user.getUser(sessionToken || "");
         setUser({ ...initialUserState, ...storedUser });
       }
     }

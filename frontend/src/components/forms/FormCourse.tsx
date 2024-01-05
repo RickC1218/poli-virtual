@@ -153,13 +153,17 @@ const FormCourse = () => {
     // Load user data from session storage when the component mounts
     //verify user state
     async function fetchData() {
-      const sessionToken = JSON.parse(localStorage.getItem("token") || "");
-      const storedUser = await crud_user.getUser(sessionToken || "");
-      setUser(storedUser);
-      setFormData({
-        ...formData,
-        instructor: storedUser.name + " " + storedUser.lastname,
-      });
+      try {
+        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
+        const storedUser = await crud_user.getUser(sessionToken || "");
+        setUser(storedUser);
+        setFormData({
+          ...formData,
+          instructor: storedUser.name + " " + storedUser.lastname,
+        });
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
     }
 
     fetchData();
