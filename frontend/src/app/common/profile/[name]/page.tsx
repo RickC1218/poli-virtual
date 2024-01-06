@@ -57,46 +57,46 @@ export default function Page() {
             <StarRating ranking={user.score_teacher} />
           </div>
         </div>
-        <div className="col-span-4 block md:hidden bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
+        <div className="col-span-4  block md:hidden bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
         <div
-          className={`col-span-3 md:col-span-3 w-full p-3 md:p-5 flex flex-col justify-center items-center`}
+          className={`col-span-4 md:col-span-3 w-full p-3 md:p-5 flex flex-col justify-center items-center`}
         >
           <div
             className={`w-full p-3 md:col-span-2 flex flex-col justify-center items-center`}
           >
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Nombre:</p>
-              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] truncate">
                 {user.name}
               </p>
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Apellido:</p>
-              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] truncate">
                 {user.lastname}
               </p>
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Correo institucional:</p>
-              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] truncate">
                 {user.email}
               </p>
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Semestre:</p>
-              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] truncate">
                 {user.semester}
               </p>
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Profesor que lo aprueba:</p>
-              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] truncate">
                 {user.approve_teacher}
               </p>
             </div>
             <div className="flex items-center justify-between w-full mx-2 p-2">
               <p className="font-bold">Correo del profesor:</p>
-              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]">
+              <p className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] truncate">
                 {user.approve_teacher_email}
               </p>
             </div>
