@@ -17,7 +17,7 @@ export default function Page() {
     async function fetchData() {
       if(isSessionActive){
         //verify user state
-        const sessionToken = JSON.parse(localStorage.getItem("token") || "");
+        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
         await crud_user.getUser(sessionToken || ""); // get user data from API
       }
     }
@@ -42,7 +42,7 @@ export default function Page() {
             description="¡Descubre una comunidad educativa única y emocionante! 
           En nuestra plataforma de educación virtual, los estudiantes se convierten en maestros, compartiendo su conocimiento y pasión."
             button={true}
-            image={true}
+            image="/image.jpg"
           />
         ) : (
           <Section

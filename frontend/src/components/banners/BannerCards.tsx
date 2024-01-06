@@ -90,11 +90,11 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
   return (
     <>
       {type === "courses" ? (
-        <div className="flex overflow-x-auto space-x-2 py-5">
+        <div className="flex overflow-x-auto space-x-1 py-5">
           {state === "enrolled" ? (
             enrolledCourses.length > 0 ? (
               enrolledCourses.map((course: Course) => (
-                <div className="p-1" key={course.id}>
+                <div key={course.id}>
                   <CourseCard
                     courseID={course.id}
                     title={course.name}
@@ -149,7 +149,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
             )
           ) : courses.length > 0 ? (
             courses.map((course: Course) => (
-              <div className="p-1" key={course.id}>
+              <div key={course.id}>
                 <CourseCard
                   courseID={course.id}
                   title={course.name}

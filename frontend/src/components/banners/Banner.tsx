@@ -9,7 +9,7 @@ interface BannerProps {
   title: ReactNode;
   description: string;
   button: boolean;
-  image: boolean;
+  image: string | boolean;
   addStyle?: string;
 }
 
@@ -67,10 +67,10 @@ const Banner: React.FC<BannerProps> = ({ title, description, button, image, addS
           </div>
         )}
       </div>
-      {image && (
+      {image !== false && (
         <div className="visible justify-self-end self-center pb-20 px-20 lg:p-0">
           <Image
-            src="/image.jpg"
+            src={image as string}
             alt="Picture of the author"
             width={750}
             height={535}

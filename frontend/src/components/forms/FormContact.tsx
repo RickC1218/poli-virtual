@@ -2,7 +2,6 @@
 import icons from '../icons/icons';
 import Button from '../buttons/Button';
 import Image from 'next/image';
-import Link from 'next/link';
 import DifferentText from '../tools/DifferentText';
 import { useState } from 'react';
 import crud_user from '@/app/api/crud_user';
@@ -135,7 +134,7 @@ const FormContact: React.FC = () => {
       </div>
       <div className="visible justify-self-end self-center pb-20 px-20 lg:p-0">
         <Image
-          src="/image.jpg"
+          src="/image3.jpg"
           alt="Picture of the author"
           width={750}
           height={535}

@@ -57,11 +57,11 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
   }, []);
 
   return (
-    <div className="flex flex-wrap py-5 items-center justify-center lg:justify-start">
+    <div className="flex flex-wrap py-3 items-center justify-center lg:justify-start space-x-1 space-y-1">
       {(state === "none" && params.id && courses.length > 0) ||
       (state === "enrolled" && enrolledCourses.length > 0) ? (
         ((state === "none")  ? courses : enrolledCourses).map((course: Course) => (
-          <div className="p-1" key={course.id}>
+          <div key={course.id}>
             <CourseCard
               courseID={course.id}
               title={course.name}

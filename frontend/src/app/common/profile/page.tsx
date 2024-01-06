@@ -69,14 +69,12 @@ export default function Page() {
           title={
             <>
               Conviértete en un
-              <DifferentText color="--principal-blue">
-                instructor
-              </DifferentText>
+              <DifferentText color="--principal-blue"> instructor</DifferentText>
             </>
           }
           description="Crear una comunidad en línea donde los estudiantes de diferentes niveles académicos compartan conocimientos y habilidades, promoviendo un ciclo constante de aprendizaje y enseñanza para el crecimiento de todos los usuarios."
           button={true}
-          image={true}
+          image="/image4.jpg"
           addStyle={`bg-[--high-gray]`}
         />
       ) : (

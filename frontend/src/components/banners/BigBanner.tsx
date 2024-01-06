@@ -9,7 +9,7 @@ interface BigBannerProps {
   title: ReactNode;
   description: string;
   button: boolean;
-  image: boolean;
+  image: string | boolean;
   textButton?: string;
 }
 
@@ -32,10 +32,10 @@ const BigBanner: React.FC<BigBannerProps> = ({ title, description, button, image
     <div className={`flex flex-col w-full ${image ? 'h-full xs:h-[1127px]' : 'h-full xs:h-[440px]' } px-6 py-12 xs:p-20 justify-items-center items-center`}>
       <h1 className="text-[38px] lg:text-[80px] pb-4 text-center">{title}</h1>
       <p className='lg:w-[65%] pb-[30px] text-center lg:text-start'>{description}</p>
-      {image && (
+      {image !== false && (
         <div className="visible self-center">
           <Image
-            src="/image.jpg"
+            src={image as string}
             alt="Picture of the author"
             width={900}
             height={600}

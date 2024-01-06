@@ -8,14 +8,18 @@ import DifferentText from "@/components/tools/DifferentText";
 export default function Page() {
   
   const verifyEmail = async () => {
-    const sessionToken = localStorage.getItem("emailVerify");
-    const email = await crud_user.emailVerification(sessionToken ?? "");
-    console.log(email);
+    try {
+      const sessionToken = localStorage.getItem("emailVerify");
+      const email = await crud_user.emailVerification(sessionToken ?? "");
+      console.log(email);
 
-    if (email === "Correo electrónico verificado") {
-      localStorage.removeItem("emailVerify")
-    } else {
-      alert("Error al verificar el correo electrónico");
+      if (email === "Correo electrónico verificado") {
+        localStorage.removeItem("emailVerify")
+      } else {
+        alert("Error al verificar el correo electrónico");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 

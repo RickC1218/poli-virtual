@@ -6,6 +6,7 @@ import Link from 'next/link';
 import StarRating from '../tools/StarRating';
 import { useEffect, useState } from 'react';
 import crud_category from '@/app/api/crud_category';
+import DifferentText from '../tools/DifferentText';
 
 interface CourseCardProps {
   courseID: number;
@@ -19,15 +20,22 @@ interface CourseCardProps {
 
 const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, assessment, image, category, state }) => {
 
-  const [categoryID, setCategoryID] = useState("");
+  const [categoryID, setCategoryID] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await crud_category.getCategoryByName(category);
-      setCategoryID(res);
+      try {
+        const res = await crud_category.getCategoryByName(category);
+        setCategoryID(res);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
-  }, []);
+  }, [category]);
 
   const courseLink = {
     name: "Cursos relacionados",
@@ -51,6 +59,20 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, ass
     }
     return style;
   };
+
+  if (isLoading) {
+    return (
+      <div
+        className={`flex flex-between w-full h-full flex-col justify-center`}
+      >
+        <div className="w-full p-6 md:px-20 md:py-10 self-center">
+          <h1 className="text-center lg:text-start">
+            <DifferentText color="--principal-blue">Cargando...</DifferentText>
+          </h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Link

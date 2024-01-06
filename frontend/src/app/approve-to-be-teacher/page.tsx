@@ -34,7 +34,7 @@ export default function Page() {
       const response = await crud_user.beInstructor({email});
       message = response;
       //redirect to confirm page
-      if(message === "Rol actualizado") {
+      if(message === "Rol del estudiante actualizado") {
         showAlert(message);
         setTimeout(() => {
           // Redirect to the explore page after the delay

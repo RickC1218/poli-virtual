@@ -90,7 +90,7 @@ export default function Page() {
       >
         <div className="w-full p-6 md:px-20 md:py-10 self-center">
           <h1 className="text-[32px] xl:text-[38px] text-center lg:text-start">
-            <DifferentText color="--principal-blue">Loading...</DifferentText>
+            <DifferentText color="--principal-blue">Cargando...</DifferentText>
           </h1>
         </div>
       </div>

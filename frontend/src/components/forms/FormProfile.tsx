@@ -23,6 +23,7 @@ const initialUserState = {
   approve_teacher: "",
   approve_teacher_email: "",
   user_description: "",
+  profilePhoto: "",
   score_teacher: 0,
 };
 
@@ -43,6 +44,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const [verificationNew, setVerificationNew] = useState("");
   const [user, setUser] = useState(initialUserState);
   const [emailSent, setEmailSent] = useState(false);
+  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<
+    "string" | undefined>(undefined);
 
   useEffect(() => {
     // Load user data from session storage when the component mounts
@@ -56,7 +59,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
 
     fetchData();
-  }, []);
+  }, [type]);
 
   // Open and close the modal
   const handleOpenModal = () => setIsOpen(true);
@@ -81,16 +84,21 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   };
 
-  /*  
-  const handleFileChange = (event: ChangeEvent<HTMLImageElement>) => {
-    if (event.target.image && event.target.image[0]) {
-      setUser({
-        ...user,
-        profilePhoto: event.target.files[0]
-      });
+  // Onchange for the file input
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUser({
+          ...user,
+          profilePhoto: reader.result as string, // Mostrar la vista previa de la imagen
+        });
+        setSelectedProfilePhoto(file as any);
+      };
+      reader.readAsDataURL(file);
     }
-  }
-  */
+  };
 
   // verification of change with input of veify password
   const handleVerification = (event: ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +120,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     setAlertMessage(message);
     setTimeout(() => {
       setAlertMessage(null);
-    }, 3000); // close the alert after 5 seconds
+    }, 3000); // close the alert after 3 seconds
   };
 
   //manage the register button
@@ -168,6 +176,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         message = "Todos los campos deben estar llenos";
       }
       showAlert(message);
+      showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
     } catch (error) {
       showAlert("Error al registrar el usuario");
     }
@@ -213,7 +222,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       approve_teacher_email: user.approve_teacher_email,
       user_description: user.user_description,
       score_teacher: user.score_teacher || 0,
-      //profilePhoto: user.profilePhoto
+      profilePhoto: user.profilePhoto
     };
     return userData;
   };
@@ -241,7 +250,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           session_token
         );
         message = response;
-        showAlert(message);
+        showAlert("Comunicate con el profesor para más información");
 
         setEmailSent(true);
 
@@ -265,8 +274,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       e.preventDefault();
       // obtain the session token from the user object
       const session_token = await getToken();
-      //const userData = getUserData();
-      const userData = await crud_user.getUser(session_token);
+      const userData = getUserData();
       // make sure the session token is available
       if (session_token) {
         // update the user
@@ -277,8 +285,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         setUser(storedUser);
         // redirect to the explore page
         showAlert(message);
-        router.push("/common/profile");
-        router.refresh();
+        setTimeout(() => {
+          router.push("/common/profile");
+          router.refresh();
+        }, 5000);
       } else {
         message = "Probablemente no has iniciado sesión.";
         showAlert(message);
@@ -309,10 +319,13 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             );
             message = response;
             // redirect to the explore page
-            showAlert(message);
-            handleCloseModal();
-            router.push("/common/profile");
-            router.refresh();
+            showAlert("Contraseña actualizada");
+
+            setTimeout(() => {
+              handleCloseModal();
+              router.push("/common/profile");
+              router.refresh();
+            }, 3000);
           } else {
             message = "Probablemente no has iniciado sesión.";
           }
@@ -389,6 +402,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             value={user.name}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required
+            disabled={type === "be-instructor"}
           />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -400,6 +414,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             value={user.lastname}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required
+            disabled={type === "be-instructor"}
           />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -414,6 +429,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             }`}
             readOnly={type !== "new-user"}
             required
+            disabled={type === "be-instructor"}
           />
         </div>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -423,6 +439,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleChange}
             value={user.semester}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            disabled={type === "be-instructor"}
           >
             <option value="1ro">1er semestre</option>
             <option value="2do">2do semestre</option>
@@ -491,7 +508,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           <div className={`${type === "new-user" ? "" : "hidden"}`}>
             <div
               className={`${
-                alertMessage.startsWith("Registro exitoso")
+                alertMessage.startsWith("Registro exitoso") ||
+                alertMessage.startsWith(
+                  "Revisa tu correo electrónico para verificar tu cuenta."
+                )
                   ? "bg-green-500"
                   : "bg-red-500"
               } z-40 text-[--light] p-2 rounded-md text-center`}
@@ -558,7 +578,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             <div
               className={`${
                 alertMessage.startsWith(
-                  "Correo electrónico enviado" || "Usuario actualizado"
+                  "Comunicate con el profesor para más información"
                 )
                   ? "bg-green-500"
                   : "bg-red-500"
@@ -590,15 +610,19 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         >
           <p className="font-bold">Foto de perfil:</p>
           <input
-            /*onChange={handleFileChange}*/
-            /*value={user.profilePhoto}*/
+            onChange={handleFileChange}
             type="file"
+            accept="image/*"
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           />
         </div>
       </div>
       {alertMessage && !isOpen && (
-        <div className={`${type === "profile" ? "" : "hidden"}`}>
+        <div
+          className={`${
+            type === "profile" || "profile-instructor" ? "" : "hidden"
+          }`}
+        >
           <div
             className={`${
               alertMessage.startsWith("Usuario actualizado") ||
@@ -674,10 +698,15 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
               />
             </div>
             {alertMessage && isOpen && (
-              <div className={`${type === "profile" ? "" : "hidden"}`}>
+              <div
+                className={`${
+                  type === "profile" || type === "profile-instructor"
+                    ? ""
+                    : "hidden"
+                }`}
+              >
                 <div
                   className={`${
-                    alertMessage.startsWith("Usuario actualizado") ||
                     alertMessage.startsWith("Contraseña actualizada")
                       ? "bg-green-500 text-[--light]"
                       : "bg-yellow-500 text-[--gray]"
@@ -702,7 +731,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       </div>
       <Link
         key="newCourse"
-        href="/common/categories/category/course"
+        href="/common/create-course"
         className={`p-2 md:p-0 ${user.role === "instructor" ? "" : "hidden"}`}
       >
         <Button

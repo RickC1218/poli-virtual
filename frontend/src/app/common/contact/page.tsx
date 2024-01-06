@@ -17,7 +17,7 @@ export default function Page() {
         }
         description="Al unirse a nuestra plataforma, tendrán acceso a oportunidades educativas innovadoras que les permitirán adquirir nuevas habilidades y conocimientos que pueden aplicar de inmediato en sus vidas y carreras."
         button={true}
-        image={false}
+        image="/image2.jpg"
       />
     </div>
   );
