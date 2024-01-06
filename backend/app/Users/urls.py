@@ -16,4 +16,6 @@ urlpatterns = [
     path('user/send-email-to-approve-teacher/', views.send_email_to_approve_teacher, name='user-sned-email-to-approve-teacher'), # Send email to approve teacher
     path('user/get-user-profile/', views.get_user_profile, name='user-get-user-profile'), # Get user profile
     path('user/get-instructor-profile/<str:name_lastname>/', views.get_instructor_profile, name='user-get-inst-profile'), # Get instructor profile
+    path('user/add-last-watched-course/', views.add_last_watched_course, name='user-add-last-watched-course'), # Add last watched course
+    path('user/get-last-watched-course/<str:course_name>/', views.get_last_watched_course, name='user-get-last-watched-course'), # Get last watched course
 ]

@@ -86,6 +86,68 @@ def user_api(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
+# Add field last_module_name and last_subtopic_name in field enrolled_courses
+@csrf_exempt
+@api_view(['PUT'])
+def add_last_watched_course(request):
+    if request.method == 'PUT':
+        user_token = verify_token(request) # return the email of the user if the token is valid
+
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+        else:
+            data = JSONParser().parse(request)
+
+            try:
+                user = User.objects.get(email=user_token)
+                user_serializer = UserSerializer(user)
+
+                # Get the specific enrolled course
+                for enrolled_course in user_serializer.data["enrolled_courses"]:
+                    if enrolled_course["name"] == data["name"]:
+                        # Update the last_module_name and last_subtopic_name
+                        enrolled_course["last_module_name"] = data["last_module_name"]
+                        enrolled_course["last_subtopic_name"] = data["last_subtopic_name"]
+                        enrolled_course["last_subtopic_url"] = data["last_subtopic_url"]
+
+                # Update the enrolled courses
+                user_serializer = UserSerializer(user, data={'enrolled_courses': user_serializer.data["enrolled_courses"]}, partial=True)
+
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Ultimo curso visto agregado", safe=False, status=200)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
+# Get the last watched course
+@csrf_exempt
+@api_view(['GET'])
+def get_last_watched_course(request, course_name):
+    if request.method == 'GET':
+        user_token = verify_token(request) # return the email of the user if the token is valid
+
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+        else:
+            try:
+                user = User.objects.get(email=user_token)
+                user_serializer = UserSerializer(user)
+
+                # Get the specific enrolled course
+                for enrolled_course in user_serializer.data["enrolled_courses"]:
+                    if enrolled_course["name"] == course_name:
+                        del enrolled_course["state"] # Remove the field state
+
+                        return JsonResponse(enrolled_course, safe=False, status=200)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
 # Sign up
 @csrf_exempt
 @api_view(['POST'])
@@ -398,7 +460,7 @@ def be_an_instructor(request):
                     message = f"Saludos cordiales {user.name} {user.lastname},\n\nNos comunicamos con usted para notificarle que su solicitud para ser Instructor en la plataforma Poli Virtual ha sido aprobada.\n\nGracias,\n\nEl equipo de Poli Virtual."
                     send_email(user.email, subject, message)
 
-                    return JsonResponse("Rol actualizado", safe=False, status=200)
+                    return JsonResponse("Rol del estudiante actualizado", safe=False, status=200)
 
             except User.DoesNotExist:
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)

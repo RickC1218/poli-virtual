@@ -8,7 +8,8 @@ class Course(models.Model):
     modules = models.JSONField(default=dict, blank=True)
     comments = models.JSONField(default=dict, blank=True)
     assessment = models.FloatField(default=0.0)
-    publication_course_date = models.CharField(max_length=30)
+    trailer_video_url = models.URLField(blank=True, default="")
+    course_image_url = models.URLField(blank=True, default="")
 
     def __str__(self):
         return self.name
