@@ -148,6 +148,32 @@ def get_last_watched_course(request, course_name):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
+# Verify if the user is enrolled in a course
+@csrf_exempt
+@api_view(['GET'])
+def is_enrolled_in_course(request, course_name):
+    if request.method == 'GET':
+        user_token = verify_token(request)
+
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+        else:
+            try:
+                user = User.objects.get(email=user_token)
+                user_serializer = UserSerializer(user)
+
+                # Get the specific enrolled course
+                for enrolled_course in user_serializer.data["enrolled_courses"]:
+                    if enrolled_course["name"] == course_name:
+                        return JsonResponse(True, safe=False, status=200) # The user is enrolled in the course
+
+                return JsonResponse(False, safe=False, status=200) # The user is not enrolled in the course
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
 # Sign up
 @csrf_exempt
 @api_view(['POST'])
