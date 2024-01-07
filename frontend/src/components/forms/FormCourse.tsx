@@ -8,6 +8,7 @@ import BannerThemeCard, {
 import crud_user from "@/app/api/crud_user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "../tools/Modal";
+import BannerSubThemeCard from "../cards/BannerSubThemeCard";
 
 interface Instructor {
   email: string;
@@ -24,7 +25,7 @@ interface ThemeCardFormData {
   cuantity: number;
   duration: number;
   content: Content[] | null;
-  action: "add" | "edit" | "read";
+  action: "add" | "edit" | "read" | "delete";
 }
 
 const FormCourse = () => {
@@ -37,6 +38,7 @@ const FormCourse = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [classes, setClasses] = useState(0);
 
   const [themeCards, setThemeCards] = useState<BannerThemeCardProps[]>([]);
 
@@ -51,11 +53,42 @@ const FormCourse = () => {
     }
   );
 
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+
+    if (files.length > 0) {
+      // Assuming you want to handle only the first dropped file
+      const droppedFile = files[0];
+      setSelectedFile(droppedFile);
+    }
+
+    setIsDragOver(false);
+  };
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     setSelectedFile(file);
-    console.log("file: ", file);
-  };
+    };
+  
+  const handleClasses = (event: ChangeEvent<HTMLInputElement>) => {
+    event.target.name = event.target.value;
+    const inputValue = parseInt(event.target.value, 10);
+    const newValue = isNaN(inputValue) ? 0 : Math.max(0, inputValue);
+    setClasses(newValue);
+  }
+
 
   // Open and close the modal
   const handleOpenModal = () => setIsOpen(true);
@@ -63,47 +96,70 @@ const FormCourse = () => {
 
   const handleAddThemeCard = () => {
     if (themeCardFormData.action === "add") {
-      setThemeCards((prevThemeCards) => {
-        const newThemeCard = {
-          title: themeCardFormData.title,
-          description: themeCardFormData.description,
-          cuantity: themeCardFormData.cuantity,
-          duration: themeCardFormData.duration,
-          content: themeCardFormData.content || [],
-          action: "add",
-        };
-        return [...prevThemeCards, newThemeCard];
-      });
+      const newThemeCard: ThemeCardFormData = {
+        title: themeCardFormData.title,
+        description: themeCardFormData.description,
+        cuantity: themeCardFormData.cuantity,
+        duration: themeCardFormData.duration,
+        content: Array.from({ length: classes }, (_, i) => ({
+          title: `Tema ${i + 1}`,
+          video_url: "",
+        })),
+        action: "add",
+      };
 
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        content: [...prevFormData.modules, themeCards],
-      }));
+      setThemeCards((prevThemeCards) => [
+        ...prevThemeCards, 
+        newThemeCard
+      ]);
+
+      setFormData((prevFormData) => {
+        const updatedModules = [...prevFormData.modules, newThemeCard];
+        return { ...prevFormData, modules: updatedModules };
+      });
     } else if (themeCardFormData.action === "edit" && editingIndex !== null) {
-      // Implement logic to update the existing card
+    
       const updatedThemeCards = [...themeCards];
+      
+      let updatedContent: { title: string; video_url: string }[] = [];
+
+      if (themeCardFormData.content?.length === classes) {
+        updatedContent = themeCardFormData.content;
+      } else if (themeCardFormData.content && themeCardFormData.content.length > classes) {
+        updatedContent = themeCardFormData.content?.slice(0, classes) || [];
+      } else {
+        updatedContent = [...(themeCardFormData.content || [])];
+        for (let i = 0; i < classes - (themeCardFormData.content?.length || 0); i++) {
+          updatedContent.push({
+            title: `Tema ${(themeCardFormData.content?.length || 0) + i + 1}`,
+            video_url: "",
+          });
+        }
+      }
+    
       updatedThemeCards[editingIndex] = {
         title: themeCardFormData.title,
         description: themeCardFormData.description,
         cuantity: themeCardFormData.cuantity,
         duration: themeCardFormData.duration,
-        content: themeCardFormData.content || [],
+        content: updatedContent,
         action: "edit",
       };
-
+    
       setThemeCards(updatedThemeCards);
-
+    
       setFormData((prevFormData) => {
         const updatedModules = [...prevFormData.modules];
         updatedModules[editingIndex] = {
           ...updatedModules[editingIndex],
           ...updatedThemeCards[editingIndex],
         };
-
+    
         return { ...prevFormData, modules: updatedModules };
       });
     }
-
+    
+    
     setEditingIndex(null);
     handleCloseModal();
     handleEraseThemeCardForm();
@@ -116,10 +172,12 @@ const FormCourse = () => {
       action: "edit",
     });
     setEditingIndex(index);
+    setClasses(selectedThemeCard.content?.length ?? 0);
     handleOpenModal();
   };
 
   const handleEraseThemeCardForm = () => {
+    setClasses(0);
     setThemeCardFormData({
       title: "",
       description: "",
@@ -200,8 +258,15 @@ const FormCourse = () => {
     >
       <div className="col-span-5 lg:col-span-3 self-center rounded-[25px] flex items-center justify-center w-full">
         <label
-          htmlFor="dropzone-file"
-          className="flex flex-col items-center justify-center w-full h-[450px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] hover:bg-[--medium-gray] hover:border-[--principal-blue] hover:text-[--principal-blue]"
+          htmlFor={`dropzone-file-${formData.name}`}
+          className={`flex flex-col items-center justify-center w-full h-[450px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] ${
+            isDragOver
+              ? "hover:bg-[--medium-gray] hover:border-[--principal-blue] hover:text-[--principal-blue]"
+              : ""
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleFileDrop}
         >
           {selectedFile === null ? (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -230,7 +295,7 @@ const FormCourse = () => {
             </div>
           )}
           <input
-            id="dropzone-file"
+            id={`dropzone-file-${formData.name}`}
             type="file"
             className="hidden"
             onChange={handleFileChange}
@@ -317,8 +382,8 @@ const FormCourse = () => {
             <div className={`flex items-center justify-between w-full py-2`}>
               <p className="font-bold">Imagen para curso:</p>
               <input
-                /*onChange={handleFileChange}*/
-                /*value={courseFile}*/
+                onChange={handleFileChange}
+                /*value={formData.image}*/
                 type="file"
                 name="trailervideo"
                 className=" w-[60%] p-2 text-[--principal-red] font-bold file:mr-4 file:py-2 file:px-6  
@@ -345,13 +410,6 @@ const FormCourse = () => {
                   />
                 </div>
               </button>
-              <Button
-                text="Agregar subtema"
-                icon={icons.faPlus}
-                color="neutral"
-                type="small"
-                onClick={handleOpenModal}
-              />
               <button
                 type="button"
                 onClick={() => handleRemoveThemeCard(index)}
@@ -378,12 +436,12 @@ const FormCourse = () => {
         <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
           {themeCardFormData.action === "add" && (
             <h1 className="text-[38px] mb-5 text-center">
-              Agregar un tema nuevo
+              Agregar un módulo nuevo
             </h1>
           )}
           {themeCardFormData.action === "edit" && (
             <h1 className="text-[38px] mb-5 text-center">
-              Editar un tema existente
+              Editar un módulo existente
             </h1>
           )}
           <div className="flex flex-col w-full">
@@ -393,7 +451,7 @@ const FormCourse = () => {
               onChange={handleThemeCardFormChange}
               value={themeCardFormData.title}
               className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 w-full mb-2"
-              placeholder="Título del tema"
+              placeholder="Título del módulo"
               required
             />
             <p>Descripción:</p>
@@ -402,10 +460,20 @@ const FormCourse = () => {
               value={themeCardFormData.description}
               name="description"
               rows={4}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 mb-4 text-sm w-full"
-              placeholder="Descripción del tema"
+              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 mb-2 text-sm w-full"
+              placeholder="Descripción del módulo"
               required
             />
+            <div className="flex justify-between items-center">
+              <p>Cantidad de clases:</p>
+              <input 
+              type="number" 
+              name="classes"
+              onChange={handleClasses}
+              value={classes}
+              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 mb-4 text-sm w-[55%]"
+              required />
+            </div>
           </div>
           {themeCardFormData.action === "add" ? (
             <Button
@@ -426,125 +494,7 @@ const FormCourse = () => {
           )}
         </div>
       </Modal>
-      <Modal isOpen={isOpen} onClose={handleCloseModal}>
-        <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
-          {themeCardFormData.action === "add" && (
-            <h1 className="text-[38px] mb-5 text-center">
-              Agregar un subtema nuevo
-            </h1>
-          )}
-          {themeCardFormData.action === "edit" && (
-            <h1 className="text-[38px] mb-5 text-center">
-              Editar un subtema existente
-            </h1>
-          )}
-          <div className="flex flex-col w-full">
-            <input
-              type="text"
-              name="title"
-              onChange={handleThemeCardFormChange}
-              value={themeCardFormData.title}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 w-full mb-2"
-              placeholder="Título del subtema"
-              required
-            />
-            <p>Descripción:</p>
-            <Modal isOpen={isOpen} onClose={handleCloseModal}>
-              <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
-                {themeCardFormData.action === "add" && (
-                  <h1 className="text-[38px] mb-5 text-center">
-                    Agregar un subtema nuevo
-                  </h1>
-                )}
-                {themeCardFormData.action === "edit" && (
-                  <h1 className="text-[38px] mb-5 text-center">
-                    Editar un subtema existente
-                  </h1>
-                )}
-                <div className="flex flex-col w-full">
-                  <input
-                    type="text"
-                    name="title"
-                    onChange={handleThemeCardFormChange}
-                    value={themeCardFormData.title}
-                    className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 w-full mb-2"
-                    placeholder="Título del subtema"
-                    required
-                  />
-                  <p>Video de este subtema:</p>
-                  <label
-                    htmlFor="dropzone-file"
-                    className="flex flex-col items-center justify-center w-full h-[200px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] hover:bg-[--medium-gray] hover:border-[--principal-blue] hover:text-[--principal-blue] mb-5"
-                  >
-                    {selectedFile === null ? (
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <FontAwesomeIcon
-                          icon={icons.faCloudArrowUp}
-                          className="w-[50px] h-[50px] text-[--principal-blue]"
-                        />
-                        <p className="mb-2 text-sm text-[--principal-blue] ">
-                          Da click y escoge el video de esta sesión o arrastralo
-                          aquí.
-                        </p>
-                        <p className="text-xs text-[--gray]">MP4 (Max 100MB)</p>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <FontAwesomeIcon
-                          icon={icons.faCheck}
-                          className="w-[50px] h-[50px] text-[--principal-blue]"
-                        />
-                        <p className="mb-2 text-sm text-[--principal-blue]">
-                          Archivo cargado exitosamente
-                        </p>
-                        <p className="text-xs text-[--principal-red]">
-                          {selectedFile.name}
-                        </p>
-                      </div>
-                    )}
-                    <input id="dropzone-file" type="file" className="hidden" />
-                  </label>
-                </div>
-                {themeCardFormData.action === "add" ? (
-                  <Button
-                    text="Agregar"
-                    icon={icons.faPlus}
-                    color="blue"
-                    type="small"
-                    onClick={handleAddThemeCard}
-                  />
-                ) : (
-                  <Button
-                    text="Actualizar"
-                    icon={icons.faRotateRight}
-                    color="blue"
-                    type="small"
-                    onClick={handleAddThemeCard}
-                  />
-                )}
-              </div>
-            </Modal>
-          </div>
-          {themeCardFormData.action === "add" ? (
-            <Button
-              text="Agregar"
-              icon={icons.faPlus}
-              color="blue"
-              type="small"
-              onClick={handleAddThemeCard}
-            />
-          ) : (
-            <Button
-              text="Actualizar"
-              icon={icons.faRotateRight}
-              color="blue"
-              type="small"
-              onClick={handleAddThemeCard}
-            />
-          )}
-        </div>
-      </Modal>
-
+      
       <div className="col-span-5 justify-items-center">
         <Button
           text="Crear curso"
