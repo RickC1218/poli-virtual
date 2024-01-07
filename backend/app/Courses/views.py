@@ -33,7 +33,7 @@ def course_api(request, id=0):
                 course = Course.objects.get(id=course_id)
                 course_serializer = CourseSerializer(course)
                 return JsonResponse(course_serializer.data, safe=False, status=200)
-            except course.DoesNotExist:
+            except Course.DoesNotExist:
                 return JsonResponse("Curso no encontrado", safe=False, status=404)
         else:
             # Get all courses
@@ -60,7 +60,7 @@ def course_api(request, id=0):
             course.delete()
             return JsonResponse("Curso eliminado", safe=False)
 
-        except course.DoesNotExist:
+        except Course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
 
 
