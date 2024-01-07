@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password
+from decouple import config
 
 class User(models.Model):
     email = models.EmailField(max_length=100, primary_key=True, unique=True)
@@ -12,7 +12,7 @@ class User(models.Model):
     approve_teacher_email = models.EmailField(max_length=100, blank=True)
     user_description = models.TextField(blank=True)
     score_teacher = models.FloatField(default=0.0)
-    profile_image_url = models.URLField(blank=True, default="")
+    profile_image_url = models.ImageField(upload_to=config('URL_IMAGE_INSTRUCTOR_STORAGE'), blank=True)
     enrolled_courses = models.JSONField(default=dict, blank=True)
     email_verification = models.BooleanField(default=False)
     session_token = models.CharField(max_length=300, default="")

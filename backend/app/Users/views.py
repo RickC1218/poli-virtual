@@ -86,6 +86,35 @@ def user_api(request):
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
 
 
+# Update profile image
+@csrf_exempt
+@api_view(['PUT'])
+def update_profile_image(request):
+    if request.method == 'PUT':
+        user_token = verify_token(request)
+
+        if user_token is False:
+            return JsonResponse("Acceso no autorizado", safe=False, status=401)
+
+        else:
+            try:
+                user = User.objects.get(email=user_token)
+
+                # Get the new profile image
+                profile_image_url = request.FILES['profile_image_url']
+
+                user_serializer = UserSerializer(user, data={'profile_image_url': profile_image_url}, partial=True)
+
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                    return JsonResponse("Imagen de perfil actualizada", safe=False, status=200)
+                else:
+                    return JsonResponse("Error al actualizar la imagen de perfil", safe=False, status=400)
+
+            except User.DoesNotExist:
+                return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
 # Add field last_module_name and last_subtopic_name in field enrolled_courses
 @csrf_exempt
 @api_view(['PUT'])
