@@ -1,86 +1,209 @@
-## Primer paso:
-- Antes de ejecutar el backend, ejecuta los siguientes comandos dentro de /backend/app/:
-- El comando git pull no se debe ejecutar si ya hiciste pull desde GITHUB-DESKTOP.
-```bash
-git pull
-python .\manage.py makemigrations
-python .\manage.py migrate
-```
-- Si no salen errores, sigue con el paso 2, caso contrario escribeme al Whatsapp.
+# Documentación de API - Users App
 
-## Segundo paso:
-- Consume los 4 siguientes endpoints desde el frontend:
-```bash
-path('user/contact-with-us/', views.contact_with_us, name='user-contact-with-us'), # Contact with us
+## Usuario
 
-path('user/be-an-instructor/', views.be_an_instructor, name='user-be-an-instructor'), # Be an instructor
+- **Obtener, actualizar, eliminar usuario**
+  - Método: `GET`, `PUT`, `DELETE`
+  - Ruta: `/user/`
+  - Descripción: Obtener, actualizar o eliminar información del usuario.
+  - Es necesario enviar el `Token de Autenticación` para cada una de estas peticiones.
+  - Ruta: PUT -> `/user/` -> Buscar desde el frontend como enviar archivos en la ruta y de ser necesario información extra que desee actualizar el usuario (name, lastname, etc), formato JSON.
 
-path('user/featured-teachers/', views.featured_teachers, name='user-featured-teachers'), # Get featured teachers
+- **Registrar usuario (Sign Up)**
+  - Método: `POST`
+  - Ruta: `/user/sign-up/`
+  - Descripción: Registrar un nuevo usuario en la plataforma.
+  - Los datos se envian en formato JSON.
 
-path('user/send-email-to-approve-teacher/', views.send_email_to_approve_teacher, name='user-sned-email-to-approve-teacher'), # Send email to approve teacher
-```
+- **Iniciar sesión (Sign In)**
+  - Método: `POST`
+  - Ruta: `/user/sign-in/`
+  - Descripción: Iniciar sesión en la plataforma.
+  - Se debe enviar el `email` y la `password` en formato JSON.
 
-## Consumir en el siguiente orden:
-- Endpoint /user/contact-with-us/:
-```bash
-# Para consumir de manera correcta este endpoint debes utilizar un metodo POST y debes enviar un JSON bajo este formato:
+- **Cerrar sesión (Sign Out)**
+  - Método: `PUT`
+  - Ruta: `/user/sign-out/`
+  - Descripción: Cerrar la sesión actual del usuario.
+  - Se debe enviar el `Token de Autenticación`
 
-{
-  "name": "Alexander Guillin",
-  "email": "jhosel.guillin@epn.edu.ec",
-  "message": "Hola tengo un problema con mis cursos, no se muestran de manera correcta"
-}
-```
-- Endpoint /user/featured-teachers/:
-```bash
-# Para consumir de manera correcta este endpoint debes utilizar un metodo GET y no es necesario enviar el token ni parametros, solo directo la ruta del endpoint.
+- **Verificar correo electrónico del usuario**
+  - Método: `POST`
+  - Ruta: `/user/set-email-verification/`
+  - Descripción: Establecer la verificación del correo electrónico del usuario.
+  - Se envía el `email` en formato JSON.
 
-# NOTA: Para que te devuelva algo, es necesario en la BD de mongo que en el nuevo campo de score_teacher, coloques un numero >= 4.0, dado que se puso como condicion que solo devuelva los instructores con esa puntuacion.
-```
-- Endpoint /user/send-email-to-approve-teacher/:
-```bash
-# Para utilizar este endpoint debe utilizar un metodo PUT, debes enviar el token en la cabecera de AUTHORIZATION y en el body, se debe enviar un JSON de este tipo:
+## Instructor
 
-{
-  "approve_teacher": "Alejandro Teran",
-  "approve_teacher_email": "alexanderguillin1999@gmail.com"
-}
+- **Convertirse en instructor**
+  - Método: `PUT`
+  - Ruta: `/user/be-an-instructor/`
+  - Descripción: Solicitar convertirse en instructor en la plataforma.
 
-Por eso este metodo debes implementarlo en http://localhost:3000/common/be-instructor, la cual es una ruta del frontend, cuando el usuario llene los campos: "Profesor que te aprueba" y "Correo del profesor" y este de clic en "Enviar correo", debes llamar a este endpoint.
+- **Obtener perfil del instructor**
+  - Método: `GET`
+  - Ruta: `/user/get-instructor-profile/<str:name_lastname>/`
+  - Descripción: Obtener el perfil de un instructor por nombre y apellido.
 
-# Luego es necesario crear una vista en el frontend que tenga la siguiente ruta:
+## Otros
 
-http://localhost:3000/approve-to-be-teacher/
+- **Agregar último curso visto**
+  - Método: `PUT`
+  - Ruta: `/user/add-last-watched-course/`
+  - Descripción: Agregar información sobre el último curso visto por el usuario.
+  - Se debe enviar el `Token de Autenticación` y el JSON debe ser en este estilo.
 
-# Esta vista puede ser similar a la que se creo cuando el usuario verifica su correo electronico, pero el mensaje debe cambiar, la logica de esta vista es que cuando un usuario decida ser un instructor, le va a llegar un correo al profesor que le aprueba, con el siguiente formato:
-```
-Saludos cordiales Alejandro Teran,
+  ```bash
+  {
+    # Nombre del curso que esta visualizando el usuario
+    "name": "Curso de Programación Avanzada 1",
+    "last_module_name": "2", # Nombre del ultimo modulo del curso visto
+    "last_subtopic_name": "2", # Nombre del ultimo subtema del curso visto
+    "last_subtopic_url": "/assets/" # URL del ultimo video visto
+  }
+  ```
 
-Nos comunicamos con usted para completar el proceso de SER UN INSTRUCTOR en la plataforma Poli Virtual, del estudiante:
+- **Obtener último curso visto**
+  - Método: `GET`
+  - Ruta: `/user/get-last-watched-course/<str:course_name>/`
+  - Descripción: Obtener información sobre el último curso visto por el usuario.
+  - Se debe enviar el `Token de Autenticación` y se retorna un JSON con estos campos.
 
-Estudiante: Jhosel Alexander Guillin Fierro
+  ```bash
+  {
+    # Nombre del curso que esta visualizando el usuario
+    "name": "Curso de Programación Avanzada 1",
+    "last_module_name": "2", # Nombre del ultimo modulo del curso visto
+    "last_subtopic_name": "2", # Nombre del ultimo subtema del curso visto
+    "last_subtopic_url": "/assets/" # URL del ultimo video visto
+  }
+  ```
 
-Correo institucional: jhosel.guillin@epn.edu.ec
+- **Verificar si está inscrito en un curso**
+  - Método: `GET`
+  - Ruta: `/user/is-enrolled-in-course/<str:course_name>/`
+  - Descripción: Verificar si el usuario está inscrito en un curso específico.
+  - Se debe enviar el `Token de Autenticación`, y el `nombre del curso`.
+  - Retorna `True` si el usuario esta inscrito, caso contrario `Falso`.
 
-Por favor, autoriza que el estudiante pueda ser un Instructor, en el caso de si hacerlo, haga clic en el siguiente enlace:
 
-http://localhost:3000/approve-to-be-teacher/
+# Documentación de API - Courses App
 
-Caso contrario, ignore este correo.
+## Curso
 
-Gracias,
+- **Obtener, actualizar o eliminar un curso por ID**
+  - Método: `POST, GET`, `PUT`, `DELETE`
+  - Ruta: `/course/<int:id>/`
+  - Descripción: Obtener, actualizar o eliminar información de un curso específico.
+  - Ruta: POST -> `/course/`, aqui se debe averiguar como enviar videos o imagenes desde el frontend.
+  - Los campos que tiene `Course` son: `name, description, category, instructor, modules, comments, assessment, trailer_video_url, course_image_url`.
+  - El formato JSON debe ser:
 
-El equipo de Poli Virtual.
+  ```bash
+  "name": "Curso de Programación Avanzada 4",
+  "description": "Aprende programación avanzada con este curso",
+  "category": "Fundamentos de programación",
+  "instructor": "Jhosel Alexander Guillin Fierro",
+  "modules": [
+    {
+      "title": "Módulo 1",
+      "description": "Introducción a la programación avanzada",
+      "content": [
+        {
+          "title": "Clases y Objetos",
+          "video_url": "https://example.com/clases_y_objetos"
+        },
+        {
+          "title": "Herencia",
+          "video_url": "https://example.com/herencia"
+        }
+      ]
+    },
+    {
+      "title": "Módulo 2",
+      "description": "Estructuras de datos avanzadas",
+      "content": [
+        {
+          "title": "Árboles binarios",
+          "video_url": "https://example.com/arboles_binarios"
+        },
+        {
+          "title": "Grafos",
+          "video_url": "https://example.com/grafos"
+        }
+      ]
+    }
+  ],
+  "comments": [
+    {
+      "student": "Maria Gómez",
+      "title": "Excelente curso",
+      "description": "Aprendí mucho, ¡gracias!",
+      "date": "2023-12-01"
+    },
+    {
+      "student": "Carlos Rodríguez",
+      "title": "Recomendado",
+      "description": "El curso es muy completo. Lo recomendaré a mis amigos.",
+      "date": "2023-12-02"
+    }
+  ],
+  "assessment": 2.5,
+  "trailer_video_url": "/assets/coursesVideos/Facturacion_electronica_SRI.webm",
+  "course_image_url": "/assets/coursesPhotos/Captura_de_pantalla_2023-03-04_223731.png"
+  ```
 
-```bash
-# En el caso que el profesor decida dar clic, es decir aprobar al estudiante como instructor dentro de la nueva vista creada se debe llamar al último endpoint /user/be-an-instructor/.
-```
-- Endpoint /user/be-an-instructor/:
-```bash
-# Para utilizar este endpoint es necesario utilizar un metodo PUT y enviar el email del estudiante en formato json.
+  - Para los campos `trailer_video_url` y `course_image_url` se debe enviar el video y la imagen respectivamente.
+  - Ruta: PUT -> `/course/`, se debe enviar en un JSON el `id` del curso y los campos que se desean actualizar, en el caso que se desee actualizar la foto del curso o el video trailer, se debe averiguar desde el frontend, como enviar.
 
-{
-  "email": "jhosel.guillin@epn.edu.ec"
-}
-```
-. NOTA: Si todo esta bien en cada endpoint se regresa un status 200, caso contrario me avisas al Whatsapp.
+## Cursos por Categoría
+
+- **Obtener cursos por categoría**
+  - Método: `GET`
+  - Ruta: `/course/<str:category>/`
+  - Descripción: Obtener una lista de cursos en una categoría específica.
+
+## Cursos Destacados
+
+- **Obtener cursos destacados**
+  - Método: `GET`
+  - Ruta: `/course/featured-courses/`
+  - Descripción: Obtener una lista de cursos destacados basados en una calificación mayor o igual a 4.0.
+
+## Cursos Recientemente Agregados
+
+- **Obtener cursos recientemente agregados**
+  - Método: `GET`
+  - Ruta: `/course/recently-added-courses/`
+  - Descripción: Obtener una lista de los últimos 3 cursos agregados, ordenados por fecha de agregado.
+
+## Cursos por Instructor
+
+- **Obtener cursos por instructor**
+  - Método: `GET`
+  - Ruta: `/course/courses-by-instructor/<str:instructor_name>/`
+  - Descripción: Obtener una lista de cursos impartidos por un instructor específico.
+  - Se debe enviar el nombre del instructor en la ruta.
+
+
+# Documentación de API - Categories App
+
+## Categoría
+
+- **Obtener todas las categorías o crear una nueva categoría**
+  - Método: `POST`, `GET`
+  - Ruta: `/category/`
+  - Descripción: Obtener todas las categorías disponibles o crear una nueva categoría.
+
+- **Obtener, actualizar o eliminar una categoría por ID**
+  - Método: `GET`, `PUT`, `DELETE`
+  - Ruta: `/category/<int:id>/`
+  - Descripción: Obtener, actualizar o eliminar información de una categoría específica.
+
+- **Obtener el ID de la categoría por el nombre**
+  - Método: `GET`
+  - Ruta: `/category/<str:category_name>/`
+  - Descripción: Obtener el ID de la categoría utilizando el nombre de la categoría.
+
+
+**Nota:** Esta documentación está sujeta a cambios a medida que evoluciona la API.
