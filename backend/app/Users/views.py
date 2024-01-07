@@ -15,6 +15,7 @@ from Users.models import User
 from Users.serializers import UserSerializer
 
 from Courses.models import Course
+from Courses.serializers import CourseSerializer
 
 # Validate email
 from django.core.validators import validate_email
@@ -38,16 +39,23 @@ def user_api(request):
                 enrolled_courses = []
 
                 for course in user.enrolled_courses:
-                    enrolled_course = Course.objects.get(name=course["name"])
 
-                    # Transform the course to a dictionary
-                    enrolled_course_dict = model_to_dict(enrolled_course)
+                    try:
+                        # Get the course
+                        enrolled_course = Course.objects.get(name=course["name"])
+                        enrolled_course_serializer = CourseSerializer(enrolled_course)
 
-                    # Add the state of the course
-                    enrolled_course_dict["state"] = course["state"]
+                        # Transform the course to a dictionary
+                        enrolled_course_dict = enrolled_course_serializer.data
 
-                    # Add the converted course to the list
-                    enrolled_courses.append(enrolled_course_dict)
+                        # Add the state of the course
+                        enrolled_course_dict["state"] = course["state"]
+
+                        # Add the converted course to the list
+                        enrolled_courses.append(enrolled_course_dict)
+
+                    except Course.DoesNotExist:
+                        return JsonResponse("Error al retornar los cursos del usuario", safe=False, status=404)
 
                 return JsonResponse(enrolled_courses, safe=False)
 
