@@ -56,13 +56,13 @@ def user_api(request):
 
 
         # Update user
+        # Now it can update the fields trailer_video_url and course_image_url
         elif request.method == 'PUT':
-            data = JSONParser().parse(request)
             user = User.objects.get(email=user_token)
 
             # Update only enrolled courses
-            if "enrolled_courses" in data:
-                user_serializer = UserSerializer(user, data={'enrolled_courses': user.enrolled_courses + data["enrolled_courses"]}, partial=True)
+            if "enrolled_courses" in request.data:
+                user_serializer = UserSerializer(user, data={'enrolled_courses': user.enrolled_courses + request.data["enrolled_courses"]}, partial=True)
 
                 if user_serializer.is_valid():
                     user_serializer.save()
@@ -70,7 +70,7 @@ def user_api(request):
 
             # Update the rest of the user information
             else:
-                user_serializer = UserSerializer(user, data=data, partial=True)
+                user_serializer = UserSerializer(user, data=request.data, partial=True)
 
                 if user_serializer.is_valid():
                     user_serializer.save()
@@ -85,35 +85,6 @@ def user_api(request):
                 user = User.objects.get(email=user_token)
                 user.delete()
                 return JsonResponse("Usuario eliminado", safe=False, status=200)
-
-            except User.DoesNotExist:
-                return JsonResponse("Usuario no encontrado", safe=False, status=404)
-
-
-# Update profile image
-@csrf_exempt
-@api_view(['PUT'])
-def update_profile_image(request):
-    if request.method == 'PUT':
-        user_token = verify_token(request)
-
-        if user_token is False:
-            return JsonResponse("Acceso no autorizado", safe=False, status=401)
-
-        else:
-            try:
-                user = User.objects.get(email=user_token)
-
-                # Get the new profile image
-                profile_image_url = request.FILES['profile_image_url']
-
-                user_serializer = UserSerializer(user, data={'profile_image_url': profile_image_url}, partial=True)
-
-                if user_serializer.is_valid():
-                    user_serializer.save()
-                    return JsonResponse("Imagen de perfil actualizada", safe=False, status=200)
-                else:
-                    return JsonResponse("Error al actualizar la imagen de perfil", safe=False, status=400)
 
             except User.DoesNotExist:
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
