@@ -14,8 +14,6 @@ def course_api(request, id=0):
     if request.method == 'POST':
         data = JSONParser().parse(request)
 
-        # Check if the course is registered ¿?
-
         course_serializer = CourseSerializer(data=data)
         if course_serializer.is_valid():
             course_serializer.save()
@@ -63,6 +61,28 @@ def course_api(request, id=0):
             return JsonResponse("Curso eliminado", safe=False)
 
         except course.DoesNotExist:
+            return JsonResponse("Curso no encontrado", safe=False, status=404)
+
+
+# Upload the video and the image of the course with the name of the course
+@csrf_exempt
+@api_view(['PUT'])
+def upload_course_files(request, course_name):
+    if request.method == 'PUT':
+        try:
+            course = Course.objects.get(name=course_name)
+
+            # Upload the video
+            course.trailer_video_url = request.FILES['trailer_video_url']
+            course.save()
+
+            # Upload the image
+            course.course_image_url = request.FILES['course_image_url']
+            course.save()
+
+            return JsonResponse("Curso actualizado", safe=False)
+
+        except Course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
 
 
