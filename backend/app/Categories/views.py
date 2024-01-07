@@ -14,16 +14,17 @@ def category_api(request, id=0):
     if request.method == 'POST':
         data = JSONParser().parse(request)
 
-        # Check if the category is registered ¿?
-
         category_serializer = CategorySerializer(data=data)
+
         if category_serializer.is_valid():
             category_serializer.save()
             response_data = {'mensaje': f'Categoria agregada'}
+            status = 200
         else:
             response_data = {'mensaje': f'Error al guardar la categoria'}
+            status = 400
 
-        return JsonResponse(response_data, safe=False)
+        return JsonResponse(response_data, safe=False, status=status)
 
     # Read
     elif request.method == 'GET':
@@ -35,19 +36,20 @@ def category_api(request, id=0):
                 category = Category.objects.get(id=category_id)
                 category_serializer = CategorySerializer(category)
                 return JsonResponse(category_serializer.data, safe=False, status=200)
-            except category.DoesNotExist:
+            except Category.DoesNotExist:
                 return JsonResponse("Categoria no encontrada", safe=False, status=404)
         else:
             # Get all Categories
             category = Category.objects.all()
             category_serializer = CategorySerializer(category, many=True)
+
             return JsonResponse(category_serializer.data, safe=False, status=200)
 
     # Update
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
         category = Category.objects.get(id=data['id'])
-        category_serializer = CategorySerializer(category, data=data)
+        category_serializer = CategorySerializer(category, data=data, partial=True)
 
         if category_serializer.is_valid():
             category_serializer.save()
@@ -62,7 +64,7 @@ def category_api(request, id=0):
             category.delete()
             return JsonResponse("Categoria eliminada", safe=False, status=200)
 
-        except category.DoesNotExist:
+        except Category.DoesNotExist:
             return JsonResponse("Categoria no encontrada", safe=False, status=404)
 
 
@@ -70,10 +72,12 @@ def category_api(request, id=0):
 @csrf_exempt
 @api_view(['GET'])
 def get_category_id(request, category_name):
-    try:
-        category = Category.objects.get(name=category_name)
-        category_serializer = CategorySerializer(category)
+    if request.method == 'GET':
+        try:
+            category = Category.objects.get(name=category_name)
+            category_serializer = CategorySerializer(category)
 
-        return JsonResponse(category_serializer.data.get('id'), safe=False, status=200)
-    except category.DoesNotExist:
-        return JsonResponse("Categoria no encontrada", safe=False, status=404)
+            return JsonResponse(category_serializer.data.get('id'), safe=False, status=200)
+
+        except Category.DoesNotExist:
+            return JsonResponse("Categoria no encontrada", safe=False, status=404)
