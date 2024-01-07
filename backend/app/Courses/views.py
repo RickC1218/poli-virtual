@@ -42,16 +42,16 @@ def course_api(request, id=0):
             return JsonResponse(course_serializer.data, safe=False, status=200)
 
     # Update
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         data = JSONParser().parse(request)
         course = Course.objects.get(id=data['id'])
-        course_serializer = CourseSerializer(course, data=data)
+        course_serializer = CourseSerializer(course, data=data, partial=True)
 
         if course_serializer.is_valid():
             course_serializer.save()
-            return JsonResponse("Curso actualizado", safe=False)
+            return JsonResponse({"message": "Curso actualizado"}, safe=False, status=200)
 
-        return JsonResponse("Error al actualizar curso")
+        return JsonResponse({"error": "Error al actualizar curso"}, safe=False, status=400)
 
     # Delete
     elif request.method == 'DELETE':
@@ -73,14 +73,16 @@ def upload_course_files(request, course_name):
             course = Course.objects.get(name=course_name)
 
             # Upload the video
-            course.trailer_video_url = request.FILES['trailer_video_url']
-            course.save()
+            trailer_video_url = request.FILES['trailer_video_url']
 
             # Upload the image
-            course.course_image_url = request.FILES['course_image_url']
-            course.save()
+            course_image_url = request.FILES['course_image_url']
 
-            return JsonResponse("Curso actualizado", safe=False)
+            course_serializer = CourseSerializer(course, data={'trailer_video_url': trailer_video_url, 'course_image_url': course_image_url}, partial=True)
+
+            if course_serializer.is_valid():
+                course_serializer.save()
+                return JsonResponse("Curso actualizado", safe=False)
 
         except Course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
