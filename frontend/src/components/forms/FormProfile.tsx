@@ -382,7 +382,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       className={`${
         type === "new-user"
           ? "col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50"
-          : "col-span-3 md:col-span-3 w-full "
+          : "col-span-4 md:col-span-3 w-full "
       } p-3 md:p-5 flex flex-col justify-center items-center`}
     >
       <h1 className={`text-[38px] ${type === "new-user" ? "" : "hidden"}`}>
@@ -613,7 +613,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleFileChange}
             type="file"
             accept="image/*"
-            className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
+            className="w-[55%] p-2 text-[--principal-red] font-bold file:mr-4 file:py-2 file:px-6  
+            file:rounded-[10px] file:border-0
+            file:text-sm file:font-semibold
+            file:bg-[--principal-blue] file:text-[--light] 
+            hover:file:shadow-md hover:file:shadow-blue-500/50"
           />
         </div>
       </div>

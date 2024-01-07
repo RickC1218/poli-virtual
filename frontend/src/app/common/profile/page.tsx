@@ -9,6 +9,7 @@ import DifferentText from "@/components/tools/DifferentText";
 import icons from "@/components/icons/icons";
 import FormProfile from "@/components/forms/FormProfile";
 import crud_user from "@/app/api/crud_user";
+import StarRating from "@/components/tools/StarRating";
 
 // Define the initial state for a new user
 const initialUserState = {
@@ -44,21 +45,28 @@ export default function Page() {
         </h1>
         {user.role === "student" ? (
           <>
-            <div className="col-span-1 items-start hidden md:block">
-              <FontAwesomeIcon
-                icon={icons.faUser}
-                className="w-[300px] h-[300px] text-[--principal-blue]"
-              />
+            <div className="col-span-4 md:col-span-1 flex flex-col justify-center">
+              <div className="flex justify-center self-start w-full">
+                <div className="bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
+              </div>
+              <div className="flex justify-center items-center w-full pt-5">
+                <FontAwesomeIcon
+                  icon={icons.faUser}
+                  className="w-[300px] h-[300px] text-[--principal-blue]"
+                />
+              </div>
             </div>
             <FormProfile type="profile" />
           </>
         ) : (
           <>
-            <div className="col-span-1 hidden md:block">
-              <FontAwesomeIcon
-                icon={icons.faUser}
-                className="w-[300px] h-[300px] text-[--principal-blue]"
-              />
+            <div className="col-span-4 md:col-span-1 flex flex-col justify-start">
+              <div className="flex justify-center self-start w-full">
+                <div className="bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
+              </div>
+              <div className="flex justify-center items-center w-full pt-5">
+                <StarRating ranking={user.score_teacher} />
+              </div>
             </div>
             <FormProfile type="profile-instructor" />
           </>

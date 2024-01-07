@@ -45,19 +45,14 @@ export default function Page() {
           Perfil del
           <DifferentText color="--principal-red"> instructor</DifferentText>
         </h1>
-        <div className="col-span-1 items-start hidden md:block">
-          <Image
-            src="/PeterParker.jpg"
-            width={350}
-            height={300}
-            alt={`Imagen del instructor`}
-            className="rounded-2xl justify-self-end"
-          />
+        <div className="col-span-4 md:col-span-1 flex flex-col justify-start">
+          <div className="flex justify-center self-start w-full">
+            <div className="bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
+          </div>
           <div className="flex justify-center items-center w-full pt-5">
             <StarRating ranking={user.score_teacher} />
           </div>
         </div>
-        <div className="col-span-4  block md:hidden bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
         <div
           className={`col-span-4 md:col-span-3 w-full p-3 md:p-5 flex flex-col justify-center items-center`}
         >
