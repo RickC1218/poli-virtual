@@ -15,15 +15,7 @@ export interface BannerThemeCardProps {
   cuantity: number;
   duration: number;
   content: Content[] | null;
-  action: "add" | "edit" | "delete" | "read";
-}
-
-interface SubThemeCardFormData {
-  title: string;
-  video_url: string;
-  duration: number;
-  parentId: string;
-  action: "add" | "edit" | "delete" | "read";
+  action: "add" | "edit" | "read" | "delete";
 }
 
 const BannerThemeCard: React.FC<BannerThemeCardProps> = ({
@@ -33,13 +25,14 @@ const BannerThemeCard: React.FC<BannerThemeCardProps> = ({
   duration,
   content,
   action,
+
 }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleExpand = () => {
     setExpanded(!expanded);
   };
-  
+
   const handleAction = () => {
     switch (action) {
       case "add":
