@@ -8,5 +8,4 @@ urlpatterns = [
     path('course/recently-added-courses/', views.recently_added_courses),
     path('course/courses-by-instructor/<str:instructor_name>/', views.courses_by_instructor),
     path('course/<str:category>/', views.courses_by_category),
-    path('course/upload-course-files/<str:course_name>/', views.upload_course_files),
 ]

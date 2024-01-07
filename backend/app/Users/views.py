@@ -16,6 +16,10 @@ from Users.serializers import UserSerializer
 
 from Courses.models import Course
 
+# Validate email
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 
 # API views (Update and delete user - Get enrolled courses)
 @csrf_exempt
@@ -637,9 +641,6 @@ def verify_token(request):
 
 # Verify if it is a valid email
 def is_valid_email(email):
-    from django.core.validators import validate_email
-    from django.core.exceptions import ValidationError
-
     try:
         validate_email(email)
         return True

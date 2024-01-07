@@ -12,9 +12,10 @@ from Courses.serializers import CourseSerializer
 def course_api(request, id=0):
     #Create
     if request.method == 'POST':
-        data = JSONParser().parse(request)
 
-        course_serializer = CourseSerializer(data=data)
+        # Now it can create a couse with the fields trailer_video_url and course_image_url
+        course_serializer = CourseSerializer(data=request.data)
+
         if course_serializer.is_valid():
             course_serializer.save()
             response_data = {'mensaje': f'Curso agregado'}
@@ -43,13 +44,17 @@ def course_api(request, id=0):
 
     # Update
     if request.method == 'PUT':
-        data = JSONParser().parse(request)
-        course = Course.objects.get(id=data['id'])
-        course_serializer = CourseSerializer(course, data=data, partial=True)
 
-        if course_serializer.is_valid():
-            course_serializer.save()
-            return JsonResponse({"message": "Curso actualizado"}, safe=False, status=200)
+        try: # Now it can update the fields trailer_video_url and course_image_url
+            course = Course.objects.get(id=request.data['id'])
+            course_serializer = CourseSerializer(course, data=request.data, partial=True)
+
+            if course_serializer.is_valid():
+                course_serializer.save()
+                return JsonResponse({"message": "Curso actualizado"}, safe=False, status=200)
+
+        except Course.DoesNotExist:
+            return JsonResponse({"error": "Curso no encontrado"}, safe=False, status=404)
 
         return JsonResponse({"error": "Error al actualizar curso"}, safe=False, status=400)
 
@@ -59,30 +64,6 @@ def course_api(request, id=0):
             course = Course.objects.get(id=id)
             course.delete()
             return JsonResponse("Curso eliminado", safe=False)
-
-        except Course.DoesNotExist:
-            return JsonResponse("Curso no encontrado", safe=False, status=404)
-
-
-# Upload the video and the image of the course with the name of the course
-@csrf_exempt
-@api_view(['PUT'])
-def upload_course_files(request, course_name):
-    if request.method == 'PUT':
-        try:
-            course = Course.objects.get(name=course_name)
-
-            # Upload the video
-            trailer_video_url = request.FILES['trailer_video_url']
-
-            # Upload the image
-            course_image_url = request.FILES['course_image_url']
-
-            course_serializer = CourseSerializer(course, data={'trailer_video_url': trailer_video_url, 'course_image_url': course_image_url}, partial=True)
-
-            if course_serializer.is_valid():
-                course_serializer.save()
-                return JsonResponse("Curso actualizado", safe=False)
 
         except Course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
