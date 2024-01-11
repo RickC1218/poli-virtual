@@ -98,12 +98,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   };
 
-   // Onchange for the file input
-   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  // Onchange for the file input
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
       console.log("file", file);
-      setUser({...user, profile_image_url: file});
+      setUser({ ...user, profile_image_url: file });
     }
   };
 
@@ -284,6 +284,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       const userData = getUserData();
       // make sure the session token is available
       if (session_token) {
+        if (!user.profile_image_url) {
+          user.profile_image_url = null;
+        }
         // update the user
         const response = await crud_user.updateUser(userData, session_token);
         message = response;
@@ -386,19 +389,17 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   return (
     <form
       onSubmit={handleRegister}
-      className={`${
-        type === "new-user"
+      className={`${type === "new-user"
           ? "col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50"
           : "col-span-4 md:col-span-3 w-full "
-      } p-3 md:p-5 flex flex-col justify-center items-center`}
+        } p-3 md:p-5 flex flex-col justify-center items-center`}
     >
       <h1 className={`text-[38px] ${type === "new-user" ? "" : "hidden"}`}>
         Registrarse
       </h1>
       <div
-        className={`${
-          user.role === "instructor" ? "md:col-span-3" : "md:col-span-2"
-        } w-full p-3 flex flex-col justify-center items-center`}
+        className={`${user.role === "instructor" ? "md:col-span-3" : "md:col-span-2"
+          } w-full p-3 flex flex-col justify-center items-center`}
       >
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Nombre:</p>
@@ -431,9 +432,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             name="email"
             onChange={handleChange}
             value={user.email}
-            className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${
-              type === "new-user" ? "" : "disabled cursor-not-allowed "
-            }`}
+            className={`bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%] ${type === "new-user" ? "" : "disabled cursor-not-allowed "
+              }`}
             readOnly={type !== "new-user"}
             required
             disabled={type === "be-instructor"}
@@ -459,11 +459,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             <option value="9no">9no semestre</option>
           </select>
         </div>
-        <Image src="" alt="profile image" className="w-[55%]"/>
         <div
-          className={`flex items-center justify-between w-full mx-2 p-2 ${
-            type === "new-user" ? "" : "hidden"
-          }`}
+          className={`flex items-center justify-between w-full mx-2 p-2 ${type === "new-user" ? "" : "hidden"
+            }`}
         >
           <p className="font-bold">Contraseña:</p>
           <input
@@ -474,11 +472,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required={type === "new-user"}
           />
-        I</div>
+        </div>
         <div
-          className={`flex items-center justify-between w-full mx-2 p-2 ${
-            type === "new-user" ? "" : "hidden"
-          }`}
+          className={`flex items-center justify-between w-full mx-2 p-2 ${type === "new-user" ? "" : "hidden"
+            }`}
         >
           <p className="font-bold">Verificación:</p>
           <input
@@ -491,9 +488,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </div>
         <div
-          className={`flex items-center justify-center w-full m-5 p-2 ${
-            type === "new-user" ? "" : "hidden"
-          }`}
+          className={`flex items-center justify-center w-full m-5 p-2 ${type === "new-user" ? "" : "hidden"
+            }`}
         >
           <Button
             text="Registrarse"
@@ -515,25 +511,23 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         {alertMessage && (
           <div className={`${type === "new-user" ? "" : "hidden"}`}>
             <div
-              className={`${
-                alertMessage.startsWith("Registro exitoso") ||
-                alertMessage.startsWith(
-                  "Revisa tu correo electrónico para verificar tu cuenta."
-                )
+              className={`${alertMessage.startsWith("Registro exitoso") ||
+                  alertMessage.startsWith(
+                    "Revisa tu correo electrónico para verificar tu cuenta."
+                  )
                   ? "bg-green-500"
                   : "bg-red-500"
-              } z-40 text-[--light] p-2 rounded-md text-center`}
+                } z-40 text-[--light] p-2 rounded-md text-center`}
             >
               {alertMessage}
             </div>
           </div>
         )}
         <div
-          className={`flex items-center justify-between w-full mx-2 p-2 ${
-            type === "be-instructor" || user.role === "instructor"
+          className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor"
               ? ""
               : "hidden"
-          }`}
+            }`}
         >
           <p className="font-bold">Profesor que te aprueba:</p>
           <input
@@ -546,11 +540,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </div>
         <div
-          className={`flex items-center justify-between w-full mx-2 p-2 ${
-            type === "be-instructor" || user.role === "instructor"
+          className={`flex items-center justify-between w-full mx-2 p-2 ${type === "be-instructor" || user.role === "instructor"
               ? ""
               : "hidden"
-          }`}
+            }`}
         >
           <p className="font-bold">Correo del profesor:</p>
           <input
@@ -564,9 +557,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         </div>
 
         <div
-          className={`py-10 col-span-4 flex items-center justify-center ${
-            type === "be-instructor" ? "" : "hidden"
-          } space-y-2 md:space-x-8 md:space-y-0`}
+          className={`py-10 col-span-4 flex items-center justify-center ${type === "be-instructor" ? "" : "hidden"
+            } space-y-2 md:space-x-8 md:space-y-0`}
         >
           <Link
             key="sendMail"
@@ -585,22 +577,20 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         {alertMessage && (
           <div className={`${type === "be-instructor" ? "" : "hidden"}`}>
             <div
-              className={`${
-                alertMessage.startsWith(
-                  "Comunicate con el profesor para más información"
-                )
+              className={`${alertMessage.startsWith(
+                "Comunicate con el profesor para más información"
+              )
                   ? "bg-green-500"
                   : "bg-red-500"
-              } z-40 text-[--light] p-2 rounded-md text-center`}
+                } z-40 text-[--light] p-2 rounded-md text-center`}
             >
               {alertMessage}
             </div>
           </div>
         )}
         <div
-          className={`flex items-center justify-between w-full mx-2 p-2 ${
-            user.role === "instructor" ? "" : "hidden"
-          }`}
+          className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"
+            }`}
         >
           <p className="font-bold">Descripción:</p>
           <textarea
@@ -613,9 +603,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
           />
         </div>
         <div
-          className={`flex items-center justify-between w-full mx-2 p-2 ${
-            user.role === "instructor" ? "" : "hidden"
-          }`}
+          className={`flex items-center justify-between w-full mx-2 p-2 ${user.role === "instructor" ? "" : "hidden"
+            }`}
         >
           <p className="font-bold">Foto de perfil:</p>
           <input
@@ -633,26 +622,23 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       </div>
       {alertMessage && !isOpen && (
         <div
-          className={`${
-            type === "profile" || "profile-instructor" ? "" : "hidden"
-          }`}
+          className={`${type === "profile" || "profile-instructor" ? "" : "hidden"
+            }`}
         >
           <div
-            className={`${
-              alertMessage.startsWith("Usuario actualizado") ||
-              alertMessage.startsWith("Contraseña actualizada")
+            className={`${alertMessage.startsWith("Usuario actualizado") ||
+                alertMessage.startsWith("Contraseña actualizada")
                 ? "bg-green-500 text-[--light]"
                 : "bg-yellow-500 text-[--gray]"
-            } z-40 p-2 rounded-md text-center`}
+              } z-40 p-2 rounded-md text-center`}
           >
             {alertMessage}
           </div>
         </div>
       )}
       <div
-        className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${
-          type !== "new-user" && type !== "be-instructor" ? "" : "hidden"
-        }`}
+        className={`py-10 col-span-4 flex items-center justify-center flex-wrap md:flex-nowrap md:space-x-8 md:space-y-1 ${type !== "new-user" && type !== "be-instructor" ? "" : "hidden"
+          }`}
       >
         <Link
           key="SignOut"
@@ -713,18 +699,16 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             </div>
             {alertMessage && isOpen && (
               <div
-                className={`${
-                  type === "profile" || type === "profile-instructor"
+                className={`${type === "profile" || type === "profile-instructor"
                     ? ""
                     : "hidden"
-                }`}
+                  }`}
               >
                 <div
-                  className={`${
-                    alertMessage.startsWith("Contraseña actualizada")
+                  className={`${alertMessage.startsWith("Contraseña actualizada")
                       ? "bg-green-500 text-[--light]"
                       : "bg-yellow-500 text-[--gray]"
-                  } z-40 p-2 rounded-md text-center`}
+                    } z-40 p-2 rounded-md text-center`}
                 >
                   {alertMessage}
                 </div>

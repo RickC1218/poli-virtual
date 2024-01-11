@@ -28,7 +28,7 @@ const initialUserState = {
 export default function Page() {
   const [user, setUser] = useState(initialUserState);
 
-  const auxRoute = "";
+  const auxRoute = "http://127.0.0.1:8000";
 
   useEffect(() => {
     async function fetchData() {
