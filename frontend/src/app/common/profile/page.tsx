@@ -23,14 +23,19 @@ const initialUserState = {
   approve_teacher_email: "",
   user_description: "",
   score_teacher: 0,
+  profile_image_url: "",
 };
 export default function Page() {
   const [user, setUser] = useState(initialUserState);
+
+  const auxRoute = "";
 
   useEffect(() => {
     async function fetchData() {
       const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
       const user = await crud_user.getUser(sessionToken || "");
+      user.profile_image_url = `${auxRoute}${user.profile_image_url}`;
+      console.log("USER.PROFILE_IMAGE_URL",user.profile_image_url);
       setUser(user);
     }
     fetchData();
@@ -47,13 +52,21 @@ export default function Page() {
           <>
             <div className="col-span-4 md:col-span-1 flex flex-col justify-center">
               <div className="flex justify-center self-start w-full">
-                <div className="bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
-              </div>
-              <div className="flex justify-center items-center w-full pt-5">
-                <FontAwesomeIcon
-                  icon={icons.faUser}
-                  className="w-[300px] h-[300px] text-[--principal-blue]"
-                />
+                {user.profile_image_url ? (
+                  <div
+                    className={`bg-cover w-[175px] h-[175px] bg-top rounded-full`}
+                    style={{
+                      backgroundImage: `url('${user.profile_image_url}')`,
+                    }}
+                  ></div>
+                ) : (
+                  <div className="w-[175px] h-[175px] rounded-full">
+                    <FontAwesomeIcon
+                      icon={icons.faUser}
+                      className="w-[175px] h-[175px] text-[--principal-blue]"
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <FormProfile type="profile" />
@@ -62,7 +75,21 @@ export default function Page() {
           <>
             <div className="col-span-4 md:col-span-1 flex flex-col justify-start">
               <div className="flex justify-center self-start w-full">
-                <div className="bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
+              {user.profile_image_url ? (
+                  <div
+                    className={`bg-cover w-[175px] h-[175px] bg-top rounded-full`}
+                    style={{
+                      backgroundImage: `url('${user.profile_image_url}')`,
+                    }}
+                  ></div>
+                ) : (
+                  <div className="w-[175px] h-[175px] rounded-full">
+                    <FontAwesomeIcon
+                      icon={icons.faUser}
+                      className="w-[175px] h-[175px] text-[--principal-blue]"
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex justify-center items-center w-full pt-5">
                 <StarRating ranking={user.score_teacher} />

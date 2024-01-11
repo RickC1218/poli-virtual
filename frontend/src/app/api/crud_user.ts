@@ -142,6 +142,7 @@ const crud_user = {
         try {
             const headers = {
                 'Authorization': `Bearer ${session_token}`,
+                "Content-Type": "multipart/form-data",
             };
             const response = await axios.put(`${API_BASE_URL}/user/`, userData, { headers });
             return response.data;

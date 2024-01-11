@@ -12,8 +12,23 @@ interface FormProfileProps {
   type: "new-user" | "be-instructor" | "profile" | "profile-instructor";
 }
 
+// Define el estado inicial para un nuevo usuario
+interface UserState {
+  name: string;
+  lastname: string;
+  email: string;
+  password: string;
+  role: string;
+  semester: string;
+  approve_teacher: string;
+  approve_teacher_email: string;
+  user_description: string;
+  profile_image_url: File | null;
+  score_teacher: number;
+}
+
 // Define the initial state for a new user
-const initialUserState = {
+const initialUserState: UserState = {
   name: "",
   lastname: "",
   email: "",
@@ -23,7 +38,7 @@ const initialUserState = {
   approve_teacher: "",
   approve_teacher_email: "",
   user_description: "",
-  profilePhoto: "",
+  profile_image_url: null,
   score_teacher: 0,
 };
 
@@ -44,8 +59,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const [verificationNew, setVerificationNew] = useState("");
   const [user, setUser] = useState(initialUserState);
   const [emailSent, setEmailSent] = useState(false);
-  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<
-    "string" | undefined>(undefined);
 
   useEffect(() => {
     // Load user data from session storage when the component mounts
@@ -84,19 +97,12 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   };
 
-  // Onchange for the file input
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+   // Onchange for the file input
+   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUser({
-          ...user,
-          profilePhoto: reader.result as string, // Mostrar la vista previa de la imagen
-        });
-        setSelectedProfilePhoto(file as any);
-      };
-      reader.readAsDataURL(file);
+      console.log("file", file);
+      setUser({...user, profile_image_url: file});
     }
   };
 
@@ -222,7 +228,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       approve_teacher_email: user.approve_teacher_email,
       user_description: user.user_description,
       score_teacher: user.score_teacher || 0,
-      profilePhoto: user.profilePhoto
+      profile_image_url: user.profile_image_url
     };
     return userData;
   };
@@ -554,6 +560,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             required={type === "be-instructor" || user.role === "instructor"}
           />
         </div>
+
         <div
           className={`py-10 col-span-4 flex items-center justify-center ${
             type === "be-instructor" ? "" : "hidden"
@@ -613,6 +620,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleFileChange}
             type="file"
             accept="image/*"
+            name="profile_image_url"
             className="w-[55%] p-2 text-[--principal-red] font-bold file:mr-4 file:py-2 file:px-6  
             file:rounded-[10px] file:border-0
             file:text-sm file:font-semibold

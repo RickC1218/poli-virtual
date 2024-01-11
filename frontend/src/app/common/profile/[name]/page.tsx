@@ -6,7 +6,7 @@ import icons from "@/components/icons/icons";
 import Section from "@/components/sections/Section";
 import DifferentText from "@/components/tools/DifferentText";
 import StarRating from "@/components/tools/StarRating";
-import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -21,6 +21,7 @@ const initialUserState = {
   approve_teacher_email: "",
   user_description: "",
   score_teacher: 0,
+  profile_image_url: "",
 };
 
 export default function Page() {
@@ -47,7 +48,16 @@ export default function Page() {
         </h1>
         <div className="col-span-4 md:col-span-1 flex flex-col justify-start">
           <div className="flex justify-center self-start w-full">
-            <div className="bg-cover w-[175px] h-[175px] bg-top rounded-full bg-[url('/PeterParker.jpg')]"></div>
+          {user.profile_image_url ? (
+            <div className={`bg-cover w-[175px] h-[175px] bg-top rounded-full`} style={{ backgroundImage: `url('/${user.profile_image_url}')` }}></div>
+          ): (
+            <div className="w-[175px] h-[175px] rounded-full">
+              <FontAwesomeIcon
+                  icon={icons.faUser}
+                  className="w-[175px] h-[175px] text-[--principal-blue]"
+                />
+            </div>
+          )}          
           </div>
           <div className="flex justify-center items-center w-full pt-5">
             <StarRating ranking={user.score_teacher} />
