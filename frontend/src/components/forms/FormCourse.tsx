@@ -8,7 +8,6 @@ import BannerThemeCard, {
 import crud_user from "@/app/api/crud_user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "../tools/Modal";
-import BannerSubThemeCard from "../cards/BannerSubThemeCard";
 
 interface Instructor {
   email: string;
@@ -28,6 +27,28 @@ interface ThemeCardFormData {
   action: "add" | "edit" | "read" | "delete";
 }
 
+interface CourseState {
+  name: string;
+  description: string;
+  assessment: number;
+  category: string;
+  instructor: string;
+  course_image_url: File | null;
+  trailer_video_url: File | null;
+  modules: ThemeCardFormData[];
+};
+
+const InitialCourseFormData: CourseState = {
+  name: "",
+  description: "",
+  assessment: 0,
+  category: "",
+  instructor: "",
+  course_image_url: null,
+  trailer_video_url: null,
+  modules: [],
+};
+
 const FormCourse = () => {
   const [user, setUser] = useState<Instructor>({
     email: "",
@@ -37,7 +58,7 @@ const FormCourse = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  //const [course, setCourse] = useState<CourseState>(InitialCourseFormData);
   const [classes, setClasses] = useState(0);
 
   const [themeCards, setThemeCards] = useState<BannerThemeCardProps[]>([]);
@@ -49,7 +70,7 @@ const FormCourse = () => {
       cuantity: 0,
       duration: 0,
       content: [],
-      action: "add",
+      action: "add",      
     }
   );
 
@@ -71,15 +92,20 @@ const FormCourse = () => {
     if (files.length > 0) {
       // Assuming you want to handle only the first dropped file
       const droppedFile = files[0];
-      setSelectedFile(droppedFile);
+      setFormData({
+        ...formData,
+        trailer_video_url: droppedFile,
+      });
     }
-
     setIsDragOver(false);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
-    setSelectedFile(file);
+    setFormData({
+      ...formData,
+      course_image_url: file,
+    });
     };
   
   const handleClasses = (event: ChangeEvent<HTMLInputElement>) => {
@@ -128,10 +154,10 @@ const FormCourse = () => {
       } else if (themeCardFormData.content && themeCardFormData.content.length > classes) {
         updatedContent = themeCardFormData.content?.slice(0, classes) || [];
       } else {
-        updatedContent = [...(themeCardFormData.content || [])];
+        updatedContent = [...(themeCardFormData.content ?? [])];
         for (let i = 0; i < classes - (themeCardFormData.content?.length || 0); i++) {
           updatedContent.push({
-            title: `Tema ${(themeCardFormData.content?.length || 0) + i + 1}`,
+            title: `Tema ${(themeCardFormData.content?.length ?? 0) + i + 1}`,
             video_url: "",
           });
         }
@@ -205,13 +231,14 @@ const FormCourse = () => {
     });
   };
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CourseState>({
     name: "",
     description: "",
     assessment: 0,
     category: "",
     instructor: user.name + " " + user.lastname,
-    image: "/frontend/public/course.jpg",
+    course_image_url: null,
+    trailer_video_url: null,
     modules: Array.isArray(themeCards) ? themeCards : [],
   });
 
@@ -268,7 +295,7 @@ const FormCourse = () => {
           onDragLeave={handleDragLeave}
           onDrop={handleFileDrop}
         >
-          {selectedFile === null ? (
+          {formData.course_image_url === null ? (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <FontAwesomeIcon
                 icon={icons.faCloudArrowUp}
@@ -290,13 +317,14 @@ const FormCourse = () => {
                 Archivo cargado exitosamente
               </p>
               <p className="text-xs text-[--principal-red]">
-                {selectedFile.name}
+                {formData.course_image_url.name}
               </p>
             </div>
           )}
           <input
             id={`dropzone-file-${formData.name}`}
             type="file"
+            name="course_image_url"
             className="hidden"
             onChange={handleFileChange}
           />
@@ -383,9 +411,8 @@ const FormCourse = () => {
               <p className="font-bold">Imagen para curso:</p>
               <input
                 onChange={handleFileChange}
-                /*value={formData.image}*/
                 type="file"
-                name="trailervideo"
+                name="course_image_url"
                 className=" w-[60%] p-2 text-[--principal-red] font-bold file:mr-4 file:py-2 file:px-6  
                 file:rounded-[10px] file:border-0
                 file:text-sm file:font-semibold

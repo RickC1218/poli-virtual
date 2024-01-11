@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Button from "../buttons/Button";
 import Modal from "../tools/Modal";
 import icons from "../icons/icons";
@@ -458,6 +459,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             <option value="9no">9no semestre</option>
           </select>
         </div>
+        <Image src="" alt="profile image" className="w-[55%]"/>
         <div
           className={`flex items-center justify-between w-full mx-2 p-2 ${
             type === "new-user" ? "" : "hidden"
@@ -472,7 +474,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
             required={type === "new-user"}
           />
-        </div>
+        I</div>
         <div
           className={`flex items-center justify-between w-full mx-2 p-2 ${
             type === "new-user" ? "" : "hidden"
