@@ -88,6 +88,47 @@ const crud_course = {
       }
     }
   },
+
+  // Create course
+  createCourse: async (courseData: any) => {
+    try {
+      console.log(courseData)
+      const headers = {
+        "Content-Type": "multipart/form-data",
+      };
+      const response = await axios.post(`${API_BASE_URL}/course/`, courseData, { headers });
+      return response.data;
+    } catch (error) {
+      const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+      if (responseError?.response?.status === 404) {
+          return "Error al actualizar el usuario";
+      } else {
+          return "Error desconocido";
+      }
+    }
+  },
+
+  // Update course
+  uploadCourse:  async (courseData: any) => {
+    try {
+        const headers = {
+            "Content-Type": "multipart/form-data",
+        };
+        const hasProfilePictureChanged = courseData.profile_image_url && courseData.profile_image_url === null;
+        const requestBody = hasProfilePictureChanged
+            ? { ...courseData, profile_image_url: courseData.profile_image_url }
+            : { ...courseData };
+        const response = await axios.put(`${API_BASE_URL}/course/`, requestBody, { headers });
+        return response.data;
+    } catch (error) {
+        const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+        if (responseError?.response?.status === 404) {
+            return "Error al actualizar el curso";
+        } else {
+            return "Error desconocido";
+        }
+    }
+},
 };
 
 export default crud_course;

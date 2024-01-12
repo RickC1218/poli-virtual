@@ -3,7 +3,6 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import Button from "../buttons/Button";
 import Modal from "../tools/Modal";
 import icons from "../icons/icons";
@@ -24,7 +23,7 @@ interface UserState {
   approve_teacher: string;
   approve_teacher_email: string;
   user_description: string;
-  profile_image_url: File | null;
+  profile_image_url: File | null | string;
   score_teacher: number;
 }
 
@@ -60,6 +59,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const [verificationNew, setVerificationNew] = useState("");
   const [user, setUser] = useState(initialUserState);
   const [emailSent, setEmailSent] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     // Load user data from session storage when the component mounts
@@ -102,8 +102,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      console.log("file", file);
-      setUser({ ...user, profile_image_url: file });
+      setSelectedFile(file);
     }
   };
 
@@ -284,8 +283,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       const userData = getUserData();
       // make sure the session token is available
       if (session_token) {
-        if (!user.profile_image_url) {
-          user.profile_image_url = null;
+        if (selectedFile) {
+          userData.profile_image_url = selectedFile;
+        } else {
+          userData.profile_image_url = null;
         }
         // update the user
         const response = await crud_user.updateUser(userData, session_token);
@@ -298,7 +299,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         setTimeout(() => {
           router.push("/common/profile");
           router.refresh();
-        }, 5000);
+        });
       } else {
         message = "Probablemente no has iniciado sesión.";
         showAlert(message);
@@ -611,7 +612,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             onChange={handleFileChange}
             type="file"
             accept="image/*"
-            name="profile_image_url"
+            name="selectedFile"
             className="w-[55%] p-2 text-[--principal-red] font-bold file:mr-4 file:py-2 file:px-6  
             file:rounded-[10px] file:border-0
             file:text-sm file:font-semibold

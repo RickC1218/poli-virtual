@@ -8,6 +8,8 @@ import BannerThemeCard, {
 import crud_user from "@/app/api/crud_user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "../tools/Modal";
+import crud_course from "@/app/api/crud_course";
+import { useRouter } from "next/navigation";
 
 interface Instructor {
   email: string;
@@ -27,29 +29,27 @@ interface ThemeCardFormData {
   action: "add" | "edit" | "read" | "delete";
 }
 
+interface Comment {
+  student: string;
+  assessment: number;
+  comment: string;
+}
+
 interface CourseState {
   name: string;
   description: string;
   assessment: number;
   category: string;
   instructor: string;
+  comments?: Comment[];
   course_image_url: File | null;
   trailer_video_url: File | null;
   modules: ThemeCardFormData[];
 };
 
-const InitialCourseFormData: CourseState = {
-  name: "",
-  description: "",
-  assessment: 0,
-  category: "",
-  instructor: "",
-  course_image_url: null,
-  trailer_video_url: null,
-  modules: [],
-};
-
 const FormCourse = () => {
+  const router = useRouter();
+
   const [user, setUser] = useState<Instructor>({
     email: "",
     name: "",
@@ -58,10 +58,12 @@ const FormCourse = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  //const [course, setCourse] = useState<CourseState>(InitialCourseFormData);
+  const [dragVideo, setDragVideo] = useState<File | null>(null);
+  const [dragImage, setDragImage] = useState<File | null>(null);
   const [classes, setClasses] = useState(0);
-
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [themeCards, setThemeCards] = useState<BannerThemeCardProps[]>([]);
+  const [commentCards, setCommentCards] = useState<Comment[]>([]);
 
   const [themeCardFormData, setThemeCardFormData] = useState<ThemeCardFormData>(
     {
@@ -88,25 +90,24 @@ const FormCourse = () => {
   const handleFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
-
     if (files.length > 0) {
-      // Assuming you want to handle only the first dropped file
       const droppedFile = files[0];
-      setFormData({
-        ...formData,
-        trailer_video_url: droppedFile,
-      });
+      setDragVideo(droppedFile);
     }
     setIsDragOver(false);
   };
 
+  const handleFileDrag = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      setDragVideo(file);
+    }
+  };
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
-    setFormData({
-      ...formData,
-      course_image_url: file,
-    });
-    };
+    setDragImage(file);
+  };
   
   const handleClasses = (event: ChangeEvent<HTMLInputElement>) => {
     event.target.name = event.target.value;
@@ -235,8 +236,9 @@ const FormCourse = () => {
     name: "",
     description: "",
     assessment: 0,
-    category: "",
+    category: "Fundamentos de programación",
     instructor: user.name + " " + user.lastname,
+    comments: Array.isArray(commentCards) ?  commentCards: [],
     course_image_url: null,
     trailer_video_url: null,
     modules: Array.isArray(themeCards) ? themeCards : [],
@@ -273,9 +275,58 @@ const FormCourse = () => {
     });
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  //Alert message
+  const showAlert = (message: string) => {
+    setAlertMessage(message);
+    setTimeout(() => {
+      setAlertMessage(null);
+    }, 3000); // close the alert after 3 seconds
+  };
+    
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    console.log(formData);
+    try {
+      if(dragImage === null || dragVideo === null) {
+        showAlert("Por favor, sube una imagen y un video para tu curso");
+        return;
+      } else {
+        // Create a new course
+        formData.course_image_url = dragImage;
+        formData.trailer_video_url = dragVideo;
+        formData.comments = Array.isArray(commentCards) ?  commentCards: [];
+        if (themeCards.length === 0) {
+          showAlert("Por favor, agrega al menos un módulo a tu curso");
+          return;
+        } else {
+          formData.modules = Array.isArray(themeCards) ? themeCards : [];
+          const responseCreate = await crud_course.createCourse(formData);
+          console.log(responseCreate)
+          showAlert("Curso creado con éxito");
+          setFormData({
+            name: "",
+            description: "",
+            assessment: 0,
+            category: "Fundamentos de programación",
+            instructor: user.name + " " + user.lastname,
+            comments: [],
+            course_image_url: null,
+            trailer_video_url: null,
+            modules: [],
+          });
+          setDragImage(null);
+          setDragVideo(null);
+          setThemeCards([]);
+        }
+        // Redirect to the home page
+        /*setTimeout(() => {
+          router.push("/common/profile");
+          router.refresh();
+        });
+        */
+      }
+    } catch (error) {
+      console.error("Error creating course:", error);
+    }
   };
 
   return (
@@ -286,16 +337,17 @@ const FormCourse = () => {
       <div className="col-span-5 lg:col-span-3 self-center rounded-[25px] flex items-center justify-center w-full">
         <label
           htmlFor={`dropzone-file-${formData.name}`}
-          className={`flex flex-col items-center justify-center w-full h-[450px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] ${
-            isDragOver
-              ? "hover:bg-[--medium-gray] hover:border-[--principal-blue] hover:text-[--principal-blue]"
+          className={`flex flex-col items-center justify-center w-full h-[450px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] 
+          ${isDragOver
+              ? "bg-[--medium-gray] border-[--principal-blue] text-[--principal-blue]"
               : ""
-          }`}
+          }
+          `}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleFileDrop}
         >
-          {formData.course_image_url === null ? (
+          {dragVideo === null ? (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <FontAwesomeIcon
                 icon={icons.faCloudArrowUp}
@@ -317,16 +369,16 @@ const FormCourse = () => {
                 Archivo cargado exitosamente
               </p>
               <p className="text-xs text-[--principal-red]">
-                {formData.course_image_url.name}
+                {dragVideo.name}
               </p>
             </div>
           )}
           <input
             id={`dropzone-file-${formData.name}`}
             type="file"
-            name="course_image_url"
+            name="dragVideo"
             className="hidden"
-            onChange={handleFileChange}
+            onChange={handleFileDrag}
           />
         </label>
       </div>
@@ -367,12 +419,12 @@ const FormCourse = () => {
                 <option value="Fundamentos de programación">
                   Fundamentos de programación
                 </option>
-                <option value="Inteligencia Artificial">
-                  Inteligencia Artificial
+                <option value="Inteligencia artificial">
+                  Inteligencia artificial
                 </option>
                 <option value="Bases de datos">Bases de datos</option>
-                <option value="Seguridad informática">
-                  Seguridad informática
+                <option value="Seguridad Informática">
+                  Seguridad Informática
                 </option>
                 <option value="Arquitectura de computadoras">
                   Arquitectura de computadoras
@@ -391,7 +443,7 @@ const FormCourse = () => {
                 <option value="DevOps y automatización">
                   DevOps y automatización
                 </option>
-                <option value="Testing y Q/A">Testing y Q/A </option>
+                <option value="QA Testing">QA Testing</option>
               </select>
             </div>
             <div
@@ -412,7 +464,7 @@ const FormCourse = () => {
               <input
                 onChange={handleFileChange}
                 type="file"
-                name="course_image_url"
+                name="dragImage"
                 className=" w-[60%] p-2 text-[--principal-red] font-bold file:mr-4 file:py-2 file:px-6  
                 file:rounded-[10px] file:border-0
                 file:text-sm file:font-semibold
@@ -521,7 +573,18 @@ const FormCourse = () => {
           )}
         </div>
       </Modal>
-      
+      {alertMessage && (
+        <div className={`w-full`}>
+          <div
+            className={`${alertMessage.startsWith("Curso creado con éxito")
+                ? "bg-green-500"
+                : "bg-red-500"
+              } z-40 text-[--light] p-2 rounded-md text-center`}
+          >
+            {alertMessage}
+          </div>
+        </div>
+      )}
       <div className="col-span-5 justify-items-center">
         <Button
           text="Crear curso"

@@ -35,11 +35,10 @@ export default function Page() {
       const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
       const user = await crud_user.getUser(sessionToken || "");
       user.profile_image_url = `${auxRoute}${user.profile_image_url}`;
-      console.log("USER.PROFILE_IMAGE_URL",user.profile_image_url);
       setUser(user);
     }
     fetchData();
-  }, []);
+  }, [user]);
 
   return (
     <>
