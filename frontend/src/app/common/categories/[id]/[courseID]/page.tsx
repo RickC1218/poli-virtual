@@ -9,7 +9,7 @@ import StarRating from "@/components/tools/StarRating";
 import BannerThemeCard from "@/components/cards/BannerThemeCard";
 import CommentCard from "@/components/cards/CommentCard";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import crud_category from "@/app/api/crud_category";
 import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
@@ -40,7 +40,8 @@ interface Course {
   instructor: string;
   description: string;
   assessment: number;
-  image: string;
+  course_image_url: string;
+  trailer_video_url: string;
   comments: Comment[];
   modules: Module[];
   category: string;
@@ -53,6 +54,10 @@ export default function Page() {
 
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [course, setCourse] = useState<Course | undefined>(undefined);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const auxRoute = "http://127.0.0.1:8000";
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +70,11 @@ export default function Page() {
           setCategory(categoryData as Category);
           setCourse(courseData as Course);
           courseData.courseID = courseID;
+          courseData.course_image_url = `${auxRoute}${courseData.course_image_url}`;
+          courseData.trailer_video_url = `${auxRoute}${courseData.trailer_video_url}`;
+
+          // asign video to ref
+          videoRef.current = courseData.trailer_video_url;
         } else {
           routerNotFound.push("/common/not-found");
         }
@@ -112,12 +122,14 @@ export default function Page() {
       </div>
       <div className="grid grid-cols-1 gap-0 lg:grid-cols-5 lg:gap-2 w-full p-6 md:px-20 md:py-10">
         <div className="col-span-5 lg:col-span-3 self-center">
-          <iframe
-            src="https://www.youtube.com/embed/iT4UOkyI09k?si=lY8CphkWJaNdWMhS"
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            className="w-full h-[450px] rounded-[25px] contrast-50"
-          ></iframe>
+        <video
+          ref={videoRef}
+          controls
+          className="w-full h-[450px] rounded-[25px]"
+        >
+          <source src={course.trailer_video_url} type="video/mp4" />
+          <track kind="captions" src="path_to_captions.vtt" label="Captions" />
+        </video>
         </div>
         <div className="col-span-5 lg:col-span-2 px-4 flex flex-col justify-between items-center sm:items-start">
           <div className="pt-6 md:pt-0">
@@ -156,7 +168,7 @@ export default function Page() {
                 cuantity={10}
                 duration={120}
                 content={module.content}
-                onEdit={() => "read"}
+                action="read"
               />
             </div>
           ))

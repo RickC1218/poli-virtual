@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import icons from '../icons/icons';
-import Image from 'next/image';
 import Link from 'next/link';
 import StarRating from '../tools/StarRating';
 import { useEffect, useState } from 'react';
@@ -22,6 +21,8 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, ass
 
   const [categoryID, setCategoryID] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  const auxRoute = "http://127.0.0.1:8000";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,13 +81,12 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, ass
       href={courseLink.path}
     >
       <div className="p-2 bg-[--white] border border-[--high-gray] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[431px] ">
-        <Image
-          src={image}
-          width={411}
-          height={301}
-          alt={`Imagen de ${title}`}
-          className="rounded-2xl"
-        />
+        <div
+          className={`bg-cover w-[411px] h-[301px] bg-center rounded-2xl`}
+          style={{
+            backgroundImage: `url('${auxRoute}${image}')`,
+          }}
+        ></div>
         <div className='grid grid-cols-4 gap-1'>
           <div className={`pt-2.5 col-span-3 ${state !== 'none' ? 'col-span-2' : ''} `}>
             <div className="mb-5 px-0.5 w-[100%]">

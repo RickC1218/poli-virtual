@@ -93,6 +93,9 @@ const crud_course = {
   createCourse: async (courseData: any) => {
     try {
       console.log(courseData)
+      courseData.modules = JSON.stringify(courseData.modules);
+      courseData.comments = JSON.stringify(courseData.comments);
+      console.log(courseData)
       const headers = {
         "Content-Type": "multipart/form-data",
       };

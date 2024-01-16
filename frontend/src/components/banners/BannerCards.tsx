@@ -26,14 +26,14 @@ interface Instructor {
   semester: string;
   approve_teacher: string;
   score_teacher: number;
-  image: string;
+  profile_image_url: string;
 }
 interface Course {
   id: number;
   instructor: string;
   name: string;
   assessment: number;
-  image: string;
+  course_image_url: string;
   category: string;
   state: "none" | "enrolled" | "completed" | "in-progress";
 }
@@ -100,7 +100,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
                     title={course.name}
                     instructor={course.instructor}
                     assessment={course.assessment}
-                    image="/course.jpg"
+                    image={course.course_image_url ? course.course_image_url : "/course.jpg"}
                     category={course.category}
                     state={course.state}
                   />
@@ -155,7 +155,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
                   title={course.name}
                   instructor={course.instructor}
                   assessment={course.assessment}
-                  image="/course.jpg"
+                  image={course.course_image_url ? course.course_image_url : "/course.jpg"}
                   category={course.category}
                   state={state}
                 />
@@ -178,7 +178,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
                   lastname={instructor.lastname}
                   semester={`Estudiante de ${instructor.semester} semestre`}
                   tutor={`Ing. ${instructor.approve_teacher}`}
-                  image="/PeterParker.jpg"
+                  image={instructor.profile_image_url ? instructor.profile_image_url : "/PeterParker.jpg"}
                   ranking={instructor.score_teacher}
                 />
               </div>

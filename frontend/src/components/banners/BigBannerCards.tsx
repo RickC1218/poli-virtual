@@ -13,7 +13,7 @@ interface Course {
   instructor: string;
   name: string;
   assessment: number;
-  image: string;
+  course_image_url: string;
   category: BigBannerCardsProps["category"];
   state: "none" | "enrolled" | "completed" | "in-progress";
 }
@@ -26,7 +26,7 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const params = useParams();
-
+  
   // get courses by category
   const getCourses = async () => {
     try {
@@ -54,6 +54,7 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
   useEffect(() => {
     getCourses();
     if (localStorage.getItem("token")) getEnrolled();
+
   }, []);
 
   return (
@@ -67,7 +68,7 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
               title={course.name}
               instructor={course.instructor}
               assessment={course.assessment}
-              image="/course.jpg"
+              image={course.course_image_url ? course.course_image_url : ""}
               category={category}
               state={course.state}
             />

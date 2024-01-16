@@ -29,12 +29,14 @@ export default function Page() {
   const params = useParams();
   const userName = params.name as string;
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const auxRoute = "http://127.0.0.1:8000";
 
   useEffect(() => {
     async function fetchData() {
       setIsUserLoggedIn(localStorage.getItem("token") !== null);
-      const storedUser = await crud_user.getInstructor(userName);
-      setUser({ ...initialUserState, ...storedUser });
+      const user = await crud_user.getInstructor(userName);
+      user.profile_image_url = `${auxRoute}${user.profile_image_url}`;
+      setUser(user);
     }
     fetchData();
   });
@@ -49,7 +51,7 @@ export default function Page() {
         <div className="col-span-4 md:col-span-1 flex flex-col justify-start">
           <div className="flex justify-center self-start w-full">
           {user.profile_image_url ? (
-            <div className={`bg-cover w-[175px] h-[175px] bg-top rounded-full`} style={{ backgroundImage: `url('/${user.profile_image_url}')` }}></div>
+            <div className={`bg-cover w-[175px] h-[175px] bg-top rounded-full`} style={{ backgroundImage: `url('${user.profile_image_url}')` }}></div>
           ): (
             <div className="w-[175px] h-[175px] rounded-full">
               <FontAwesomeIcon

@@ -251,11 +251,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       // make sure the session token is available
       if (session_token) {
         // update the user
-        const response = await crud_user.sendEmailToBeInstructor(
+        await crud_user.sendEmailToBeInstructor(
           userData,
           session_token
         );
-        message = response;
         showAlert("Comunicate con el profesor para más información");
 
         setEmailSent(true);
