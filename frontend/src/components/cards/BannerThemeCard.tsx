@@ -170,9 +170,11 @@ const BannerThemeCard: React.FC<BannerThemeCardProps & {initialSubThemes: SubThe
   useEffect(() => {
     async function fetchData() {
       try {
+        console.log("initialSubThemes",initialSubThemes)
+        setSubThemeCards(initialSubThemes);
         setFormSubData({
           ...formSubData,
-          content: subThemeCards.map((subThemeCard) => ({
+          content: initialSubThemes.map((subThemeCard) => ({
             title: subThemeCard.title,
             duration: subThemeCard.duration,
             parentId: subThemeCard.parentId,
@@ -180,7 +182,6 @@ const BannerThemeCard: React.FC<BannerThemeCardProps & {initialSubThemes: SubThe
             action: "add",
           })),
         });
-        handleAddSubThemeCard();
       } catch (error) {
         console.error(error);
       }
