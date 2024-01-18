@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "../tools/Modal";
 import crud_course from "@/app/api/crud_course";
 import { useRouter } from "next/navigation";
+import { BannerSubThemeCardProps } from "../cards/BannerSubThemeCard";
 
 interface Instructor {
   email: string;
@@ -62,7 +63,7 @@ const FormCourse = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [dragVideo, setDragVideo] = useState<File | null>(null);
   const [dragImage, setDragImage] = useState<File | null>(null);
-  const [classes, setClasses] = useState(0);
+  const [classes, setClasses] = useState(1);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [commentCards, setCommentCards] = useState<Comment[]>([]);
 
@@ -90,6 +91,20 @@ const FormCourse = () => {
     setIsDragOver(false);
   };
 
+  // Update the subthemes of a theme card
+  const updateSubThemes = (index: number, updatedSubThemes: BannerSubThemeCardProps[]) => {
+    if (index !== -1) {
+      setThemeCards((prevThemeCards) => {
+        const updatedThemeCards = [...prevThemeCards];
+        updatedThemeCards[index] = {
+          ...updatedThemeCards[index],
+          content: updatedSubThemes,
+        };
+        return updatedThemeCards;
+      });
+    }
+  };
+
   const handleFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
@@ -115,7 +130,10 @@ const FormCourse = () => {
   const handleClasses = (event: ChangeEvent<HTMLInputElement>) => {
     event.target.name = event.target.value;
     const inputValue = parseInt(event.target.value, 10);
-    const newValue = isNaN(inputValue) ? 0 : Math.max(0, inputValue);
+    let newValue = isNaN(inputValue) ? 0 : Math.max(0, inputValue);
+    if (newValue === 0) {
+      newValue = 1;
+    }
     setClasses(newValue);
   };
 
@@ -284,8 +302,7 @@ const FormCourse = () => {
         console.error("Error fetching user:", error);
       }
     }
-
-    fetchData();
+    fetchData(); 
   }, []);
 
   const handleChange = (
@@ -499,8 +516,11 @@ const FormCourse = () => {
         <h3 className="text-[32px] text-start py-4">Temario del curso:</h3>
         {themeCards.map((themeCard, index) => (
           <div key={index} className="mb-4 relative">
-            <BannerThemeCard {...themeCard} action="edit" 
-            initialSubThemes={themeCard.content ?? []}
+            <BannerThemeCard 
+              {...themeCard} 
+              action="edit" 
+              initialSubThemes={themeCard.content ?? []}
+              updateSubThemes={updateSubThemes}
             />
             <div className="absolute top-0 right-0 m-2 p-2 flex space-x-2 cursor-pointer">
               <button type="button" onClick={() => handleEditThemeCard(index)}>
