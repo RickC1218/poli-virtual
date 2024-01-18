@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import icons from '../icons/icons';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,11 +10,24 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+
+  useEffect(() => {
+    if (isOpen) {
+      // Evita que el scroll de fondo sea posible cuando el modal está abierto
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+  
   if (!isOpen) return null;
 
-  return (
-    <div className='static'>
-      <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-50">
+  return ReactDOM.createPortal(
+      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-50">
         <div className="bg-transparent rounded-xl flex flex-col-reverse">
           {children}
           <button
@@ -23,8 +37,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
             <FontAwesomeIcon icon={icons.faCircleXmark} className={`text-3xl`} />
           </button>
         </div>
-      </div>
-    </div>
+      </div>,
+      document.body
   );
 };
 

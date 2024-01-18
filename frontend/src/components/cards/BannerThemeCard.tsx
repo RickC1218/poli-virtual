@@ -1,62 +1,197 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import icons from "../icons/icons";
-import BannerSubThemeCard from "./BannerSubThemeCard";
+import BannerSubThemeCard, { BannerSubThemeCardProps } from "./BannerSubThemeCard";
+import Button from "../buttons/Button";
+import Modal from "../tools/Modal";
+import { SubThemeCardFormData } from "../forms/FormCourse";
 
-interface Content {
-  title: string;
-  video_url: string;
-}
 export interface BannerThemeCardProps {
   title: string;
   description: string;
   cuantity: number;
   duration: number;
-  content: Content[] | null;
+  content: SubThemeCardFormData[] | null;
   action: "add" | "edit" | "read" | "delete";
 }
 
-const BannerThemeCard: React.FC<BannerThemeCardProps> = ({
+const BannerThemeCard: React.FC<BannerThemeCardProps & {initialSubThemes: SubThemeCardFormData[]}> = ({
   title,
   description,
   cuantity,
   duration,
   content,
   action,
-
+  initialSubThemes
 }) => {
   const [expanded, setExpanded] = useState(false);
-
+  
   const handleExpand = () => {
     setExpanded(!expanded);
   };
 
-  const handleAction = () => {
-    switch (action) {
-      case "add":
-        console.log("add");
-        break;
-      case "edit":
-        console.log("edit");
-        break;
-      case "delete":
-        console.log("delete");
-        break;
-      case "read":
-        console.log("read");
-        break;
-      default:
-        console.log("default");
-        break;
+  const [editingSubIndex, setEditingSubIndex] = useState<number | null>(null);
+  const [subThemeCards, setSubThemeCards] = useState<BannerSubThemeCardProps[]>([]);
+
+  const [subThemeCardFormData, setSubThemeCardFormData] = useState<SubThemeCardFormData>({
+    title: "",
+    duration: 0,
+    parentId: "",
+    video_url: "",
+    action: "add",
+  });
+
+  const [formSubData, setFormSubData] = useState<BannerThemeCardProps>({
+    title: "",
+    description: "",
+    cuantity: 0,
+    duration: 0,
+    content: subThemeCards.map((subThemeCard) => ({
+      title: subThemeCard.title,
+      duration: subThemeCard.duration,
+      parentId: subThemeCard.parentId,
+      video_url: subThemeCard.video_url,
+      action: "add",
+    })),
+    action: "add",
+  });
+
+  const [isSubOpen, setIsSubOpen] = useState(false);
+
+  const handleOpenModal = () => setIsSubOpen(true);
+  const handleCloseModal = () => setIsSubOpen(false);
+
+  const handleAddSubThemeCard = () => {
+    if (subThemeCardFormData.action === "add") {
+      const newSubThemeCard: SubThemeCardFormData = {
+        title: subThemeCardFormData.title,
+        duration: subThemeCardFormData.duration,
+        parentId: subThemeCardFormData.parentId,
+        video_url: subThemeCardFormData.video_url,
+        action: "add",
+      };
+
+      setSubThemeCards((prevSubThemesCards) => [
+        ...prevSubThemesCards, 
+        newSubThemeCard
+      ]);
+
+      setFormSubData((prevFormSubData) => {
+        if(prevFormSubData.content === null) return prevFormSubData;
+        const updatedContent = [...prevFormSubData.content, newSubThemeCard];
+        return {
+          ...prevFormSubData,
+          content: updatedContent,
+        };
+
+      });
+    } else if (subThemeCardFormData.action === "edit" && editingSubIndex !== null) {
+      const updatedSubThemeCard = [...subThemeCards];
+
+      //------------------------------------------
+      updatedSubThemeCard[editingSubIndex] = {
+        title: subThemeCardFormData.title,
+        duration: subThemeCardFormData.duration,
+        parentId: subThemeCardFormData.parentId,
+        video_url: subThemeCardFormData.video_url,
+        action: "edit",
+      };
     }
+    setEditingSubIndex(null);
+    handleCloseModal();
+  }
+
+  const handleEditSubThemeCard = (index: number) => {
+    console.log(subThemeCards[index])
+    const selectedSubThemeCard = subThemeCards[index];
+    setSubThemeCardFormData(
+      {
+        title: selectedSubThemeCard.title,
+        duration: selectedSubThemeCard.duration,
+        parentId: selectedSubThemeCard.parentId,
+        video_url: selectedSubThemeCard.video_url,
+        action: "edit",
+      }
+    );
+    setEditingSubIndex(index);
+    handleOpenModal();
+  }
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
   };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+
+    if (files.length > 0) {
+      // Assuming you want to handle only the first dropped file
+      const droppedFile = files[0];
+      setSelectedFile(droppedFile);
+    }
+
+    setIsDragOver(false);
+  };
+
+  const handleSubThemeCardFormChange = (e: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
+    setSubThemeCardFormData({
+      ...subThemeCardFormData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  
+  const handleRemoveSubThemeCard = (index: number) => () => {
+    setSubThemeCards((prevSubThemeCards) =>
+      prevSubThemeCards.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    setSelectedFile(file);
+    console.log("file: ", file);
+  };
+
+  const handleUploadFileClick = () => {
+    document.getElementById("dropzone-file")?.click();
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setFormSubData({
+          ...formSubData,
+          content: subThemeCards.map((subThemeCard) => ({
+            title: subThemeCard.title,
+            duration: subThemeCard.duration,
+            parentId: subThemeCard.parentId,
+            video_url: subThemeCard.video_url,
+            action: "add",
+          })),
+        });
+        handleAddSubThemeCard();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <>
       <div className="flex items-center bg-[--white] rounded-[32px] p-4 my-1 border-2 border-[--medium-gray]">
-        <button onClick={handleExpand}>
+        <button type="button" onClick={handleExpand}>
           <div className="w-[50px] h-[50px] rounded-2xl bg-[--principal-red] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-red-500/50">
             <FontAwesomeIcon
               icon={icons.faChevronRight}
@@ -79,15 +214,102 @@ const BannerThemeCard: React.FC<BannerThemeCardProps> = ({
           </div>
         )}
       </div>
-      {expanded &&
-        content?.map((content, index) => (
-          <div key={index} className="w-full mb-1">
-            <BannerSubThemeCard
-              title={content.title}
-              duration={0}
-              parentId={title}
-              action={action}
-            />
+      {expanded && action !== "read" &&
+        content?.map((subthemeCard, index) => (
+          <div key={index} className="relative mb-4">
+            <BannerSubThemeCard {...subthemeCard} action="edit"/>
+            <div className="absolute top-3 right-12 flex space-x-2 cursor-pointer">
+                <button type="button" onClick={() => handleEditSubThemeCard(index)}>
+                  <div className="w-[50px] h-[50px] rounded-2xl bg-[--gray] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-gray-500/50">
+                    <FontAwesomeIcon
+                      icon={icons.faPenToSquare}
+                      className={`text-[--white] transform`}
+                    />
+                  </div>
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => handleRemoveSubThemeCard(index)}>
+                  <div className="w-[50px] h-[50px] rounded-2xl bg-[--principal-red] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-red-500/50">
+                    <FontAwesomeIcon
+                      icon={icons.faCircleXmark}
+                      className={`text-[--white] transform`}
+                    />
+                  </div>
+                </button>
+              </div>
+            <Modal isOpen={isSubOpen} onClose={handleCloseModal}>
+              <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
+              <div className="flex flex-col w-full p-5">
+              <div className={`flex items-center justify-around w-full`}>
+                <p className="font-bold">Título de la clase:</p>
+                <input
+                  type="text"
+                  name="title"
+                  onChange={handleSubThemeCardFormChange}
+                  value={subThemeCardFormData.title}
+                  className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[60%]"
+                  required
+                />
+              </div>
+              <p className="font-bold">Video de este subtema:</p>
+              <label
+                htmlFor={`dropzone-file-${subThemeCardFormData.title}`}
+                className={`flex flex-col items-center justify-center w-full h-[250px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] ${
+                  isDragOver
+                    ? "hover:bg-[--medium-gray] hover:border-[--principal-blue] hover:text-[--principal-blue]"
+                    : ""
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleFileDrop}
+              >
+                {selectedFile === null ? (
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <FontAwesomeIcon
+                      icon={icons.faCloudArrowUp}
+                      className="w-[50px] h-[50px] text-[--principal-blue]"
+                    />
+                    <p className="mb-2 text-sm text-[--principal-blue] ">
+                      Da click y escoge el video de esta sesión o arrastralo aquí.
+                    </p>
+                    <p className="text-xs text-[--gray]">MP4 (Max 100MB)</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <FontAwesomeIcon
+                      icon={icons.faCheck}
+                      className="w-[50px] h-[50px] text-[--principal-blue]"
+                    />
+                    <p className="mb-2 text-sm text-[--principal-blue]">
+                      Archivo cargado exitosamente
+                    </p>
+                    <p className="text-xs text-[--principal-red]">
+                      {selectedFile.name}
+                    </p>
+                  </div>
+                )}
+                <input id={`dropzone-file-${subThemeCardFormData.title}`} type="file" onChange={handleFileChange} className="hidden" />
+              </label>
+              <div className="flex justify-center space-x-2 pt-5">
+                <Button
+                  text="Actualizar"
+                  icon={icons.faRotateRight}
+                  color="blue"
+                  type="small"
+                  onClick={handleAddSubThemeCard}
+                />
+                <Button
+                  text="Cancelar"
+                  icon={icons.faCircleXmark}
+                  color="red"
+                  type="small"
+                  onClick={handleCloseModal}
+                />
+              </div>
+            </div>
+              </div>
+            </Modal>
           </div>
         ))}
     </>
