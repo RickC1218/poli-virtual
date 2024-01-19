@@ -84,6 +84,12 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
+# AWS Configuration
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_QUERYSTRING_AUTH = False
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -143,3 +149,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de almacenamiento para archivos estáticos y multimedia
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
