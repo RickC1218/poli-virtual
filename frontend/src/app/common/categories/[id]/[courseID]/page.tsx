@@ -28,11 +28,13 @@ interface Module {
   description: string;
   duration: number;
   cuantity: number;
-  content: Content[]
+  content: Content[];
 }
 interface Content {
   title: string;
   video_url: string;
+  duration: number;
+  parentId: string;  
 }
 interface Course {
   courseID: number;
@@ -57,7 +59,6 @@ export default function Page() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const auxRoute = "http://127.0.0.1:8000";
-
 
   useEffect(() => {
     const fetchData = async () => {

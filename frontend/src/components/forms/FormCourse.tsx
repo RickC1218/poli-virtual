@@ -1,43 +1,19 @@
 "use client";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/navigation";
+
 import Button from "../buttons/Button";
 import icons from "../icons/icons";
-import BannerThemeCard, {
-  BannerThemeCardProps,
-} from "../cards/BannerThemeCard";
 import crud_user from "@/app/api/crud_user";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Modal from "../tools/Modal";
 import crud_course from "@/app/api/crud_course";
-import { useRouter } from "next/navigation";
-import { BannerSubThemeCardProps } from "../cards/BannerSubThemeCard";
+import FormSyllabus from "./FormSyllabus";
 
 interface Instructor {
   email: string;
   name: string;
   lastname: string;
 }
-interface ThemeCardFormData {
-  title: string;
-  description: string;
-  cuantity: number;
-  duration: number;
-  content: SubThemeCardFormData[] | null;
-  action: "add" | "edit" | "read" | "delete";
-}
-export interface SubThemeCardFormData {
-  title: string;
-  duration: number;
-  parentId: string;
-  action: "add" | "edit" | "read" | "delete";
-  video_url: string;
-}
-interface Comment {
-  student: string;
-  assessment: number;
-  comment: string;
-}
-
 interface CourseState {
   name: string;
   description: string;
@@ -47,7 +23,27 @@ interface CourseState {
   comments?: Comment[];
   course_image_url: File | null;
   trailer_video_url: File | null;
-  modules: ThemeCardFormData[];
+  modules: Module[];
+}
+interface Comment {
+  student: string;
+  assessment: number;
+  comment: string;
+}
+export interface Module {
+  title: string;
+  description: string;
+  cuantity: number;
+  duration: number;
+  content: Content[];
+  action: "add" | "edit" | "read" | "delete";
+}
+export interface Content {
+  title: string;
+  duration: number;
+  video_url: File | null;
+  parentId: string;
+  action: "add" | "edit" | "read" | "delete";
 }
 
 const FormCourse = () => {
@@ -59,28 +55,21 @@ const FormCourse = () => {
     lastname: "",
   });
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [dragVideo, setDragVideo] = useState<File | null>(null);
-  const [dragImage, setDragImage] = useState<File | null>(null);
-  const [classes, setClasses] = useState(1);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [commentCards, setCommentCards] = useState<Comment[]>([]);
-
-  const [themeCards, setThemeCards] = useState<BannerThemeCardProps[]>([]);
-
-  const [themeCardFormData, setThemeCardFormData] = useState<ThemeCardFormData>(
-    {
-      title: "",
-      description: "",
-      cuantity: 0,
-      duration: 0,
-      content: [],
-      action: "add",
-    }
-  );
-
   const [isDragOver, setIsDragOver] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  
+  /* Create course */
+  const [course, setCourse] = useState<CourseState>({
+    name: "",
+    description: "",
+    assessment: 0,
+    category: "Fundamentos de programación",
+    instructor: user.name + " " + user.lastname,
+    course_image_url: null,
+    trailer_video_url: null,
+    modules: [],
+    comments: [],
+  });
 
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -91,230 +80,53 @@ const FormCourse = () => {
     setIsDragOver(false);
   };
 
-  // Update the subthemes of a theme card
-  const updateSubThemes = (index: number, updatedSubThemes: BannerSubThemeCardProps[]) => {
-    if (index !== -1) {
-      setThemeCards((prevThemeCards) => {
-        const updatedThemeCards = [...prevThemeCards];
-        updatedThemeCards[index] = {
-          ...updatedThemeCards[index],
-          content: updatedSubThemes,
-        };
-        return updatedThemeCards;
-      });
-    }
-  };
-
-  const handleFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+  const handleVideoDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      const droppedFile = files[0];
-      setDragVideo(droppedFile);
+      const droppedFile = files[files.length - 1];
+      setCourse({
+        ...course,
+        trailer_video_url: droppedFile,
+      });
     }
     setIsDragOver(false);
   };
 
-  const handleFileDrag = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
+  const handleVideoDrag = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
-      setDragVideo(file);
+      setCourse({
+        ...course,
+        trailer_video_url: file,
+      });
     }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    setDragImage(file);
-  };
-
-  const handleClasses = (event: ChangeEvent<HTMLInputElement>) => {
-    event.target.name = event.target.value;
-    const inputValue = parseInt(event.target.value, 10);
-    let newValue = isNaN(inputValue) ? 0 : Math.max(0, inputValue);
-    if (newValue === 0) {
-      newValue = 1;
-    }
-    setClasses(newValue);
-  };
-
-  // Open and close the modal
-  const handleOpenModal = () => setIsOpen(true);
-  const handleCloseModal = () => setIsOpen(false);
-
-  const handleAddThemeCard = () => {
-    if (themeCardFormData.action === "add") {
-      const newThemeCard: ThemeCardFormData = {
-        title: themeCardFormData.title,
-        description: themeCardFormData.description,
-        cuantity: themeCardFormData.cuantity,
-        duration: themeCardFormData.duration,
-        content: Array.from(Array(classes).keys()).map((i) => ({
-          title: `Tema ${i + 1}`,
-          duration: 0,
-          parentId: themeCardFormData.title,
-          action: "add",
-          video_url: "",
-        })),
-        action: "add",
-      };
-
-      setThemeCards((prevThemeCards) => [...prevThemeCards, newThemeCard]);
-
-      setFormData((prevFormData) => {
-        const updatedModules = [...prevFormData.modules, newThemeCard];
-        return { ...prevFormData, modules: updatedModules };
-      });
-    } else if (themeCardFormData.action === "edit" && editingIndex !== null) {
-      const updatedThemeCards = [...themeCards];
-
-      let updatedContent: SubThemeCardFormData[] = [];
-
-      if (themeCardFormData.content?.length === classes) {
-        updatedContent = themeCardFormData.content;
-      } else if (
-        themeCardFormData.content &&
-        themeCardFormData.content.length > classes
-      ) {
-        updatedContent = themeCardFormData.content?.slice(0, classes) || [];
-      } else {
-        updatedContent = [...(themeCardFormData.content ?? [])];
-        for (
-          let i = 0;
-          i < classes - (themeCardFormData.content?.length || 0);
-          i++
-        ) {
-          updatedContent.push({
-            title: `Tema ${i + 1}`,
-            duration: 0,
-            parentId: themeCardFormData.title,
-            action: "add",
-            video_url: "",
-          });
-        }
-      }
-
-      updatedThemeCards[editingIndex] = {
-        title: themeCardFormData.title,
-        description: themeCardFormData.description,
-        cuantity: themeCardFormData.cuantity,
-        duration: themeCardFormData.duration,
-        content: updatedContent,
-        action: "edit",
-      };
-
-      setThemeCards(updatedThemeCards);
-
-      setFormData((prevFormData) => {
-        const updatedModules = [...prevFormData.modules];
-        updatedModules[editingIndex] = {
-          title: themeCardFormData.title,
-          description: themeCardFormData.description,
-          cuantity: themeCardFormData.cuantity,
-          duration: themeCardFormData.duration,
-          content: updatedContent,
-          action: "edit",
-        };
-
-        return { ...prevFormData, modules: updatedModules };
+    const file = event.target.files?.[0];
+    if (file) {
+      setCourse({
+        ...course,
+        course_image_url: file,
       });
     }
-    setEditingIndex(null);
-    handleCloseModal();
-    handleEraseThemeCardForm();
   };
 
-  const handleEditThemeCard = (index: number) => {
-    const selectedThemeCard = themeCards[index];
-    setThemeCardFormData({
-      title: selectedThemeCard.title,
-      description: selectedThemeCard.description,
-      cuantity: selectedThemeCard.cuantity,
-      duration: selectedThemeCard.duration,
-      content: selectedThemeCard.content,
-      action: "edit",
-    });
-    setEditingIndex(index);
-    setClasses(selectedThemeCard.content?.length ?? 0);
-    handleOpenModal();
-  };
-
-  const handleEraseThemeCardForm = () => {
-    setClasses(0);
-    setThemeCardFormData({
-      title: "",
-      description: "",
-      cuantity: 0,
-      duration: 0,
-      content: [],
-      action: "add",
-    });
-  };
-
-  const handleRemoveThemeCard = (index: number) => {
-    setThemeCards((prevThemeCards) =>
-      prevThemeCards.filter((_, i) => i !== index)
-    );
-  };
-
-  const handleThemeCardFormChange = (
-    event: ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    setThemeCardFormData({
-      ...themeCardFormData,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const [formData, setFormData] = useState<CourseState>({
-    name: "",
-    description: "",
-    assessment: 0,
-    category: "Fundamentos de programación",
-    instructor: user.name + " " + user.lastname,
-    comments: Array.isArray(commentCards) ? commentCards : [],
-    course_image_url: null,
-    trailer_video_url: null,
-    modules: themeCards.map((themeCard) => ({
-      title: themeCard.title,
-      description: themeCard.description,
-      cuantity: themeCard.cuantity,
-      duration: themeCard.duration,
-      content: themeCard.content,
-      action: "add",
-    })),
-  });
-
-  useEffect(() => {
-    // Load user data from session storage when the component mounts
-    //verify user state
-    async function fetchData() {
-      try {
-        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
-        const storedUser = await crud_user.getUser(sessionToken || "");
-        setUser(storedUser);
-        setFormData({
-          ...formData,
-          instructor: storedUser.name + " " + storedUser.lastname,
-        });
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    }
-    fetchData(); 
-  }, []);
-
+  
   const handleChange = (
     event: ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setFormData({
-      ...formData,
+    setCourse({
+      ...course,
       [event.target.name]: event.target.value,
     });
   };
+
+  // Modules
+  const [modules, setModules] = useState<Module[]>([]);
 
   //Alert message
   const showAlert = (message: string) => {
@@ -324,57 +136,33 @@ const FormCourse = () => {
     }, 3000); // close the alert after 3 seconds
   };
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      if (dragImage === null || dragVideo === null) {
-        showAlert("Por favor, sube una imagen y un video para tu curso");
-        return;
-      } else {
-        // Create a new course
-        formData.course_image_url = dragImage;
-        formData.trailer_video_url = dragVideo;
-        formData.comments = Array.isArray(commentCards) ? commentCards : [];
-        if (themeCards.length === 0) {
-          showAlert("Por favor, agrega al menos un módulo a tu curso");
-          return;
-        } else {
-          await crud_course.createCourse(formData);
-          showAlert("Curso creado con éxito");
-          setFormData({
-            name: "",
-            description: "",
-            assessment: 0,
-            category: "Fundamentos de programación",
-            instructor: user.name + " " + user.lastname,
-            comments: [],
-            course_image_url: null,
-            trailer_video_url: null,
-            modules: [],
-          });
-          setDragImage(null);
-          setDragVideo(null);
-          setThemeCards([]);
-        }
-        // Redirect to the home page
-        setTimeout(() => {
-          router.push("/common/profile");
-          router.refresh();
-        });
-      }
-    } catch (error) {
-      console.error("Error creating course:", error);
-    }
+    console.log("course: ", course);
+    console.log("modules: ", modules);
+    showAlert("Creando curso...");
   };
+  
+  useEffect(() => {
+    async function fetchData() {
+      const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+      const user = await crud_user.getUser(sessionToken || "");
+      setUser(user);
+      setCourse({
+        ...course,
+        instructor: user.name + " " + user.lastname,
+      });
+    }
+    fetchData();
+  }, []);
 
   return (
-    <form
-      onSubmit={handleSubmit}
+    <form onSubmit={handleSubmit}
       className="grid grid-cols-1 gap-0 lg:grid-cols-5 lg:gap-2 w-full p-6 md:px-20 md:py-10"
     >
       <div className="col-span-5 lg:col-span-3 self-center rounded-[25px] flex items-center justify-center w-full">
         <label
-          htmlFor={`dropzone-file-${formData.name}`}
+          htmlFor={`dropzone-file-${course.trailer_video_url}`}
           className={`flex flex-col items-center justify-center w-full h-[450px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] 
           ${
             isDragOver
@@ -384,9 +172,9 @@ const FormCourse = () => {
           `}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onDrop={handleFileDrop}
+          onDrop={handleVideoDrop}
         >
-          {dragVideo === null ? (
+          {course.trailer_video_url === null ? (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <FontAwesomeIcon
                 icon={icons.faCloudArrowUp}
@@ -407,15 +195,15 @@ const FormCourse = () => {
               <p className="mb-2 text-sm text-[--principal-blue]">
                 Archivo cargado exitosamente
               </p>
-              <p className="text-xs text-[--principal-red]">{dragVideo.name}</p>
+              <p className="text-xs text-[--principal-red]">{course.trailer_video_url.name}</p>
             </div>
           )}
           <input
-            id={`dropzone-file-${formData.name}`}
+            id={`dropzone-file-${course.trailer_video_url}`}
             type="file"
             name="dragVideo"
             className="hidden"
-            onChange={handleFileDrag}
+            onChange={handleVideoDrag}
           />
         </label>
       </div>
@@ -427,7 +215,7 @@ const FormCourse = () => {
                 type="text"
                 name="name"
                 onChange={handleChange}
-                value={formData.name}
+                value={course.name}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-[32px] xl:text-[38px] w-full mb-2"
                 placeholder="Título del curso"
                 required
@@ -439,7 +227,7 @@ const FormCourse = () => {
                 type="text"
                 name="instructor"
                 onChange={handleChange}
-                value={formData.instructor}
+                value={course.instructor}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[60%]"
                 required
                 disabled
@@ -450,7 +238,7 @@ const FormCourse = () => {
               <select
                 name="category"
                 onChange={handleChange}
-                value={formData.category}
+                value={course.category}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[60%]"
               >
                 <option value="Fundamentos de programación">
@@ -489,9 +277,9 @@ const FormCourse = () => {
               <p className="font-bold">Descripción:</p>
               <textarea
                 onChange={handleChange}
-                value={formData.description}
                 name="description"
                 rows={7}
+                value={course.description}
                 className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-full"
                 required
               />
@@ -512,111 +300,10 @@ const FormCourse = () => {
           </div>
         </div>
       </div>
-      <div className="col-span-5 py-10">
-        <h3 className="text-[32px] text-start py-4">Temario del curso:</h3>
-        {themeCards.map((themeCard, index) => (
-          <div key={index} className="mb-4 relative">
-            <BannerThemeCard 
-              {...themeCard} 
-              action="edit" 
-              initialSubThemes={themeCard.content ?? []}
-              updateSubThemes={updateSubThemes}
-            />
-            <div className="absolute top-0 right-0 m-2 p-2 flex space-x-2 cursor-pointer">
-              <button type="button" onClick={() => handleEditThemeCard(index)}>
-                <div className="w-[50px] h-[50px] rounded-2xl bg-[--principal-blue] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-blue-500/50">
-                  <FontAwesomeIcon
-                    icon={icons.faPenToSquare}
-                    className={`text-[--white] transform`}
-                  />
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRemoveThemeCard(index)}
-              >
-                <div className="w-[50px] h-[50px] rounded-2xl bg-[--principal-red] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-red-500/50">
-                  <FontAwesomeIcon
-                    icon={icons.faCircleXmark}
-                    className={`text-[--white] transform`}
-                  />
-                </div>
-              </button>
-            </div>
-          </div>
-        ))}
-        <div role="button" onClick={handleOpenModal}>
-          <Button
-            text="Agregar tema"
-            icon={icons.faPlus}
-            color="blue"
-            type="small"
-          />
-        </div>
-      </div>
-      <Modal isOpen={isOpen} onClose={handleCloseModal}>
-        <div className="col-span-4 md:col-span-2 w-[100%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-5 flex flex-col justify-center items-center">
-          {themeCardFormData.action === "add" && (
-            <h1 className="text-[38px] mb-5 text-center">
-              Agregar un tema nuevo
-            </h1>
-          )}
-          {themeCardFormData.action === "edit" && (
-            <h1 className="text-[38px] mb-5 text-center">
-              Editar un tema existente
-            </h1>
-          )}
-          <div className="flex flex-col w-full">
-            <input
-              type="text"
-              name="title"
-              onChange={handleThemeCardFormChange}
-              value={themeCardFormData.title}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 w-full mb-2"
-              placeholder="Título del tema"
-              required
-            />
-            <p>Descripción:</p>
-            <textarea
-              onChange={handleThemeCardFormChange}
-              value={themeCardFormData.description}
-              name="description"
-              rows={4}
-              className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 mb-2 text-sm w-full"
-              placeholder="Descripción del tema"
-              required
-            />
-            <div className="flex justify-between items-center">
-              <p>Cantidad de clases:</p>
-              <input
-                type="number"
-                name="classes"
-                onChange={handleClasses}
-                value={classes}
-                className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 mb-4 text-sm w-[55%]"
-                required
-              />
-            </div>
-          </div>
-          {themeCardFormData.action === "add" ? (
-            <Button
-              text="Agregar"
-              icon={icons.faPlus}
-              color="blue"
-              type="small"
-              onClick={handleAddThemeCard}
-            />
-          ) : (
-            <Button
-              text="Actualizar"
-              icon={icons.faRotateRight}
-              color="blue"
-              type="small"
-              onClick={handleAddThemeCard}
-            />
-          )}
-        </div>
-      </Modal>
+      <FormSyllabus 
+        modules={modules}
+        setModules={setModules}
+      />
       {alertMessage && (
         <div className={`w-full`}>
           <div
