@@ -183,8 +183,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       } else {
         message = "Todos los campos deben estar llenos";
       }
-      showAlert(message);
-      showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
+      setTimeout(() => {
+        showAlert(message);
+        showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
+      }, 3000);
     } catch (error) {
       showAlert("Error al registrar el usuario");
     }
