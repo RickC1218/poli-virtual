@@ -22,7 +22,7 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, ass
   const [categoryID, setCategoryID] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const auxRoute = "http://127.0.0.1:8000";
+  image = image.replace('s3.amazonaws.com/', '')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,7 +84,7 @@ const CourseCard: React.FC<CourseCardProps> = ({courseID, title, instructor, ass
         <div
           className={`bg-cover w-[411px] h-[301px] bg-center rounded-2xl`}
           style={{
-            backgroundImage: `url('${auxRoute}${image}')`,
+            backgroundImage: `url('${image}')`,
           }}
         ></div>
         <div className='grid grid-cols-4 gap-1'>

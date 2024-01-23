@@ -13,7 +13,7 @@ interface Instructor {
   name: string;
   lastname: string;
 }
-interface CourseState {
+export interface CourseState {
   name: string;
   description: string;
   assessment: number;

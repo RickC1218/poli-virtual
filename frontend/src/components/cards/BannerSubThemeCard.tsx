@@ -24,11 +24,11 @@ const BannerSubThemeCard: React.FC<BannerSubThemeCardProps> = ({
       </div>
       <div className="text-start grow mx-2">
         <p className="text-base font-bold">{title}</p>
-        <p className="text-sm text-[--medium-gray]">{parentId}</p>
+        
       </div>
       {action === "read" && (
         <div>
-          <p className="text-base font-bold">{duration} minutos</p>
+          <p className="text-sm text-[--medium-gray] pr-2">{parentId}</p>
         </div>
       )}
     </div>

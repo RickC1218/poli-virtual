@@ -61,6 +61,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
   const [emailSent, setEmailSent] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  
+
   useEffect(() => {
     // Load user data from session storage when the component mounts
     //verify user state

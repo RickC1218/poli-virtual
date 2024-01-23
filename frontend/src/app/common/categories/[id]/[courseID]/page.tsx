@@ -13,6 +13,8 @@ import { useEffect, useRef, useState } from "react";
 import crud_category from "@/app/api/crud_category";
 import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
+import { Module, Content } from "@/components/forms//FormCourse";
+
 
 interface Category {
   id: number;
@@ -22,19 +24,6 @@ interface Comment {
   student: string;
   description: string;
   assessment: number;
-}
-interface Module {
-  title: string;
-  description: string;
-  duration: number;
-  cuantity: number;
-  content: Content[];
-}
-interface Content {
-  title: string;
-  video_url: string;
-  duration: number;
-  parentId: string;  
 }
 interface Course {
   courseID: number;
@@ -58,7 +47,7 @@ export default function Page() {
   const [course, setCourse] = useState<Course | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const auxRoute = "http://127.0.0.1:8000";
+  const auxRoute = "";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,8 +60,11 @@ export default function Page() {
           setCategory(categoryData as Category);
           setCourse(courseData as Course);
           courseData.courseID = courseID;
-          courseData.course_image_url = `${auxRoute}${courseData.course_image_url}`;
-          courseData.trailer_video_url = `${auxRoute}${courseData.trailer_video_url}`;
+          console.log(courseData.course_image_url)
+          courseData.course_image_url = 
+          courseData.course_image_url.replace("s3.amazonaws.com/", "")
+
+          courseData.trailer_video_url = courseData.trailer_video_url.replace("s3.amazonaws.com/", "")
 
           // asign video to ref
           videoRef.current = courseData.trailer_video_url;
@@ -166,8 +158,8 @@ export default function Page() {
               <BannerThemeCard
                 title={module.title}
                 description={module.description}
-                cuantity={10}
-                duration={120}
+                cuantity={module.content.length}
+                duration={module.duration}
                 content={module.content}
                 action="read"
               />

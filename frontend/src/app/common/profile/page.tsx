@@ -28,13 +28,11 @@ const initialUserState = {
 export default function Page() {
   const [user, setUser] = useState(initialUserState);
 
-  const auxRoute = "http://127.0.0.1:8000";
-
   useEffect(() => {
     async function fetchData() {
       const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
       const user = await crud_user.getUser(sessionToken || "");
-      user.profile_image_url = `${auxRoute}${user.profile_image_url}`;
+      user.profile_image_url = user.profile_image_url.replace('s3.amazonaws.com/', '');
       setUser(user);
     }
     fetchData();

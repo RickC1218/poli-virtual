@@ -18,7 +18,8 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ email, name, lastname, 
     name: "Perfil del instructor",
     path: `/common/profile/${urlInstructor}`,
   };
-  const auxRoute = "http://127.0.0.1:8000";
+
+  image = image.replace('s3.amazonaws.com/', '')
 
   return (
     <Link
@@ -26,7 +27,7 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ email, name, lastname, 
       href={instructorLink.path}
     >
       <div className="flex flex-col justify-center items-center p-4 bg-[--white] border border-[--high-gray] rounded-3xl hover:shadow-md hover:shadow-gray-500/50 cursor-pointer w-[250px]">
-        <div className='bg-cover w-[175px] h-[175px] bg-top rounded-full' style={{ backgroundImage: `url(${auxRoute}${image})` }}>
+        <div className='bg-cover w-[175px] h-[175px] bg-top rounded-full' style={{ backgroundImage: `url(${image})` }}>
         </div>
         <div className='flex justify-center items-center'>
           <div className="pt-2.5 text-center">

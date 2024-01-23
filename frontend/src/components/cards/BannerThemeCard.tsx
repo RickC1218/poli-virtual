@@ -48,9 +48,9 @@ const BannerThemeCard: React.FC<Module> = ({
           </p>
         </div>
         {action === "read" && (
-          <div className="pr-16">
+          <div>
             <p className="text-base font-bold">
-              {cuantity} clases - {duration} minutos
+              {cuantity} clases
             </p>
           </div>
         )}
