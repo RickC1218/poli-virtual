@@ -9,14 +9,15 @@ import BannerSubThemeCard from "../cards/BannerSubThemeCard";
 interface FormSyllabusProps {
   modules: Module[];
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
+  onConfirmSyllabus: (modules: Module[]) => void;
 }
 
-const FormSyllabus: React.FC<FormSyllabusProps> = () => {
+const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfirmSyllabus}) => {
   /* index para modules */
   const [index, setIndex] = useState<number>(0);
   /* index para contents */
   const [indexContent, setIndexContent] = useState<number>(0);
-  const [modules, setModules] = useState<Module[]>([]);
+
   const [contents, setContents] = useState<Content[]>([]);
 
   const [module, setModule] = useState<Module>({
@@ -243,7 +244,6 @@ const FormSyllabus: React.FC<FormSyllabusProps> = () => {
 
   const handleEditContent = (idModule: number, idContent: number) => {
     setIndexContent(idContent);
-    console.log(modules[idModule].content[idContent]);
     setContent({
       title: modules[idModule].content[idContent].title,
       duration: modules[idModule].content[idContent].duration,
@@ -296,8 +296,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = () => {
       showAlert("Por favor, agrega al menos un módulo.");
       return;
     }
-    setModules(modules);
-    console.log(modules);
+    onConfirmSyllabus(modules);
   };
 
   return (
@@ -504,6 +503,9 @@ const FormSyllabus: React.FC<FormSyllabusProps> = () => {
                           Da click y escoge el video de tu clase o arrastralo
                           aquí.
                         </p>
+                        <p className="mb-2 text-sm text-[--principal-red] ">
+                        Recuerda que debe ser un archivo MP4 de máximo 5 minutos.
+                        </p>
                         <p className="text-xs text-[--gray]">MP4 (Max 100MB)</p>
                       </div>
                     ) : (
@@ -565,10 +567,10 @@ const FormSyllabus: React.FC<FormSyllabusProps> = () => {
       ))}
       <div className="flex w-full justify-center py-5">
         <Button
-          text="Confirmar temario"
-          icon={icons.faCheck}
+          text="Crear curso"
+          icon={icons.faCircleUp}
           color="blue"
-          type="small"
+          type="big"
           onClick={() => handleConfirmSyllabus(modules)}
         />
       </div>

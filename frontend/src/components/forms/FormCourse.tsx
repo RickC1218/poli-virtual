@@ -3,7 +3,6 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 
-import Button from "../buttons/Button";
 import icons from "../icons/icons";
 import crud_user from "@/app/api/crud_user";
 import crud_course from "@/app/api/crud_course";
@@ -136,11 +135,36 @@ const FormCourse = () => {
     }, 3000); // close the alert after 3 seconds
   };
 
+  // Confirm syllabus
+  const handleConfirmSyllabus = (updateModules: Module[]) => {
+    setModules(updateModules);
+    setCourse({
+      ...course,
+      modules: updateModules,
+    });
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("course: ", course);
     console.log("modules: ", modules);
-    showAlert("Creando curso...");
+    if (modules.length === 0) {
+      showAlert("Por favor, agrega al menos un módulo.");
+      return;
+    } else {
+      setCourse({
+        ...course,
+        modules: modules,
+      });
+    }
+    console.log("course: ", course);
+    showAlert("Cargando...");
+    const response = await crud_course.createCourse(course);
+    if (response) {
+      showAlert("Curso creado exitosamente");
+      router.push("/common/profile");
+    } else {
+      showAlert("Error al crear el curso");
+    }
   };
   
   useEffect(() => {
@@ -303,13 +327,14 @@ const FormCourse = () => {
       <FormSyllabus 
         modules={modules}
         setModules={setModules}
+        onConfirmSyllabus={handleConfirmSyllabus}
       />
       {alertMessage && (
-        <div className={`w-full`}>
+        <div className={`flex justify-center ${alertMessage === "Curso creado exitosamente" ? "hidden" : "block" }`}>
           <div
             className={`${
-              alertMessage.startsWith("Curso creado con éxito")
-                ? "bg-green-500"
+              alertMessage.startsWith("Cargando...")
+                ? "bg-yellow-500"
                 : "bg-red-500"
             } z-40 text-[--light] p-2 rounded-md text-center`}
           >
@@ -317,14 +342,18 @@ const FormCourse = () => {
           </div>
         </div>
       )}
-      <div className="col-span-5 justify-items-center">
-        <Button
-          text="Crear curso"
-          icon={icons.faCircleUp}
-          color="red"
-          type="big"
-        />
-      </div>
+      {alertMessage === "Curso creado exitosamente" && (
+        <div className={`flex justify-center`}>
+          <div
+            className={`${
+              alertMessage.startsWith("Curso creado exitosamente")
+                && "bg-green-500"
+            } z-40 text-[--light] p-2 rounded-md text-center`}
+          >
+            {alertMessage}
+          </div>
+        </div>
+      )}
     </form>
   );
 };
