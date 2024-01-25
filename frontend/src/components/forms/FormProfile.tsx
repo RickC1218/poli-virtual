@@ -68,9 +68,13 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     //verify user state
     async function fetchData() {
       if (type !== "new-user") {
-        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
-        const storedUser = await crud_user.getUser(sessionToken || "");
-        setUser({ ...initialUserState, ...storedUser });
+        try {
+          const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
+          const storedUser = await crud_user.getUser(sessionToken || "");
+          setUser({ ...initialUserState, ...storedUser });
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
 
@@ -375,12 +379,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         //closing the session
         message = "Cerrando sesión...";
         showAlert(message);
-        // Introduce a delay using setTimeout
-        setTimeout(() => {
-          // Redirect to the explore page after the delay
-          router.push("/login");
-          router.refresh();
-        }, 3000);
+        window.location.reload();
+        window.location.href = "/common/explore";
       } else {
         message = "Probablemente no has iniciado sesión.";
         showAlert(message);
@@ -646,7 +646,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       >
         <Link
           key="SignOut"
-          href="/login"
+          href="/common/explore"
           className={`p-2 md:p-0`}
           onClick={handleLogOut}
         >

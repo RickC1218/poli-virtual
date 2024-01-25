@@ -10,6 +10,7 @@ import icons from "@/components/icons/icons";
 import FormProfile from "@/components/forms/FormProfile";
 import crud_user from "@/app/api/crud_user";
 import StarRating from "@/components/tools/StarRating";
+import { useRouter } from "next/navigation";
 
 // Define the initial state for a new user
 const initialUserState = {
@@ -28,12 +29,19 @@ const initialUserState = {
 export default function Page() {
   const [user, setUser] = useState(initialUserState);
 
+  const router = useRouter();
+
   useEffect(() => {
     async function fetchData() {
       const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-      const user = await crud_user.getUser(sessionToken || "");
-      user.profile_image_url = user.profile_image_url.replace('s3.amazonaws.com/', '');
-      setUser(user);
+      try {
+        const user = await crud_user.getUser(sessionToken || "");
+        user.profile_image_url = user.profile_image_url.replace('s3.amazonaws.com/', '');
+        setUser(user);
+      } catch (error) {
+        console.log(error);
+        router.push("/common/explore");
+      }
     }
     fetchData();
   }, [user]);

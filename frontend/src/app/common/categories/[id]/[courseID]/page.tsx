@@ -14,6 +14,7 @@ import crud_category from "@/app/api/crud_category";
 import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
 import { Module, Content } from "@/components/forms//FormCourse";
+import crud_user from "@/app/api/crud_user";
 
 
 interface Category {
@@ -46,12 +47,16 @@ export default function Page() {
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [course, setCourse] = useState<Course | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  const auxRoute = "";
-
+  const [user, setUser] = useState<any>(null);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+        if (sessionToken) {
+          const user = await crud_user.getUser(sessionToken || "");
+          setUser(user);
+        }
         const categoryData = await crud_category.getCategoryById(id);
         const courseData = await crud_course.getCourseById(courseID);
         if (categoryData === "Error desconocido") {
@@ -60,12 +65,9 @@ export default function Page() {
           setCategory(categoryData as Category);
           setCourse(courseData as Course);
           courseData.courseID = courseID;
-          console.log(courseData.course_image_url)
           courseData.course_image_url = 
           courseData.course_image_url.replace("s3.amazonaws.com/", "")
-
           courseData.trailer_video_url = courseData.trailer_video_url.replace("s3.amazonaws.com/", "")
-
           // asign video to ref
           videoRef.current = courseData.trailer_video_url;
         } else {
@@ -135,20 +137,38 @@ export default function Page() {
           <div className="flex flex-col md:items-start">
             <h3 className="text-[32px] text-start">Descripción del curso:</h3>
             <p>{course.description}</p>
-            <div className="mt-6 self-center md:self-start">
-              <Link
-                key="Inscribirse"
-                href="/signin"
-                className="block md:flex-none"
-              >
-                <Button
-                  text="Inscribirse"
-                  icon={icons.faBagShopping}
-                  color="blue"
-                  type="big"
-                />
-              </Link>
-            </div>
+            { user !== "Error desconocido" ? (
+                <div className="mt-6 self-center md:self-start">
+                  <Link
+                    key="Inscribirse"
+                    href={`/common/categories/${category.id}/${course.courseID}/video-course`}
+                    className="block md:flex-none"
+                  >
+                    <Button
+                      text="Inscribirse"
+                      icon={icons.faBagShopping}
+                      color="blue"
+                      type="big"
+                    />
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-6 self-center md:self-start">
+                  <Link
+                    key="Inscribirse"
+                    href={'/login'}
+                    className="block md:flex-none"
+                  >
+                    <Button
+                      text="Inscribirse"
+                      icon={icons.faBagShopping}
+                      color="blue"
+                      type="big"
+                    />
+                  </Link>
+                </div>
+              )
+            }
           </div>
         </div>
         <div className="col-span-5 py-10">

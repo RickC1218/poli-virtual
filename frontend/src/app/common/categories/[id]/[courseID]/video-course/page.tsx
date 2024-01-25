@@ -27,18 +27,21 @@ export default function Page() {
             description="Cursos que cubren diversos lenguajes de programación, metodologías de desarrollo de software."
             cuantity={10}
             duration={120}
+            action="read"
           />
           <BannerThemeCard
             title="Fundamentos de programación"
             description="Cursos que cubren diversos lenguajes de programación, metodologías de desarrollo de software."
             cuantity={10}
             duration={120}
+            action="read"
           />
           <BannerThemeCard
             title="Fundamentos de programación"
             description="Cursos que cubren diversos lenguajes de programación, metodologías de desarrollo de software."
             cuantity={10}
             duration={120}
+            action="read"
           />
         </div>
         <div className='col-span-5 px-4 pt-6 flex flex-col justify-between items-center sm:items-start'>
