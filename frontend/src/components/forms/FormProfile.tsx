@@ -166,8 +166,19 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
               user.email = escapeHTML(user.email);
               user.password = escapeHTML(user.password);
               user.semester = escapeHTML(user.semester);
-              console.log(user)
-              const response = await crud_user.createUser(user);
+              
+              const newUser = {
+                name: user.name,
+                lastname: user.lastname,
+                email: user.email,
+                password: user.password,
+                semester: user.semester,
+                role: user.role,
+                enrolled_courses: user.enrolled_courses,
+              };
+
+              console.log(newUser)
+              const response = await crud_user.createUser(newUser);
               console.log(response)
               // temporal email
               localStorage.setItem("emailVerify", user.email);
@@ -631,7 +642,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       </div>
       {alertMessage && !isOpen && (
         <div
-          className={`${type === "profile" || "profile-instructor" ? "" : "hidden"
+          className={`${(type === "profile" ||  "profile-instructor") && type !== "new-user" ? "" : "hidden"
             }`}
         >
           <div
@@ -708,7 +719,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             </div>
             {alertMessage && isOpen && (
               <div
-                className={`${type === "profile" || type === "profile-instructor"
+                className={`${type === "profile" || "profile-instructor"
                     ? ""
                     : "hidden"
                   }`}

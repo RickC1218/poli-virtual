@@ -286,7 +286,8 @@ const crud_user = {
             const headers = {
                 "Authorization": `Bearer ${session_token}`,
             };
-            const response = await axios.put(`${API_BASE_URL}/user/`, {enrolled_course: enrolledCourseData,},{ headers } );
+            console.log("enrolledCourseData", enrolledCourseData)
+            const response = await axios.put(`${API_BASE_URL}/user/`, {enrolled_courses: enrolledCourseData,}, { headers } );
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };

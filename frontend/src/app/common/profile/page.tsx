@@ -36,11 +36,16 @@ export default function Page() {
       const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
       try {
         const user = await crud_user.getUser(sessionToken || "");
-        user.profile_image_url = user.profile_image_url.replace('s3.amazonaws.com/', '');
-        setUser(user);
+        if (user) {
+          if (user.profile_image_url) {
+            user.profile_image_url = user.profile_image_url.replace('s3.amazonaws.com/', '')
+          }
+          setUser(user);
+        } else {
+          router.push("/common/explore");
+        }
       } catch (error) {
         console.log(error);
-        router.push("/common/explore");
       }
     }
     fetchData();

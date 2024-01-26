@@ -70,7 +70,7 @@ export default function SideNav() {
           <div
             className={`flex lg:flex justify-between cursor-auto w-full ${
               menuOpen
-                ? "flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl w-full sm:w-[50%] lg:w-[25%]"
+                ? "flex-col space-x-2 absolute bg-[--white] py-4 border border-[--high-gray] rounded-3xl w-full sm:w-[50%] lg:w-[25%] z-10"
                 : "hidden"
             }`}
           >

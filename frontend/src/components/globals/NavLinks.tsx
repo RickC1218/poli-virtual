@@ -27,7 +27,7 @@ const NavLinks = () => {
     async function fetchData() {
       if(isSessionActive){
         //verify user state
-        const sessionToken = JSON.parse(localStorage.getItem("token") || "");
+        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
         const storedUser = await crud_user.getUser(sessionToken || ""); 
         setUserRole(storedUser.role || "");
       }

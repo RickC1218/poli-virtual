@@ -98,28 +98,26 @@ export default function Page() {
 
   const handleNoneCourse = async () => {
     const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    console.log(course)
     try {
       if (course) {
-        const courseNone = {
-          name: course.name,
-          state: "enrolled",
-          last_module_name: course.modules[0].title,
-          last_subtopic_name: course.modules[0].content[0].title
-        }
-        console.log("courseNone", courseNone)
-        const response = await crud_user.updateUser(courseNone, sessionToken);
-        console.log("response", response)
-        console.log("user", user)
+        const courseNone = [
+          {
+            name: course.name,
+            state: "enrolled",
+            last_module_name: course.modules[0].title,
+            last_subtopic_name: course.modules[0].content[0].title
+          }
+        ]
+        await crud_user.subscribeCourse(courseNone, sessionToken);
+        setUserCourse(courseNone[0]);
       }
     } catch (error) {
-      console.log("error", error)
+      console.error("error", error)
     }
   };
 
   const handleEnrolledCourse = async () => {
     const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    console.log(course)
     try {
       if (course) {
         const courseNone = {
@@ -128,19 +126,17 @@ export default function Page() {
           last_module_name: course.modules[0].title,
           last_subtopic_name: course.modules[0].content[0].title
         }
-        console.log("courseNone", courseNone)
         const response = await crud_user.updateUser(courseNone, sessionToken);
         console.log("response", response)
         console.log("user", user)
       }
     } catch (error) {
-      console.log("error", error)
+      console.error("error", error)
     }
   };
 
   const handleCompletedCourse = async () => {
     const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    console.log(course)
     try {
       if (course) {
         const courseNone = {
@@ -155,13 +151,12 @@ export default function Page() {
         console.log("user", user)
       }
     } catch (error) {
-      console.log("error", error)
+      console.error("error", error)
     }
   };
 
   const handleInProgressCourse = async () => {
     const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    console.log(course)
     try {
       if (course) {
         const courseNone = {
@@ -176,7 +171,7 @@ export default function Page() {
         console.log("user", user)
       }
     } catch (error) {
-      console.log("error", error)
+      console.error("error", error)
     }
   };
 
@@ -259,8 +254,8 @@ export default function Page() {
                     >
                       <Button
                         text="Iniciar curso"
-                        icon={icons.faChevronRight}
-                        color="blue"
+                        icon={icons.faPlay}
+                        color="red"
                         type="big"
                         onClick={handleEnrolledCourse}
                       />
@@ -273,7 +268,7 @@ export default function Page() {
                       className="block md:flex-none"
                     >
                       <Button
-                        text="Ver certificado"
+                        text="Completado"
                         icon={icons.faCheck}
                         color="blue"
                         type="big"
@@ -289,8 +284,8 @@ export default function Page() {
                     >
                       <Button
                         text="Continuar curso"
-                        icon={icons.faStopwatch}
-                        color="blue"
+                        icon={icons.faPause}
+                        color="neutral"
                         type="big"
                         onClick={handleInProgressCourse}
                       />
