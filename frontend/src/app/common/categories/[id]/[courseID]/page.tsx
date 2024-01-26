@@ -43,20 +43,19 @@ interface Course {
 export default function Page() {
   const { id, courseID } = useParams();
   const routerNotFound = useRouter();
+  let redirectVideoCourse = "";
 
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [course, setCourse] = useState<Course | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [userCourse, setUserCourse] = useState<any>(null);
+
   
   useEffect(() => {
     const fetchData = async () => {
       try {
         const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-        if (sessionToken) {
-          const user = await crud_user.getUser(sessionToken || "");
-          setUser(user);
-        }
         const categoryData = await crud_category.getCategoryById(id);
         const courseData = await crud_course.getCourseById(courseID);
         if (categoryData === "Error desconocido") {
@@ -70,8 +69,22 @@ export default function Page() {
           courseData.trailer_video_url = courseData.trailer_video_url.replace("s3.amazonaws.com/", "")
           // asign video to ref
           videoRef.current = courseData.trailer_video_url;
+          // set course
+          setCourse(courseData as Course);
         } else {
           routerNotFound.push("/common/not-found");
+        }
+        // get user
+        if (sessionToken) {
+          const user = await crud_user.getUser(sessionToken ?? "");
+          setUser(user);
+
+          /* verify if the user isn't subscribe in the course */
+          const userCourses = await crud_user.getEnrolledCourses(sessionToken ?? "");
+          //console.log("userCourses", userCourses)
+          const userCourse = userCourses.find((course: any) => course.courseID === courseID);
+          //console.log("userCourse", userCourse);
+          setUserCourse(userCourse);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -82,6 +95,90 @@ export default function Page() {
       fetchData();
     }
   }, [courseID]);
+
+  const handleNoneCourse = async () => {
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+    console.log(course)
+    try {
+      if (course) {
+        const courseNone = {
+          name: course.name,
+          state: "enrolled",
+          last_module_name: course.modules[0].title,
+          last_subtopic_name: course.modules[0].content[0].title
+        }
+        console.log("courseNone", courseNone)
+        const response = await crud_user.updateUser(courseNone, sessionToken);
+        console.log("response", response)
+        console.log("user", user)
+      }
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+  const handleEnrolledCourse = async () => {
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+    console.log(course)
+    try {
+      if (course) {
+        const courseNone = {
+          name: course.name,
+          state: "enrolled",
+          last_module_name: course.modules[0].title,
+          last_subtopic_name: course.modules[0].content[0].title
+        }
+        console.log("courseNone", courseNone)
+        const response = await crud_user.updateUser(courseNone, sessionToken);
+        console.log("response", response)
+        console.log("user", user)
+      }
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+  const handleCompletedCourse = async () => {
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+    console.log(course)
+    try {
+      if (course) {
+        const courseNone = {
+          name: course.name,
+          state: "completed",
+          last_module_name: course.modules[0].title,
+          last_subtopic_name: course.modules[0].content[0].title
+        }
+        console.log("courseNone", courseNone)
+        const response = await crud_user.updateUser(courseNone, sessionToken);
+        console.log("response", response)
+        console.log("user", user)
+      }
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+  const handleInProgressCourse = async () => {
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+    console.log(course)
+    try {
+      if (course) {
+        const courseNone = {
+          name: course.name,
+          state: "in-progress",
+          last_module_name: course.modules[0].title,
+          last_subtopic_name: course.modules[0].content[0].title
+        }
+        console.log("courseNone", courseNone)
+        const response = await crud_user.updateUser(courseNone, sessionToken);
+        console.log("response", response)
+        console.log("user", user)
+      }
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
 
   if (
     !course ||
@@ -139,18 +236,66 @@ export default function Page() {
             <p>{course.description}</p>
             { user !== "Error desconocido" ? (
                 <div className="mt-6 self-center md:self-start">
-                  <Link
-                    key="Inscribirse"
-                    href={`/common/categories/${category.id}/${course.courseID}/video-course`}
-                    className="block md:flex-none"
-                  >
-                    <Button
-                      text="Inscribirse"
-                      icon={icons.faBagShopping}
-                      color="blue"
-                      type="big"
-                    />
-                  </Link>
+                  {!userCourse && 
+                    <Link
+                      key="Inscribirse"
+                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      className="block md:flex-none"
+                    >
+                      <Button
+                        text="Inscribirse"
+                        icon={icons.faBagShopping}
+                        color="blue"
+                        type="big"
+                        onClick={handleNoneCourse}
+                      />
+                    </Link>
+                  }
+                  {userCourse && userCourse.state === "enrolled" &&
+                    <Link
+                      key="Iniciar curso"
+                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      className="block md:flex-none"
+                    >
+                      <Button
+                        text="Iniciar curso"
+                        icon={icons.faChevronRight}
+                        color="blue"
+                        type="big"
+                        onClick={handleEnrolledCourse}
+                      />
+                    </Link>
+                  }
+                  {userCourse && userCourse.state === "completed" &&
+                    <Link
+                      key="Ver certificado"
+                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      className="block md:flex-none"
+                    >
+                      <Button
+                        text="Ver certificado"
+                        icon={icons.faCheck}
+                        color="blue"
+                        type="big"
+                        onClick={handleCompletedCourse}
+                      />
+                    </Link>
+                  }
+                  {userCourse && userCourse.state === "in-progress" &&
+                    <Link
+                      key="Continuar curso"
+                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      className="block md:flex-none"
+                    >
+                      <Button
+                        text="Continuar curso"
+                        icon={icons.faStopwatch}
+                        color="blue"
+                        type="big"
+                        onClick={handleInProgressCourse}
+                      />
+                    </Link>
+                  }
                 </div>
               ) : (
                 <div className="mt-6 self-center md:self-start">

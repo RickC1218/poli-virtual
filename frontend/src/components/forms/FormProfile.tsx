@@ -14,9 +14,9 @@ interface FormProfileProps {
 
 // Define el estado inicial para un nuevo usuario
 interface UserState {
+  email: string;
   name: string;
   lastname: string;
-  email: string;
   password: string;
   role: string;
   semester: string;
@@ -24,14 +24,15 @@ interface UserState {
   approve_teacher_email: string;
   user_description: string;
   profile_image_url: File | null | string;
+  enrolled_courses: number[];
   score_teacher: number;
 }
 
 // Define the initial state for a new user
 const initialUserState: UserState = {
+  email: "",
   name: "",
   lastname: "",
-  email: "",
   password: "",
   role: "student",
   semester: "",
@@ -39,6 +40,7 @@ const initialUserState: UserState = {
   approve_teacher_email: "",
   user_description: "",
   profile_image_url: null,
+  enrolled_courses: [],
   score_teacher: 0,
 };
 
@@ -164,14 +166,18 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
               user.email = escapeHTML(user.email);
               user.password = escapeHTML(user.password);
               user.semester = escapeHTML(user.semester);
-              await crud_user.createUser(user);
-
+              console.log(user)
+              const response = await crud_user.createUser(user);
+              console.log(response)
               // temporal email
               localStorage.setItem("emailVerify", user.email);
 
+              showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
+              setTimeout(() => {
+                //router.push("/login");
+                router.refresh();
+              }, 3000);
               //redirect to the login page
-              router.push("/login");
-              router.refresh();
             } catch (error) {
               console.error(error);
             }
@@ -189,7 +195,6 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       }
       setTimeout(() => {
         showAlert(message);
-        showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
       }, 3000);
     } catch (error) {
       showAlert("Error al registrar el usuario");

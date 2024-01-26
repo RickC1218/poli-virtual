@@ -202,7 +202,6 @@ const crud_user = {
     sendEmailContact: async (formData: any) => {
         try{
             const response = await axios.post(`${API_BASE_URL}/user/contact-with-us/`, formData);
-
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
@@ -275,6 +274,24 @@ const crud_user = {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
             if (responseError?.response?.status === 404) {
                 return "Error al encontrar al usuario";
+            } else {
+                return "Error desconocido";
+            }
+        }
+    },
+
+    // enrolled in a course
+    subscribeCourse: async (enrolledCourseData: any, session_token: string) => {
+        try {
+            const headers = {
+                "Authorization": `Bearer ${session_token}`,
+            };
+            const response = await axios.put(`${API_BASE_URL}/user/`, {enrolled_course: enrolledCourseData,},{ headers } );
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Error al actualizar el usuario";
             } else {
                 return "Error desconocido";
             }
