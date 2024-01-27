@@ -412,7 +412,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
             </button>
           </div>
           {modules[id].content?.map((content, index) => (
-            <div key={index} className="relative mb-1">
+            <div key={index} className="relative mb-1 px-8">
               <BannerSubThemeCard {...content} action="edit" />
               <div className="absolute top-[5px] right-[37px] p-2 flex space-x-2 cursor-pointer">
                 <button
