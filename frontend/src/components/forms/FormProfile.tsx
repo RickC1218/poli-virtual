@@ -176,17 +176,20 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
                 role: user.role,
                 enrolled_courses: user.enrolled_courses,
               };
-
               console.log(newUser)
-              const response = await crud_user.createUser(newUser);
-              console.log(response)
+
+              setTimeout(() => {
+                showAlert("Cargando...");
+              }, 3000);
+              await crud_user.createUser(newUser);
+
               // temporal email
               localStorage.setItem("emailVerify", user.email);
 
-              showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
+              //redirect to the login page
               setTimeout(() => {
-                //router.push("/login");
-                router.refresh();
+                showAlert("Revisa tu correo electrónico para verificar tu cuenta.");
+                window.location.href = "/login";
               }, 3000);
               //redirect to the login page
             } catch (error) {
@@ -518,7 +521,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
             type="small"
           />
         </div>
-        <p className={`text-base flex ${type === "new-user" ? "" : "hidden"}`}>
+        <p className={`text-base flex ${type === "new-user" ? "block" : "hidden"}`}>
           ¿Ya tienes cuenta? &nbsp;
           <Link
             key={loginlink.name}
@@ -531,7 +534,9 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         {alertMessage && (
           <div className={`${type === "new-user" ? "" : "hidden"}`}>
             <div
-              className={`${alertMessage.startsWith("Registro exitoso") ||
+              className={`
+                ${
+                  alertMessage.startsWith("Registro exitoso") ||
                   alertMessage.startsWith(
                     "Revisa tu correo electrónico para verificar tu cuenta."
                   )

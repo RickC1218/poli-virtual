@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "../icons/icons";
 import BannerSubThemeCard from "./BannerSubThemeCard";
-import { Content } from "../forms/FormCourse";
 import { useEffect, useState } from "react";
 import {Module} from "../forms/FormCourse";
 
@@ -13,6 +12,7 @@ const BannerThemeCard: React.FC<Module> = ({
   duration,
   content,
   action,
+  currentSubtopic,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -31,7 +31,7 @@ const BannerThemeCard: React.FC<Module> = ({
 
   return (
     <>
-      <div className="flex items-center bg-[--white] rounded-[32px] p-4 my-1 border-2 border-[--medium-gray]">
+      <div className="flex items-center bg-[--white] rounded-[32px] p-4 my-2 border-2 border-[--medium-gray]">
         <button type="button" onClick={handleExpand}>
           <div className="w-[50px] h-[50px] rounded-2xl bg-[--principal-red] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-red-500/50">
             <FontAwesomeIcon
@@ -49,18 +49,21 @@ const BannerThemeCard: React.FC<Module> = ({
         </div>
         {action === "read" && (
           <div>
-            <p className="text-base font-bold">
+            <p className="text-base font-bold pr-5">
               {cuantity} clases
             </p>
           </div>
         )}
       </div>
       {action === "read" && expanded &&
-        content?.map((subthemeCard, id) => (
-          <div key={id} className="relative mb-1">
+        content?.map((subthemeCard, id) => {
+          const currentIndex = content.findIndex((subtheme) => subtheme.title === currentSubtopic);
+
+          return (
+          <div key={id} className={`relative m-1 mx-8 ${id === content.length -1 && 'pb-2'} text-${id > currentIndex ? '[--high-gray]' : '[--gray]'}`}>
             <BannerSubThemeCard {...subthemeCard} action="read" />
           </div>
-        ))
+        )})
       }
     </>
   );

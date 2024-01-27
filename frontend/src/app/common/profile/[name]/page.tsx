@@ -29,13 +29,14 @@ export default function Page() {
   const params = useParams();
   const userName = params.name as string;
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const auxRoute = "http://127.0.0.1:8000";
 
   useEffect(() => {
     async function fetchData() {
       setIsUserLoggedIn(localStorage.getItem("token") !== null);
       const user = await crud_user.getInstructor(userName);
-      user.profile_image_url = `${auxRoute}${user.profile_image_url}`;
+      if (user.profile_image_url) {
+        user.profile_image_url = user.profile_image_url.replace('s3.amazonaws.com/', '')
+      }
       setUser(user);
     }
     fetchData();

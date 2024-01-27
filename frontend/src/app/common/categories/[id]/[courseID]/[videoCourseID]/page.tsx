@@ -1,10 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
-import Breadcrumbs from "@/components/tools/Breadcrumbs";
-import Button from "@/components/buttons/Button";
-import icons from "@/components/icons/icons";
 import StarRating from "@/components/tools/StarRating";
 import BannerThemeCard from "@/components/cards/BannerThemeCard";
 import CommentCard from "@/components/cards/CommentCard";
@@ -47,6 +42,9 @@ export default function Page() {
   const [course, setCourse] = useState<Course | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [currentModule, setCurrentModule] = useState<string | null>(null);
+  const [currentSubtopic, setCurrentSubtopic] = useState<string | null>(null);
+  const [currentVideo, setCurrentVideo] = useState<File | string | any>(null);  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,6 +72,28 @@ export default function Page() {
           );
           // asign video to ref
           videoRef.current = courseData.trailer_video_url;
+          const module_subtopic_name = videoCourseID.toString().split("_");
+          const currentModule = decodeURIComponent(module_subtopic_name[0]);
+          const currentSubtopic = decodeURIComponent(module_subtopic_name[1]);
+          
+          // asign current module and subtopic
+          courseData.modules.forEach((module: Module) => {
+            if (module.title === currentModule) {
+              setCurrentModule(module.title);
+              module.content.forEach((content: Content) => {
+                if (content.title === currentSubtopic) {
+                  setCurrentSubtopic(content.title);
+                  console.log(content.video_url)
+                  /*content.video_url = content.video_url.replace(
+                    "s3.amazonaws.com/",
+                    ""
+                    );*/
+                  setCurrentVideo(content.video_url);
+                }
+              });
+            }
+          });
+
         } else {
           routerNotFound.push("/common/not-found");
         }
@@ -115,7 +135,7 @@ export default function Page() {
             controls
             className="w-full h-[500px] rounded-[25px]"
           >
-            <source src={course.trailer_video_url} type="video/mp4" />
+            <source src={currentVideo} type="video/mp4" />
             <track
               kind="captions"
               src="path_to_captions.vtt"
@@ -127,19 +147,24 @@ export default function Page() {
       <div className="grid grid-cols-1 gap-0 lg:grid-cols-5 lg:gap-2 w-full p-6 md:px-20 md:py-10">
         <div className="col-span-5 py-10">
           <h3 className="text-[32px] text-start py-4">Temario del curso:</h3>
-          {course.modules.map((module, id) => (
-            <div key={id}>
-              <BannerThemeCard
-                title={module.title}
-                description={module.description}
-                cuantity={module.content.length}
-                duration={module.duration}
-                content={module.content}
-                action="read"
-              />
-            </div>
-          ))
-          }
+          {course.modules.map((module, id) => {
+
+            const currentIndex = course.modules.findIndex((mod) => mod.title === currentModule);
+            
+            return (
+              <div key={id} className={`text-${id > currentIndex ? '[--high-gray]' : '[--gray]'}`}>
+                <BannerThemeCard
+                  title={module.title}
+                  description={module.description}
+                  cuantity={module.content.length}
+                  duration={module.duration}
+                  content={module.content}
+                  action="read"
+                  currentSubtopic={currentSubtopic ?? ""}
+                  />
+              </div>
+            );
+          })}
         </div>
         <div className="col-span-5 px-4 pt-6 flex flex-col justify-between items-center sm:items-start">
           <div className="pt-6 md:pt-0">

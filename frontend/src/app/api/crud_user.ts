@@ -297,6 +297,24 @@ const crud_user = {
                 return "Error desconocido";
             }
         }
+    },
+
+    //get last video watched
+    getLastVideoWatched: async (name: string, session_token: string) => {
+        try {
+            const headers = {
+                "Authorization": `Bearer ${session_token}`,
+            }
+            const response = await axios.get(`${API_BASE_URL}/user/get-last-watched-course/${name}/`, { headers});
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Error al encontrar el curso";
+            } else {
+                return "Error desconocido";
+            }
+        }
     }
 };
 

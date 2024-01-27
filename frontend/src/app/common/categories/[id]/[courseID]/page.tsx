@@ -9,7 +9,7 @@ import StarRating from "@/components/tools/StarRating";
 import BannerThemeCard from "@/components/cards/BannerThemeCard";
 import CommentCard from "@/components/cards/CommentCard";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import crud_category from "@/app/api/crud_category";
 import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
@@ -43,7 +43,7 @@ interface Course {
 export default function Page() {
   const { id, courseID } = useParams();
   const routerNotFound = useRouter();
-  let redirectVideoCourse = "";
+  const [videoCourseID, setVideoCourseID] = useState<string>("");
 
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [course, setCourse] = useState<Course | undefined>(undefined);
@@ -81,10 +81,13 @@ export default function Page() {
 
           /* verify if the user isn't subscribe in the course */
           const userCourses = await crud_user.getEnrolledCourses(sessionToken ?? "");
-          //console.log("userCourses", userCourses)
-          const userCourse = userCourses.find((course: any) => course.courseID === courseID);
-          //console.log("userCourse", userCourse);
+          /* find course */
+          const userCourse = userCourses.find((course: any) => course.id === courseData.id);
           setUserCourse(userCourse);
+          if (userCourse) {
+            const res = await crud_user.getLastVideoWatched(userCourse.name, sessionToken ?? "");
+            setVideoCourseID(res.last_module_name + "_" + res.last_subtopic_name);
+          }
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -110,65 +113,7 @@ export default function Page() {
         ]
         await crud_user.subscribeCourse(courseNone, sessionToken);
         setUserCourse(courseNone[0]);
-      }
-    } catch (error) {
-      console.error("error", error)
-    }
-  };
-
-  const handleEnrolledCourse = async () => {
-    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    try {
-      if (course) {
-        const courseNone = {
-          name: course.name,
-          state: "enrolled",
-          last_module_name: course.modules[0].title,
-          last_subtopic_name: course.modules[0].content[0].title
-        }
-        const response = await crud_user.updateUser(courseNone, sessionToken);
-        console.log("response", response)
-        console.log("user", user)
-      }
-    } catch (error) {
-      console.error("error", error)
-    }
-  };
-
-  const handleCompletedCourse = async () => {
-    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    try {
-      if (course) {
-        const courseNone = {
-          name: course.name,
-          state: "completed",
-          last_module_name: course.modules[0].title,
-          last_subtopic_name: course.modules[0].content[0].title
-        }
-        console.log("courseNone", courseNone)
-        const response = await crud_user.updateUser(courseNone, sessionToken);
-        console.log("response", response)
-        console.log("user", user)
-      }
-    } catch (error) {
-      console.error("error", error)
-    }
-  };
-
-  const handleInProgressCourse = async () => {
-    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-    try {
-      if (course) {
-        const courseNone = {
-          name: course.name,
-          state: "in-progress",
-          last_module_name: course.modules[0].title,
-          last_subtopic_name: course.modules[0].content[0].title
-        }
-        console.log("courseNone", courseNone)
-        const response = await crud_user.updateUser(courseNone, sessionToken);
-        console.log("response", response)
-        console.log("user", user)
+        window.location.reload();
       }
     } catch (error) {
       console.error("error", error)
@@ -232,24 +177,18 @@ export default function Page() {
             { user !== "Error desconocido" ? (
                 <div className="mt-6 self-center md:self-start">
                   {!userCourse && 
-                    <Link
-                      key="Inscribirse"
-                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
-                      className="block md:flex-none"
-                    >
-                      <Button
-                        text="Inscribirse"
-                        icon={icons.faBagShopping}
-                        color="blue"
-                        type="big"
-                        onClick={handleNoneCourse}
-                      />
-                    </Link>
+                    <Button
+                      text="Inscribirse"
+                      icon={icons.faBagShopping}
+                      color="blue"
+                      type="big"
+                      onClick={handleNoneCourse}
+                    />
                   }
                   {userCourse && userCourse.state === "enrolled" &&
                     <Link
                       key="Iniciar curso"
-                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      href={`/common/categories/${category.id}/${course.courseID}/${videoCourseID}`}
                       className="block md:flex-none"
                     >
                       <Button
@@ -257,14 +196,13 @@ export default function Page() {
                         icon={icons.faPlay}
                         color="red"
                         type="big"
-                        onClick={handleEnrolledCourse}
                       />
                     </Link>
                   }
                   {userCourse && userCourse.state === "completed" &&
                     <Link
                       key="Ver certificado"
-                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      href={`/common/categories/${category.id}/${course.courseID}/${videoCourseID}`}
                       className="block md:flex-none"
                     >
                       <Button
@@ -272,14 +210,13 @@ export default function Page() {
                         icon={icons.faCheck}
                         color="blue"
                         type="big"
-                        onClick={handleCompletedCourse}
                       />
                     </Link>
                   }
                   {userCourse && userCourse.state === "in-progress" &&
                     <Link
                       key="Continuar curso"
-                      href={`/common/categories/${category.id}/${course.courseID}/${redirectVideoCourse}`}
+                      href={`/common/categories/${category.id}/${course.courseID}/${videoCourseID}`}
                       className="block md:flex-none"
                     >
                       <Button
@@ -287,7 +224,6 @@ export default function Page() {
                         icon={icons.faPause}
                         color="neutral"
                         type="big"
-                        onClick={handleInProgressCourse}
                       />
                     </Link>
                   }

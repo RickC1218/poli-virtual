@@ -18,17 +18,16 @@ const BannerSubThemeCard: React.FC<BannerSubThemeCardProps> = ({
   action,
 }) => {
   return (
-    <div className="flex justify-between items-center bg-[--white] rounded-[24px] p-3 mx-8 my-1 border border-[--high-gray]">
+    <div className="flex justify-between items-center bg-white rounded-[24px] p-3 border border-[--high-gray]">
       <div className="w-[50px] h-[50px] rounded-xl bg-[--principal-blue] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-blue-500/50">
         <FontAwesomeIcon icon={icons.faTv} className="p-2 text-[--white]" />
       </div>
       <div className="text-start grow mx-2">
         <p className="text-base font-bold">{title}</p>
-        
       </div>
       {action === "read" && (
         <div>
-          <p className="text-sm text-[--medium-gray] pr-2">{parentId}</p>
+          <p className="text-sm text-[--medium-gray] pr-5">{parentId}</p>
         </div>
       )}
     </div>

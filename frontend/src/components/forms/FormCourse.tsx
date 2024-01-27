@@ -36,6 +36,7 @@ export interface Module {
   duration: number;
   content: Content[];
   action: "add" | "edit" | "read" | "delete";
+  currentSubtopic?: string;
 }
 export interface Content {
   title: string;
@@ -134,37 +135,29 @@ const FormCourse = () => {
       setAlertMessage(null);
     }, 3000); // close the alert after 3 seconds
   };
+  
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log("modules completo a enviarse ", course.modules)
+    console.log("course completo a enviarse ", course)
+    
+    // Create course
+    const response = await crud_course.createCourse(course);
+    if (response) {
+      showAlert("Curso creado exitosamente");
+      //router.push("/common/profile");
+    } else {
+      showAlert("Error al crear el curso");
+    }
+  };
 
   // Confirm syllabus
   const handleConfirmSyllabus = (updateModules: Module[]) => {
-    setModules(updateModules);
     setCourse({
       ...course,
       modules: updateModules,
     });
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("modules: ", modules);
-    if (modules.length === 0) {
-      showAlert("Por favor, agrega al menos un módulo.");
-      return;
-    } else {
-      setCourse({
-        ...course,
-        modules: modules,
-      });
-    }
-    console.log("course: ", course);
     showAlert("Cargando...");
-    const response = await crud_course.createCourse(course);
-    if (response) {
-      showAlert("Curso creado exitosamente");
-      router.push("/common/profile");
-    } else {
-      showAlert("Error al crear el curso");
-    }
   };
   
   useEffect(() => {
@@ -326,7 +319,7 @@ const FormCourse = () => {
       </div>
       <FormSyllabus 
         modules={modules}
-        setModules={setModules}
+        setModules={setModules}       
         onConfirmSyllabus={handleConfirmSyllabus}
       />
       {alertMessage && (
