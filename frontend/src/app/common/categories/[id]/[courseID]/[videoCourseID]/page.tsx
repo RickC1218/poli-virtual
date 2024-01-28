@@ -62,16 +62,7 @@ export default function Page() {
           setCategory(categoryData as Category);
           setCourse(courseData as Course);
           courseData.courseID = courseID;
-          courseData.course_image_url = courseData.course_image_url.replace(
-            "s3.amazonaws.com/",
-            ""
-          );
-          courseData.trailer_video_url = courseData.trailer_video_url.replace(
-            "s3.amazonaws.com/",
-            ""
-          );
           // asign video to ref
-          videoRef.current = courseData.trailer_video_url;
           const module_subtopic_name = videoCourseID.toString().split("_");
           const currentModule = decodeURIComponent(module_subtopic_name[0]);
           const currentSubtopic = decodeURIComponent(module_subtopic_name[1]);
@@ -84,16 +75,16 @@ export default function Page() {
                 if (content.title === currentSubtopic) {
                   setCurrentSubtopic(content.title);
                   console.log(content.video_url)
-                  /*content.video_url = content.video_url.replace(
-                    "s3.amazonaws.com/",
-                    ""
-                    );*/
-                  setCurrentVideo(content.video_url);
+                  if (content.video_url) {
+                    if (typeof content.video_url === 'string' || content.video_url instanceof String){
+                      setCurrentVideo(content.video_url.replace("s3.amazonaws.com/", ""));
+                      videoRef.current = currentVideo;
+                    }
+                  }                  
                 }
               });
             }
           });
-
         } else {
           routerNotFound.push("/common/not-found");
         }
@@ -101,17 +92,68 @@ export default function Page() {
         console.error("Error fetching categories:", error);
       }
     };
-
+    
     if (courseID) {
       fetchData();
     }
   }, [courseID]);
 
+  useEffect(() => {
+    const handleVideoEnd = () => {
+      if (!course) return;
+  
+      // Search the current module index
+      const currentModuleIndex = course.modules.findIndex((mod: Module) => mod.title === currentModule);
+  
+      // Search the current subtopic index
+      const currentSubtopicIndex = course.modules[currentModuleIndex]?.content.findIndex((content: Content) => content.title === currentSubtopic);
+  
+      // If the current module index is not the last one, get the next module
+      if (currentModuleIndex !== -1 && currentModuleIndex < course.modules.length - 1) {
+        // If the current subtopic index is not the last one, get the next subtopic
+        if (currentSubtopicIndex !== -1 && currentSubtopicIndex < course.modules[currentModuleIndex].content.length - 1) {
+          const nextSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].title;
+          const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
+          setCurrentSubtopic(nextSubtopic);
+          setCurrentVideo(nextVideoUrl);
+        } else {
+          // If the current subtopic index is the last one, get the next module
+          const nextModule = course.modules[currentModuleIndex + 1];
+          const nextSubtopic = nextModule.content[0]?.title || '';
+          const nextVideoUrl = nextModule.content[0]?.video_url || '';
+          setCurrentModule(nextModule.title);
+          setCurrentSubtopic(nextSubtopic);
+          setCurrentVideo(nextVideoUrl);
+        }
+      } else {
+        // If the current module index is the last one, get the next module
+        setCurrentModule('¡Felicidades!');
+        setCurrentSubtopic('¡Has terminado el curso!');
+        setCurrentVideo('https://www.youtube.com/watch?v=6ZfuNTqbHE8');
+      }
+    };
+  
+    if (videoRef.current) {
+      // Cuando se carga el componente, iniciamos el video y añadimos el listener de fin
+      videoRef.current.addEventListener('ended', handleVideoEnd);
+      videoRef.current.play().catch(error => console.error("Error al reproducir el video:", error));
+    }
+  
+    return () => {
+      // Limpieza del evento cuando el componente se desmonta
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('ended', handleVideoEnd);
+      }
+    };
+  
+  }, [currentModule, currentSubtopic, course]); 
+
   if (
     !course ||
     (course && course.courseID === 0) ||
     !category ||
-    (category && category.id === 0)
+    (category && category.id === 0) ||
+    (currentVideo === null || currentVideo === undefined)
   ) {
     return (
       <div
@@ -134,6 +176,7 @@ export default function Page() {
             ref={videoRef}
             controls
             className="w-full h-[500px] rounded-[25px]"
+            autoPlay
           >
             <source src={currentVideo} type="video/mp4" />
             <track

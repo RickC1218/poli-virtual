@@ -3,6 +3,7 @@ import icons from "../icons/icons";
 import BannerSubThemeCard from "./BannerSubThemeCard";
 import { useEffect, useState } from "react";
 import {Module} from "../forms/FormCourse";
+import Link from "next/link";
 
 
 const BannerThemeCard: React.FC<Module> = ({
@@ -55,12 +56,13 @@ const BannerThemeCard: React.FC<Module> = ({
       </button>
       {action === "read" && expanded &&
         content?.map((subthemeCard, id) => {
-          
-          const currentIndex = content.findIndex((subtheme) => subtheme.title === currentSubtopic);
-
           return (
-          <div key={id} className={`relative m-1 mx-8 ${id === content.length -1 && 'pb-2'} text-${id > currentIndex ? '[--high-gray]' : '[--gray]'}`}>
-            <BannerSubThemeCard {...subthemeCard} action="read" />
+          <div key={id} className={`relative m-1 mx-8 ${id === content.length -1 && 'pb-2'} text-${currentSubtopic === subthemeCard.title ? '[--principal-red]' : '[--medium-gray]'}`}>
+            <Link
+              href={`${title}_${subthemeCard.title}`}
+            >
+              <BannerSubThemeCard {...subthemeCard} action="read" />
+            </Link>
           </div>
         )})
       }

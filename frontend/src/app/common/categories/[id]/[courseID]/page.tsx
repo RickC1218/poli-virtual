@@ -64,8 +64,7 @@ export default function Page() {
           setCategory(categoryData as Category);
           setCourse(courseData as Course);
           courseData.courseID = courseID;
-          courseData.course_image_url = 
-          courseData.course_image_url.replace("s3.amazonaws.com/", "")
+          courseData.course_image_url = courseData.course_image_url.replace("s3.amazonaws.com/", "")
           courseData.trailer_video_url = courseData.trailer_video_url.replace("s3.amazonaws.com/", "")
           // asign video to ref
           videoRef.current = courseData.trailer_video_url;
