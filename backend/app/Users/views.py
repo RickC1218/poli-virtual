@@ -22,7 +22,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 
-# API views (Update and delete user - Get enrolled courses)
+# API views (Update and delete user - Get/update enrolled courses)
 @csrf_exempt
 @api_view(['GET', 'PUT', 'DELETE'])
 def user_api(request):
@@ -119,9 +119,9 @@ def add_last_watched_course(request):
                 for enrolled_course in user_serializer.data["enrolled_courses"]:
                     if enrolled_course["name"] == data["name"]:
                         # Update the last_module_name and last_subtopic_name
+                        #enrolled_course["state"] = data["state"]
                         enrolled_course["last_module_name"] = data["last_module_name"]
                         enrolled_course["last_subtopic_name"] = data["last_subtopic_name"]
-                        enrolled_course["last_subtopic_url"] = data["last_subtopic_url"]
 
                 # Update the enrolled courses
                 user_serializer = UserSerializer(user, data={'enrolled_courses': user_serializer.data["enrolled_courses"]}, partial=True)
