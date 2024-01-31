@@ -264,7 +264,7 @@ def sign_in(request):
                             if user_serializer.is_valid():
                                 user_serializer.save()
 
-                            return JsonResponse(user_serializer.data, safe=False)
+                            return JsonResponse(user_serializer.data['session_token'], safe=False)
                         else:
                             return JsonResponse({"mensaje": "Contraseña incorrecta"}, status=401)
 

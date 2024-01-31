@@ -6,9 +6,14 @@ from rest_framework.decorators import api_view
 from Courses.models import Course
 from Courses.serializers import CourseSerializer
 
+import boto3
+from decouple import config
+
+import json
+
 # API views
 @csrf_exempt
-@api_view(['POST', 'GET', 'PUT', 'DELETE'])
+@api_view(['POST', 'GET', 'DELETE'])
 def course_api(request, id=0):
     #Create
     if request.method == 'POST':
@@ -19,10 +24,12 @@ def course_api(request, id=0):
         if course_serializer.is_valid():
             course_serializer.save()
             response_data = {'mensaje': f'Curso agregado'}
+            status = 200
         else:
             response_data = {'mensaje': f'Error al guardar el curso'}
+            status = 400
 
-        return JsonResponse(response_data, safe=False)
+        return JsonResponse(response_data, safe=False, status=status)
 
     # Read
     elif request.method == 'GET':
@@ -42,28 +49,12 @@ def course_api(request, id=0):
             course_serializer = CourseSerializer(course, many=True)
             return JsonResponse(course_serializer.data, safe=False, status=200)
 
-    # Update
-    if request.method == 'PUT':
-
-        try: # Now it can update the fields trailer_video_url and course_image_url
-            course = Course.objects.get(id=request.data['id'])
-            course_serializer = CourseSerializer(course, data=request.data, partial=True)
-
-            if course_serializer.is_valid():
-                course_serializer.save()
-                return JsonResponse({"message": "Curso actualizado"}, safe=False, status=200)
-
-        except Course.DoesNotExist:
-            return JsonResponse({"error": "Curso no encontrado"}, safe=False, status=404)
-
-        return JsonResponse({"error": "Error al actualizar curso"}, safe=False, status=400)
-
     # Delete
     elif request.method == 'DELETE':
         try:
             course = Course.objects.get(id=id)
             course.delete()
-            return JsonResponse("Curso eliminado", safe=False)
+            return JsonResponse("Curso eliminado", safe=False, status=200)
 
         except Course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
@@ -109,7 +100,7 @@ def recently_added_courses(request):
     if request.method == 'GET':
         try:
             # Get the last 3 courses added
-            courses = Course.objects.order_by('-id')[:3]
+            courses = Course.objects.order_by('-id')[:5]
 
             # Reverse the order of the courses
             courses = courses[::-1]
@@ -134,3 +125,61 @@ def courses_by_instructor(request, instructor_name):
 
         except Course.DoesNotExist:
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def upload_videos(request):
+    if request.method == 'POST':
+        #course_serializer = CourseSerializer(data=request.data)
+
+        # Get the course
+        #course = Course.objects.get(id=course_id)
+        #course_serializer = CourseSerializer(course)
+
+        # Get the modules of the course
+        modules = json.loads(request.data['modules'])
+
+        for module in modules:
+            # Get the videos of the module
+            topics = module['content']
+
+            for topic in topics:
+                topic['video_url'] = request.FILES['video'].name
+
+        course_to_upload = {
+            'name': request.data['name'],
+            'description': request.data['description'],
+            'category': request.data['category'],
+            'instructor': request.data['instructor'],
+            'modules': modules,
+            'comments': request.data['comments'],
+            'assessment': request.data['assessment'],
+            'trailer_video_url': request.FILES['trailer_video_url'],
+            'course_image_url': request.FILES['course_image_url']
+        }
+
+        course_serializer = CourseSerializer(data=course_to_upload)
+
+        if course_serializer.is_valid():
+            course_serializer.save()
+            response_data = {'mensaje': f'Curso agregado'}
+            status = 200
+        else:
+            response_data = {'mensaje': f'Error al guardar el curso'}
+            status = 400
+
+        return JsonResponse(response_data, safe=False, status=status)
+
+
+# Upload content videos in bucket S3 AWS
+def upload_content_videos_to_s3(course_id, video):
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=config('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=config('AWS_SECRET_ACCESS_KEY')
+    )
+
+    # Save the video in Amazon S3
+    s3_key = f'assets/{course_id}/{video.name}'
+    s3.upload_fileobj(video, config('AWS_STORAGE_BUCKET_NAME'), s3_key)
