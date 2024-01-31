@@ -109,6 +109,7 @@ const crud_course = {
 
       courseData.comments = [];
 
+      courseData.modules = JSON.stringify(courseData.modules);
       const headers = {
         "Content-Type": "multipart/form-data",
       };
