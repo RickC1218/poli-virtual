@@ -131,12 +131,6 @@ def courses_by_instructor(request, instructor_name):
 @api_view(['POST'])
 def upload_videos(request):
     if request.method == 'POST':
-        #course_serializer = CourseSerializer(data=request.data)
-
-        # Get the course
-        #course = Course.objects.get(id=course_id)
-        #course_serializer = CourseSerializer(course)
-
         # Get the modules of the course
         modules = json.loads(request.data['modules'])
 
@@ -144,8 +138,12 @@ def upload_videos(request):
             # Get the videos of the module
             topics = module['content']
 
-            for topic in topics:
-                topic['video_url'] = request.FILES['video'].name
+            # Get the list of videos from request.FILES['videos']
+            video_files = request.FILES.getlist('videos')
+
+            # Iterate over the videos and assign their names to topics
+            for i, video_file in enumerate(video_files):
+                topics[i]['video_url'] = video_file.name
 
         course_to_upload = {
             'name': request.data['name'],
