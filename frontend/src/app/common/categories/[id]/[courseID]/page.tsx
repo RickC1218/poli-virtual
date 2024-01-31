@@ -267,7 +267,7 @@ export default function Page() {
             Comentarios del curso:
           </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-5 px-10">
-            {course.comments.map((comment, index) => (
+            {course.comments?.map((comment, index) => (
                 <div key={index} className="col-span-1">
                   <CommentCard
                     name={comment.student}

@@ -138,11 +138,9 @@ const FormCourse = () => {
   
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("modules completo a enviarse ", course.modules)
-    console.log("course completo a enviarse ", course)
-    
+
     // Create course
-    const response = await crud_course.createCourse(course);
+    const response = await crud_course.createCourse(course, modules);
     if (response) {
       showAlert("Curso creado exitosamente");
       //router.push("/common/profile");

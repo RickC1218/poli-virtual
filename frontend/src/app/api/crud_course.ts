@@ -90,13 +90,27 @@ const crud_course = {
   },
 
   // Create course
-  createCourse: async (courseData: any) => {
+  createCourse: async (courseData: any, modules: any) => {
     try {
+      const modulesSend = modules.map((module: any) => ({
+        title: module.title,
+        description: module.description,
+        content: module.content.map((content: any) => ({
+          title: content.title,
+          video_url: content.video_url,
+        })),
+      }));
+      courseData.modules = modulesSend;
+      console.log("Course Data Modules",courseData.modules);
+
       courseData.modules = JSON.stringify(courseData.modules);
       courseData.comments = JSON.stringify(courseData.comments);
+      
       const headers = {
         "Content-Type": "multipart/form-data",
       };
+      console.log("Course Data",courseData);
+
       const response = await axios.post(`${API_BASE_URL}/course/`, courseData, { headers });
       return response.data;
     } catch (error) {

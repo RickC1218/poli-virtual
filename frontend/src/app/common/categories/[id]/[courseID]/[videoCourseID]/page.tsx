@@ -80,7 +80,7 @@ export default function Page() {
                       setCurrentVideo(content.video_url.replace("s3.amazonaws.com/", ""));
                       videoRef.current = currentVideo;
                     }
-                  }                  
+                  }
                 }
               });
             }
@@ -120,7 +120,7 @@ export default function Page() {
           // If the current subtopic index is the last one, get the next module
           const nextModule = course.modules[currentModuleIndex + 1];
           const nextSubtopic = nextModule.content[0]?.title || '';
-          const nextVideoUrl = nextModule.content[0]?.video_url || '';
+          const nextVideoUrl = nextModule.content[0]?.video_url ?? '';
           setCurrentModule(nextModule.title);
           setCurrentSubtopic(nextSubtopic);
           setCurrentVideo(nextVideoUrl);
@@ -152,8 +152,7 @@ export default function Page() {
     !course ||
     (course && course.courseID === 0) ||
     !category ||
-    (category && category.id === 0) ||
-    (currentVideo === null || currentVideo === undefined)
+    (category && category.id === 0)
   ) {
     return (
       <div
@@ -234,7 +233,7 @@ export default function Page() {
             Comentarios del curso:
           </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-5 px-10">
-            {course.comments.map((comment, index) => (
+            {course.comments?.map((comment, index) => (
                 <div key={index} className="col-span-1">
                   <CommentCard
                     name={comment.student}
