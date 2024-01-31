@@ -62,7 +62,7 @@ const FormCourse = () => {
   const [course, setCourse] = useState<CourseState>({
     name: "",
     description: "",
-    assessment: 0,
+    assessment: 0.5,
     category: "Fundamentos de programación",
     instructor: user.name + " " + user.lastname,
     course_image_url: null,

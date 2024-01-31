@@ -97,21 +97,27 @@ const crud_course = {
         description: module.description,
         content: module.content.map((content: any) => ({
           title: content.title,
-          video_url: content.video_url,
+          video_url: "",
         })),
       }));
       courseData.modules = modulesSend;
+
+      const videos = modules.map((module: any) => module.content.map((content: any) => content.video_url));
+      console.log("Videos",videos);
+
       console.log("Course Data Modules",courseData.modules);
 
-      courseData.modules = JSON.stringify(courseData.modules);
-      courseData.comments = JSON.stringify(courseData.comments);
-      
+      courseData.comments = [];
+
       const headers = {
         "Content-Type": "multipart/form-data",
       };
+
+      courseData.videos = videos;
       console.log("Course Data",courseData);
 
-      const response = await axios.post(`${API_BASE_URL}/course/`, courseData, { headers });
+      const response = await axios.post(`${API_BASE_URL}/course/upload-videos/`, courseData, { headers });
+
       return response.data;
     } catch (error) {
       const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };

@@ -88,8 +88,8 @@ export default function Page() {
         password: "",
       });
     } else {
-      localStorage.setItem("token", JSON.stringify(response.session_token));
-      if (response.session_token) {
+      localStorage.setItem("token", JSON.stringify(response));
+      if (response) {
         message = "Inicio de sesión exitoso";
         showAlert(message);
         setTimeout(() => {
