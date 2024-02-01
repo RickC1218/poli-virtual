@@ -41,7 +41,7 @@ const crud_category = {
   // Obtain category by name
   getCategoryByName: async (name: any) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/category/${name}`);
+      const response = await axios.get(`${API_BASE_URL}/category/get_category_id/${name}`);
       return response.data;
     } catch (error) {
       const responseError = error as {

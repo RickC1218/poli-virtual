@@ -52,20 +52,40 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
 
     switch (subtype) {
       case "featured":
-        courses = await crud_course.getFeaturedCourses();
+        try {
+          courses = await crud_course.getFeaturedCourses();
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       case "daily":
-        courses = await crud_course.getRecentlyAddedCourses();
+        try {
+          courses = await crud_course.getRecentlyAddedCourses();
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       case "your-courses":
-        courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        try {
+          courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       case "instructor-courses":
-        courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        try {
+          courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        } catch (error) {
+          // console.log(error);
+        }
         break;
         case "your-learning":
-        enrolledCourses = await crud_user.getEnrolledCourses(getToken());
-        setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
+        try {
+          enrolledCourses = await crud_user.getEnrolledCourses(getToken());
+          setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       default:
         break;
