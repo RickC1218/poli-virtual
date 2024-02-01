@@ -6,6 +6,9 @@ from rest_framework.decorators import api_view
 from Courses.models import Course
 from Courses.serializers import CourseSerializer
 
+from Content.models import Content
+from Content.serializers import ContentSerializer
+
 import boto3
 from decouple import config
 
@@ -14,7 +17,7 @@ import json
 # API views
 @csrf_exempt
 @api_view(['POST', 'GET', 'DELETE'])
-def course_api(request, id=0):
+def course_api(request, id="0"):
     #Create
     if request.method == 'POST':
 
@@ -35,12 +38,43 @@ def course_api(request, id=0):
     elif request.method == 'GET':
         course_id = id
 
-        if course_id != 0:
+        if course_id != "0":
             # Get the course by id
             try:
                 course = Course.objects.get(id=course_id)
                 course_serializer = CourseSerializer(course)
-                return JsonResponse(course_serializer.data, safe=False, status=200)
+
+                # Get the content of the course
+                content = Content.objects.filter(course_name=course.name)
+                content_serializer = ContentSerializer(content, many=True)
+
+                # Remove (id, course_name) from the content
+                for i in range(len(content_serializer.data)):
+                    content_serializer.data[i].pop('id')
+                    content_serializer.data[i].pop('course_name')
+
+                # Add the content to the course
+                course_modules = list(course_serializer.data['modules'])
+
+                for course_index in range(len(course_serializer.data['modules'])):
+                    for content_index in range(len(content_serializer.data)):
+                        if course_modules[course_index]['title'] == content_serializer.data[content_index]['module']:
+                            #content_serializer.data[content_index].pop('module')
+                            course_modules[course_index]['content'].append(content_serializer.data[content_index])
+
+                course_to_return = {
+                    'name': course_serializer.data['name'],
+                    'description': course_serializer.data['description'],
+                    'category': course_serializer.data['category'],
+                    'instructor': course_serializer.data['instructor'],
+                    'modules': course_modules,
+                    'comments': course_serializer.data['comments'],
+                    'assessment': course_serializer.data['assessment'],
+                    'trailer_video_url': course_serializer.data['trailer_video_url'],
+                    'course_image_url': course_serializer.data['course_image_url']
+                }
+
+                return JsonResponse(course_to_return, safe=False, status=200)
             except Course.DoesNotExist:
                 return JsonResponse("Curso no encontrado", safe=False, status=404)
         else:

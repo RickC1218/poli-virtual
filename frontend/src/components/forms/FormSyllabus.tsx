@@ -12,7 +12,7 @@ interface FormSyllabusProps {
   onConfirmSyllabus: (modules: Module[]) => void;
 }
 
-const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfirmSyllabus}) => {
+const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConfirmSyllabus }) => {
   /* index para modules */
   const [index, setIndex] = useState<number>(0);
   /* index para contents */
@@ -255,15 +255,15 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
       modules.map((module, index) =>
         index === idModule
           ? {
-              ...module,
-              content: module.content.map((content, index) => ({
-                title: content.title,
-                duration: content.duration,
-                video_url: content.video_url,
-                parentId: module.title,
-                action: "add",
-              })),
-            }
+            ...module,
+            content: module.content.map((content, index) => ({
+              title: content.title,
+              duration: content.duration,
+              video_url: content.video_url,
+              parentId: module.title,
+              action: "add",
+            })),
+          }
           : module
       )
     );
@@ -280,11 +280,11 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
       modules.map((module, index) =>
         index === idModule
           ? {
-              ...module,
-              content: module.content.filter(
-                (content, index) => index !== idContent
-              ),
-            }
+            ...module,
+            content: module.content.filter(
+              (content, index) => index !== idContent
+            ),
+          }
           : module
       )
     );
@@ -312,9 +312,8 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
           <div className="mx-5 w-[50px] h-[50px] rounded-2xl bg-[--principal-blue] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-blue-500/50">
             <FontAwesomeIcon
               icon={icons.faPlus}
-              className={`text-[--white] transform ${
-                expandFormModule ? "rotate-45" : "rotate-0"
-              }`}
+              className={`text-[--white] transform ${expandFormModule ? "rotate-45" : "rotate-0"
+                }`}
             />
           </div>
         </button>
@@ -451,9 +450,8 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
                 <div className="mx-5 w-[50px] h-[50px] rounded-2xl bg-[--gray] flex justify-center items-center cursor-pointer hover:shadow-md hover:shadow-gray-500/50">
                   <FontAwesomeIcon
                     icon={icons.faPlus}
-                    className={`text-[--white] transform ${
-                      expandFormContent[id] ? "rotate-45" : "rotate-0"
-                    }`}
+                    className={`text-[--white] transform ${expandFormContent[id] ? "rotate-45" : "rotate-0"
+                      }`}
                   />
                 </div>
               </button>
@@ -483,11 +481,10 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
                   <label
                     htmlFor={`dropzone-file-content-${content.title}-${content.video_url}`}
                     className={`flex flex-col items-center justify-center w-full h-[200px] rounded-[25px] border-2 border-[--medium-gray] text-[--principal-red] font-bold border-dashed cursor-pointer bg-[--high-gray] mb-4 
-                    ${
-                      isDragOver
+                    ${isDragOver
                         ? "bg-[--medium-gray] border-[--principal-blue] text-[--principal-blue]"
                         : ""
-                    }
+                      }
                     `}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -504,7 +501,10 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({modules, setModules, onConfi
                           aquí.
                         </p>
                         <p className="mb-2 text-sm text-[--principal-red] ">
-                        Recuerda que debe ser un archivo MP4 de máximo 5 minutos.
+                          Formato para el nombre del archivo: "nombreTema_nombreInstructor.mp4"
+                        </p>
+                        <p className="mb-2 text-sm text-[--gray] ">
+                          Recuerda que debe ser un archivo MP4 de máximo 10 minutos.
                         </p>
                         <p className="text-xs text-[--gray]">MP4 (Max 100MB)</p>
                       </div>

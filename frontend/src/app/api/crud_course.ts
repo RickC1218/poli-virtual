@@ -95,62 +95,76 @@ const crud_course = {
       const modulesSend = modules.map((module: any) => ({
         title: module.title,
         description: module.description,
-        content: module.content.map((content: any) => ({
-          title: content.title,
-          video_url: "",
-        })),
+        content: []
       }));
       courseData.modules = modulesSend;
 
-      const videos = modules.map((module: any) => module.content.map((content: any) => content.video_url));
-      console.log("Videos",videos);
-
-      console.log("Course Data Modules",courseData.modules);
+      const videos = modules.map((module: any) => ({
+        course_name: courseData.name,
+        module: module.title,
+        title: module.content.map((content: any) => content.title),
+        video_url: module.content.map((content: any) => content.video_url),
+      }));
 
       courseData.comments = [];
 
       courseData.modules = JSON.stringify(courseData.modules);
+      courseData.comments = JSON.stringify(courseData.comments);
+
       const headers = {
         "Content-Type": "multipart/form-data",
       };
 
-      courseData.videos = videos;
-      console.log("Course Data",courseData);
+      const response_course = await axios.post(`${API_BASE_URL}/course/`, courseData, { headers });
 
-      const response = await axios.post(`${API_BASE_URL}/course/upload-videos/`, courseData, { headers });
+      console.log("Response Course", response_course);
 
-      return response.data;
+      let response_content = "";
+      videos.forEach(async (video: any) => {
+        for (let i = 0; i < video.title.length; i++) {
+          response_content = await axios.post(`${API_BASE_URL}/content/`, {
+            course_name: video.course_name,
+            module: video.module,
+            title: video.title[i],
+            video_url: video.video_url[i],
+          }, { headers });
+          console.log("Response", response_content);
+        }
+      });
+
+      return response_course.data;
+
     } catch (error) {
       const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
       if (responseError?.response?.status === 404) {
-          return "Error al actualizar el usuario";
+        return "Error al actualizar el usuario";
       } else {
-          return "Error desconocido";
+        return "Error desconocido";
       }
     }
   },
 
   // Update course
-  uploadCourse:  async (courseData: any) => {
+  uploadCourse: async (courseData: any) => {
     try {
-        const headers = {
-            "Content-Type": "multipart/form-data",
-        };
-        const hasProfilePictureChanged = courseData.profile_image_url && courseData.profile_image_url === null;
-        const requestBody = hasProfilePictureChanged
-            ? { ...courseData, profile_image_url: courseData.profile_image_url }
-            : { ...courseData };
-        const response = await axios.put(`${API_BASE_URL}/course/`, requestBody, { headers });
-        return response.data;
+      const headers = {
+        "Content-Type": "multipart/form-data",
+      };
+      const hasProfilePictureChanged = courseData.profile_image_url && courseData.profile_image_url === null;
+      const requestBody = hasProfilePictureChanged
+        ? { ...courseData, profile_image_url: courseData.profile_image_url }
+        : { ...courseData };
+      const response = await axios.put(`${API_BASE_URL}/course/`, requestBody, { headers });
+      return response.data;
     } catch (error) {
-        const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
-        if (responseError?.response?.status === 404) {
-            return "Error al actualizar el curso";
-        } else {
-            return "Error desconocido";
-        }
+      const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+      if (responseError?.response?.status === 404) {
+        return "Error al actualizar el curso";
+      } else {
+        return "Error desconocido";
+      }
     }
-},
+  },
 };
 
 export default crud_course;

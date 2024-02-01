@@ -1,7 +1,9 @@
 from django.db import models
+import uuid
+
 
 class Category(models.Model):
-    #_id = models.AutoField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=100)
     name = models.CharField(max_length=500)
     description = models.TextField()
 

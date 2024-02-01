@@ -25,4 +25,5 @@ urlpatterns = [
     path('', include('Users.urls')),
     path('', include('Courses.urls')),
     path('', include('Categories.urls')),
+    path('', include('Content.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -13,11 +13,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name='Content',
             fields=[
                 ('id', models.CharField(default=uuid.uuid4, editable=False, max_length=100, primary_key=True, serialize=False, unique=True)),
-                ('name', models.CharField(max_length=500)),
-                ('description', models.TextField()),
+                ('course_name', models.CharField(max_length=500)),
+                ('module', models.CharField(max_length=500)),
+                ('title', models.CharField(max_length=500)),
+                ('video_url', models.FileField(blank=True, upload_to='assets/coursesVideos/content/')),
             ],
         ),
     ]

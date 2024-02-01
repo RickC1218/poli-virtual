@@ -1,8 +1,10 @@
 from django.db import models
 from decouple import config
+import uuid
 
 
 class Course(models.Model):
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=100)
     name = models.CharField(max_length=500)
     description = models.TextField()
     category = models.CharField(max_length=100)
