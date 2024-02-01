@@ -6,7 +6,7 @@ const crud_course = {
   // Obtain courses by category
   getCourses: async (category: string) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/course/${category}`);
+      const response = await axios.get(`${API_BASE_URL}/course/courses-by-category/${category}`);
       return response.data;
     } catch (error) {
       const responseError = error as {

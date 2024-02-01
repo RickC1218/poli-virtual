@@ -44,35 +44,7 @@ def course_api(request, id="0"):
                 course = Course.objects.get(id=course_id)
                 course_serializer = CourseSerializer(course)
 
-                # Get the content of the course
-                content = Content.objects.filter(course_name=course.name)
-                content_serializer = ContentSerializer(content, many=True)
-
-                # Remove (id, course_name) from the content
-                for i in range(len(content_serializer.data)):
-                    content_serializer.data[i].pop('id')
-                    content_serializer.data[i].pop('course_name')
-
-                # Add the content to the course
-                course_modules = list(course_serializer.data['modules'])
-
-                for course_index in range(len(course_serializer.data['modules'])):
-                    for content_index in range(len(content_serializer.data)):
-                        if course_modules[course_index]['title'] == content_serializer.data[content_index]['module']:
-                            #content_serializer.data[content_index].pop('module')
-                            course_modules[course_index]['content'].append(content_serializer.data[content_index])
-
-                course_to_return = {
-                    'name': course_serializer.data['name'],
-                    'description': course_serializer.data['description'],
-                    'category': course_serializer.data['category'],
-                    'instructor': course_serializer.data['instructor'],
-                    'modules': course_modules,
-                    'comments': course_serializer.data['comments'],
-                    'assessment': course_serializer.data['assessment'],
-                    'trailer_video_url': course_serializer.data['trailer_video_url'],
-                    'course_image_url': course_serializer.data['course_image_url']
-                }
+                course_to_return = get_course_with_content(course_serializer.data)
 
                 return JsonResponse(course_to_return, safe=False, status=200)
             except Course.DoesNotExist:
@@ -94,6 +66,40 @@ def course_api(request, id="0"):
             return JsonResponse("Curso no encontrado", safe=False, status=404)
 
 
+def get_course_with_content(course_serializer_data):
+    # Get the content of the course
+    content = Content.objects.filter(course_name=course_serializer_data['name'])
+    content_serializer = ContentSerializer(content, many=True)
+
+    # Remove (id, course_name) from the content
+    for i in range(len(content_serializer.data)):
+        content_serializer.data[i].pop('id')
+        content_serializer.data[i].pop('course_name')
+
+    # Add the content to the course
+    course_modules = list(course_serializer_data['modules'])
+
+    for course_index in range(len(course_serializer_data['modules'])):
+        for content_index in range(len(content_serializer.data)):
+            if course_modules[course_index]['title'] == content_serializer.data[content_index]['module']:
+                #content_serializer.data[content_index].pop('module')
+                course_modules[course_index]['content'].append(content_serializer.data[content_index])
+
+    course_to_return = {
+        'name': course_serializer_data['name'],
+        'description': course_serializer_data['description'],
+        'category': course_serializer_data['category'],
+        'instructor': course_serializer_data['instructor'],
+        'modules': course_modules,
+        'comments': course_serializer_data['comments'],
+        'assessment': course_serializer_data['assessment'],
+        'trailer_video_url': course_serializer_data['trailer_video_url'],
+        'course_image_url': course_serializer_data['course_image_url']
+    }
+
+    return course_to_return
+
+
 # Get the courses by the category
 @csrf_exempt
 @api_view(['GET'])
@@ -102,7 +108,14 @@ def courses_by_category(request, category):
         try:
             courses = Course.objects.filter(category=category)
             courses_serializer = CourseSerializer(courses, many=True)
-            return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+            courses_to_return = []
+
+            for course in courses_serializer.data:
+                course_to_return = get_course_with_content(course)
+                courses_to_return.append(course_to_return)
+
+            return JsonResponse(courses_to_return, safe=False, status=200)
 
         except Course.DoesNotExist:
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
@@ -119,7 +132,14 @@ def featured_courses(request):
 
             if len(courses) != 0:
                 courses_serializer = CourseSerializer(courses, many=True)
-                return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+                courses_to_return = []
+
+                for course in courses_serializer.data:
+                    course_to_return = get_course_with_content(course)
+                    courses_to_return.append(course_to_return)
+
+                return JsonResponse(courses_to_return, safe=False, status=200)
             else:
                 return JsonResponse("No hay cursos destacados", safe=False, status=404)
 
@@ -140,7 +160,14 @@ def recently_added_courses(request):
             courses = courses[::-1]
 
             courses_serializer = CourseSerializer(courses, many=True)
-            return JsonResponse(courses_serializer.data, safe=False, status=200)
+
+            courses_to_return = []
+
+            for course in courses_serializer.data:
+                course_to_return = get_course_with_content(course)
+                courses_to_return.append(course_to_return)
+
+            return JsonResponse(courses_to_return, safe=False, status=200)
 
         except Course.DoesNotExist:
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
