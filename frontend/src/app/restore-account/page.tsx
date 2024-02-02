@@ -8,6 +8,7 @@ import crud_user from "@/app/api/crud_user";
 
 import { useEffect, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const router = useRouter();
@@ -31,13 +32,25 @@ export default function Page() {
     });
   };
 
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
 
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => {
-      setAlertMessage(null);
-    }, 3000); // close the alert after 3 seconds
+  const showAlert = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
   };
 
   //Validating password
@@ -64,34 +77,39 @@ export default function Page() {
           // redirect to the explore page
           if (message.startsWith("Contraseña actualizada")) {
             localStorage.removeItem("email");
-            showAlert(message);
+            showAlert(message, "success");
             router.push("/login");
             router.refresh();
           }
         } else {
           //Error
           message = "La contraseña y la verificación no coinciden.";
+          showAlert(message, "error");
         }
-        showAlert(message);
       } else {
         //password error
         message =
           "Contraseña inválida: La contraseña debe tener entre 8 y 15 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial.";
-        showAlert(message);
+        showAlert(message, "warning");
       }
     } catch (error) {
-      showAlert("Error al actualizar la contraseña.");
+      showAlert("Error al actualizar la contraseña.", "error");
     }
   };
 
   return (
-    <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
-      <div className="col-span-2 hidden md:block">
+    <div className="h-screen grid grid-cols-3 lg:grid-cols-4 gap-2 bg-[--white] place-items-center md:p-10">
+      <div className="col-span-1 lg:col-span-2 hidden md:block">
         <Link key="Explorar" href="/common/explore">
           <Image src="/logo.png" alt="logo" width={300} height={212.68} />
         </Link>
       </div>
       <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center ">
+        <div className="block md:hidden py-5">
+          <Link key="Explorar" href="/common/explore">
+            <Image src="/logo.png" alt="logo" width={85} height={21.268} />
+          </Link>
+        </div>
         <h1 className="text-[38px] mb-5 text-center">Restauración de cuenta</h1>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Nueva contraseña:</p>
@@ -111,17 +129,6 @@ export default function Page() {
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]"
           />
         </div>
-        {alertMessage && (
-          <div
-            className={`${
-              alertMessage.startsWith("Contraseña actualizada")
-                ? "bg-green-500"
-                : "bg-red-500"
-            } text-[--light] z-40 p-2 rounded-md text-center`}
-          >
-            {alertMessage}
-          </div>
-        )}
         <div className="flex items-center justify-center w-full m-5 p-2">
           <Link onClick={handleUpdateAccount} href="/login">
             <Button

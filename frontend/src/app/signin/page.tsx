@@ -18,8 +18,8 @@ export default function Page() {
   });
   
   return (
-    <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
-      <div className="col-span-2 hidden md:block">
+    <div className="h-screen grid grid-cols-3 lg:grid-cols-4 gap-2 bg-[--white] place-items-center md:p-10">
+      <div className="col-span-1 lg:col-span-2 hidden md:block">
         <Link
           key="Explorar"
           href='/common/explore'

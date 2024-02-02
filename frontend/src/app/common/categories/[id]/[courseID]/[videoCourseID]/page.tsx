@@ -10,6 +10,9 @@ import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
 import { Module, Content } from "@/components/forms//FormCourse";
 import crud_user from "@/app/api/crud_user";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import icons from "@/components/icons/icons";
+import Button from "@/components/buttons/Button";
 
 interface Category {
   id: number;
@@ -170,7 +173,7 @@ export default function Page() {
   return (
     <div className={`flex flex-between w-full h-full flex-col justify-between`}>
       <div className="grid grid-cols-1 gap-0 lg:grid-cols-5 bg-[--gray] lg:gap-2 w-full p-6 md:px-20 md:py-10">
-        <div className="col-span-5 self-center">
+        <div className="col-span-5 self-center flex justify-center items-center">
           <video
             ref={videoRef}
             controls
@@ -185,6 +188,16 @@ export default function Page() {
             />
           </video>
         </div>
+      </div>
+      <div className="col-span-5 self-center flex items-center justify-between w-[70%] pt-3">
+        <button className="flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer bg-[--principal-blue] w-[175px] h-[50px] p-3 hover:shadow-lg hover:shadow-blue-500/50">
+          <FontAwesomeIcon icon={icons.faChevronLeft} className=" w-[18px] text-[--white]" />
+          Video anterior
+        </button>
+        <button className="flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer bg-[--principal-blue] w-[175px] h-[50px] p-3 hover:shadow-lg hover:shadow-blue-500/50">
+          Video Siguiente
+          <FontAwesomeIcon icon={icons.faChevronRight} className="w-[18px] text-[--white]" />
+        </button>
       </div>
       <div className="grid grid-cols-1 gap-0 lg:grid-cols-5 lg:gap-2 w-full p-6 md:px-20 md:py-10">
         <div className="col-span-5 py-10">

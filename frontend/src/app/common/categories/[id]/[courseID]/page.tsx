@@ -15,6 +15,7 @@ import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
 import { Module, Content } from "@/components/forms//FormCourse";
 import crud_user from "@/app/api/crud_user";
+import Swal from "sweetalert2";
 
 
 interface Category {
@@ -51,6 +52,30 @@ export default function Page() {
   const [user, setUser] = useState<any>(null);
   const [userCourse, setUserCourse] = useState<any>(null);
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+  };
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -111,7 +136,10 @@ export default function Page() {
         ]
         await crud_user.subscribeCourse(courseNone, sessionToken);
         setUserCourse(courseNone[0]);
-        window.location.reload();
+        showAlert("Felicidades, te inscribiste al curso", "success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000)
       }
     } catch (error) {
       console.error("error", error)
@@ -172,7 +200,7 @@ export default function Page() {
           <div className="flex flex-col md:items-start">
             <h3 className="text-[32px] text-start">Descripción del curso:</h3>
             <p>{course.description}</p>
-            { user !== "Error desconocido" ? (
+            { user !== "Error al enviar de datos" ? (
                 <div className="mt-6 self-center md:self-start">
                   {!userCourse && 
                     <Button

@@ -7,18 +7,32 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
+import Swal from "sweetalert2";
 
 export default function Page() {
   
   const [emailVerification, setEmailVerification] = useState("");
   const router = useRouter();
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => {
-      setAlertMessage(null);
-    }, 3000); // close the alert after 2 seconds
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+
+  const showAlert = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +49,7 @@ export default function Page() {
       message = response;
       //redirect to confirm page
       if(message === "Rol del estudiante actualizado") {
-        showAlert(message);
+        showAlert(message, "success");
         setTimeout(() => {
           // Redirect to the explore page after the delay
           router.push("/approve-to-be-teacher/confirm");
@@ -43,7 +57,7 @@ export default function Page() {
         }, 2000);
       }
     } catch (error) {
-      showAlert("Error al enviar el correo de verificación");
+      showAlert("Error al enviar el correo de verificación", "error");
     }
   };
 
@@ -67,8 +81,8 @@ export default function Page() {
   };
 
   return (
-    <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
-      <div className="col-span-2 hidden md:block">
+    <div className="h-screen grid grid-cols-3 lg:grid-cols-4 gap-2 bg-[--white] place-items-center md:p-10">
+      <div className="col-span-1 lg:col-span-2 hidden md:block">
         <Link
           key="Explorar"
           href='/common/explore'
@@ -82,6 +96,11 @@ export default function Page() {
         </Link>
       </div>
       <form className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center " onSubmit={handleSubmit}>
+        <div className="block md:hidden py-5">
+          <Link key="Explorar" href="/common/explore">
+            <Image src="/logo.png" alt="logo" width={85} height={21.268} />
+          </Link>
+        </div>
         <h1 className="text-[38px] text-center mb-5">Confirmación de correo electrónico</h1>
         <p className="mx-2 text-start align-middle">Escribe el correo del estudiante que ha pedido ser instructor.</p>
         <div className="flex items-center justify-between w-full mx-2 p-2">
@@ -93,11 +112,6 @@ export default function Page() {
             value={emailVerification}
             className="bg-[--white] border border-[--high-gray] rounded-[10px] p-2 text-sm w-[55%]" />
         </div>
-        {alertMessage && (
-          <div className={`${alertMessage.startsWith("Rol actualizado") ? 'bg-green-500' : 'bg-red-500'} text-[--light] z-40 p-2 rounded-md text-center`}>
-            {alertMessage}
-          </div>
-        )}
         <div className="flex items-center justify-center w-full m-5 p-2">
           <Button
             text="Enviar correo"
