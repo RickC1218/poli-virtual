@@ -7,7 +7,7 @@ import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
 import crud_user from "@/app/api/crud_user";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
@@ -42,7 +42,12 @@ export default function Page() {
     });
   };
 
-  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "undefined" && token !== "null") {
+      router.push("/common/explore");
+    }
+  });
 
   const showAlert = (message: string) => {
     setAlertMessage(message);

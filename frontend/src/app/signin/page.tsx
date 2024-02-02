@@ -3,8 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import FormProfile from "@/components/forms/FormProfile";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "undefined" && token !== "null") {
+      router.push("/common/explore");
+    }
+  });
   
   return (
     <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">

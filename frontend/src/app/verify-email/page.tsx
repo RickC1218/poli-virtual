@@ -4,9 +4,20 @@ import Link from "next/link";
 
 import crud_user from "@/app/api/crud_user";
 import DifferentText from "@/components/tools/DifferentText";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "undefined" && token !== "null") {
+      router.push("/common/explore");
+    }
+  });
+
   const verifyEmail = async () => {
     try {
       const sessionToken = localStorage.getItem("emailVerify");

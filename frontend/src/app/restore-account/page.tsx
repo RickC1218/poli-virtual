@@ -6,11 +6,18 @@ import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
 import crud_user from "@/app/api/crud_user";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useEffect, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "undefined" && token !== "null") {
+      router.push("/common/explore");
+    }
+  });
 
   const [pass, setPass] = useState({
     password: "",

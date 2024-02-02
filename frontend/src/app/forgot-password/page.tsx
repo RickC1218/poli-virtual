@@ -8,6 +8,8 @@ import icons from "@/components/icons/icons";
 
 import crud_user from "@/app/api/crud_user";
 import { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page() {
   const text = "Enviar correo";
@@ -20,6 +22,14 @@ export default function Page() {
     label: "Registrarse",
   };
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "undefined" && token !== "null") {
+      router.push("/common/explore");
+    }
+  });
   const [email, setEmail] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
