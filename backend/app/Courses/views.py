@@ -48,7 +48,7 @@ def course_api(request, id="0"):
 
                 return JsonResponse(course_to_return, safe=False, status=200)
             except Course.DoesNotExist:
-                return JsonResponse("Curso no encontrado", safe=False, status=404)
+                return JsonResponse("Curso no encontrado2", safe=False, status=404)
         else:
             # Get all courses
             course = Course.objects.all()
@@ -64,40 +64,6 @@ def course_api(request, id="0"):
 
         except Course.DoesNotExist:
             return JsonResponse("Curso no encontrado", safe=False, status=404)
-
-
-def get_course_with_content(course_serializer_data):
-    # Get the content of the course
-    content = Content.objects.filter(course_name=course_serializer_data['name'])
-    content_serializer = ContentSerializer(content, many=True)
-
-    # Remove (id, course_name) from the content
-    for i in range(len(content_serializer.data)):
-        content_serializer.data[i].pop('id')
-        content_serializer.data[i].pop('course_name')
-
-    # Add the content to the course
-    course_modules = list(course_serializer_data['modules'])
-
-    for course_index in range(len(course_serializer_data['modules'])):
-        for content_index in range(len(content_serializer.data)):
-            if course_modules[course_index]['title'] == content_serializer.data[content_index]['module']:
-                #content_serializer.data[content_index].pop('module')
-                course_modules[course_index]['content'].append(content_serializer.data[content_index])
-
-    course_to_return = {
-        'name': course_serializer_data['name'],
-        'description': course_serializer_data['description'],
-        'category': course_serializer_data['category'],
-        'instructor': course_serializer_data['instructor'],
-        'modules': course_modules,
-        'comments': course_serializer_data['comments'],
-        'assessment': course_serializer_data['assessment'],
-        'trailer_video_url': course_serializer_data['trailer_video_url'],
-        'course_image_url': course_serializer_data['course_image_url']
-    }
-
-    return course_to_return
 
 
 # Get the courses by the category
@@ -133,13 +99,7 @@ def featured_courses(request):
             if len(courses) != 0:
                 courses_serializer = CourseSerializer(courses, many=True)
 
-                courses_to_return = []
-
-                for course in courses_serializer.data:
-                    course_to_return = get_course_with_content(course)
-                    courses_to_return.append(course_to_return)
-
-                return JsonResponse(courses_to_return, safe=False, status=200)
+                return JsonResponse(courses_serializer.data, safe=False, status=200)
             else:
                 return JsonResponse("No hay cursos destacados", safe=False, status=404)
 
@@ -242,3 +202,38 @@ def upload_content_videos_to_s3(course_id, video):
     # Save the video in Amazon S3
     s3_key = f'assets/{course_id}/{video.name}'
     s3.upload_fileobj(video, config('AWS_STORAGE_BUCKET_NAME'), s3_key)
+
+
+# Get the course with its content
+def get_course_with_content(course_serializer_data):
+    # Get the content of the course
+    content = Content.objects.filter(course_name=course_serializer_data['name'])
+    content_serializer = ContentSerializer(content, many=True)
+
+    # Remove (id, course_name) from the content
+    for i in range(len(content_serializer.data)):
+        content_serializer.data[i].pop('id')
+        content_serializer.data[i].pop('course_name')
+
+    # Add the content to the course
+    course_modules = list(course_serializer_data['modules'])
+
+    for course_index in range(len(course_serializer_data['modules'])):
+        for content_index in range(len(content_serializer.data)):
+            if course_modules[course_index]['title'] == content_serializer.data[content_index]['module']:
+                #content_serializer.data[content_index].pop('module')
+                course_modules[course_index]['content'].append(content_serializer.data[content_index])
+
+    course_to_return = {
+        'name': course_serializer_data['name'],
+        'description': course_serializer_data['description'],
+        'category': course_serializer_data['category'],
+        'instructor': course_serializer_data['instructor'],
+        'modules': course_modules,
+        'comments': course_serializer_data['comments'],
+        'assessment': course_serializer_data['assessment'],
+        'trailer_video_url': course_serializer_data['trailer_video_url'],
+        'course_image_url': course_serializer_data['course_image_url']
+    }
+
+    return course_to_return

@@ -44,7 +44,7 @@ export default function Page() {
   const [user, setUser] = useState<any>(null);
   const [currentModule, setCurrentModule] = useState<string | null>(null);
   const [currentSubtopic, setCurrentSubtopic] = useState<string | null>(null);
-  const [currentVideo, setCurrentVideo] = useState<File | string | any>(null);  
+  const [currentVideo, setCurrentVideo] = useState<File | string | any>(null);
 
   useEffect(() => {
     const fetchData = async () => {

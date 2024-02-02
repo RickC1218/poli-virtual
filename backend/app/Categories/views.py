@@ -9,7 +9,7 @@ from Categories.serializers import CategorySerializer
 # API views
 @csrf_exempt
 @api_view(['POST', 'GET', 'PUT', 'DELETE'])
-def category_api(request, id=0):
+def category_api(request, id="0"):
     #Create
     if request.method == 'POST':
         data = JSONParser().parse(request)
@@ -30,7 +30,7 @@ def category_api(request, id=0):
     elif request.method == 'GET':
         category_id = id
 
-        if category_id != 0:
+        if category_id != "0":
             # Get the category by id
             try:
                 category = Category.objects.get(id=category_id)
