@@ -21,7 +21,7 @@ const crud_user = {
                 case 402:
                     return "Este usuario ya existe";
                 default:
-                    return "Error desconocido";
+                    return "Error al guardar el usuario";
             }
         }
     },
@@ -36,7 +36,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Usuario no encontrado";
             } else {
-                return "Error desconocido";
+                return "Usuario no encontrado";
             }
         }
     },
@@ -51,7 +51,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Usuario no encontrado";
             } else {
-                return "Error desconocido";
+                return "Usuario no encontrado";
             }
         }
     },
@@ -69,7 +69,7 @@ const crud_user = {
                 case 404:
                     return "Usuario no encontrado";
                 default:
-                    return "Error desconocido";
+                    return "Usuario no encontrado";
             }
         }
     },
@@ -91,7 +91,7 @@ const crud_user = {
                 case 404:
                     return "Usuario no encontrado";
                 default:
-                    return "Error desconocido";
+                    return "Usuario no encontrado";
             }
         }
     },
@@ -114,7 +114,7 @@ const crud_user = {
                 case 404:
                     return "Usuario no encontrado";
                 default:
-                    return "Error desconocido";
+                    return "Error al cerrar sesión";
             }
         }
     },
@@ -155,7 +155,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al actualizar el usuario";
             } else {
-                return "Error desconocido";
+                return "Error al actualizar el usuario";
             }
         }
     },
@@ -178,7 +178,7 @@ const crud_user = {
                 case 404:
                     return "Usuario no encontrado";
                 default:
-                    return "Error desconocido";
+                    return "Error al actualizar la contraseña";
             }
         }
     },
@@ -193,7 +193,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Instructores no encontrados";
             } else {
-                return "Error desconocido";
+                return "Instructores no encontrados";
             }
         }
     },
@@ -208,7 +208,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al enviar el correo";
             } else {
-                return "Error desconocido";
+                return "Error al enviar el correo";
             }
         }
     },
@@ -227,11 +227,11 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al enviar el correo";
             } else {
-                return "Error desconocido";
+                return "Error al enviar el correo";
             }
         }
     },
-    
+
     // active the instructor site
     beInstructor : async (emailData: any) => {
         try{
@@ -242,7 +242,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al enviar el correo";
             } else {
-                return "Error desconocido";
+                return "Error al enviar el correo";
             }
         }
     },
@@ -260,7 +260,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al enviar de datos";
             } else {
-                return "Error desconocido";
+                return "Error al enviar de datos";
             }
         }
     },
@@ -275,7 +275,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al encontrar al usuario";
             } else {
-                return "Error desconocido";
+                return "Error al encontrar al usuario";
             }
         }
     },
@@ -294,7 +294,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al actualizar el usuario";
             } else {
-                return "Error desconocido";
+                return "Error al actualizar el usuario";
             }
         }
     },
@@ -312,7 +312,7 @@ const crud_user = {
             if (responseError?.response?.status === 404) {
                 return "Error al encontrar el curso";
             } else {
-                return "Error desconocido";
+                return "Error al encontrar el curso";
             }
         }
     }

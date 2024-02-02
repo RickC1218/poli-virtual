@@ -88,7 +88,15 @@ def user_api(request):
                 user_serializer = UserSerializer(user, data=request.data, partial=True)
 
                 if user_serializer.is_valid():
-                    user_serializer.save()
+                    user = user_serializer.save()
+
+                    # Modify the name profile_image_url
+                    profile_image = request.FILES.get('profile_image_url')
+                    if profile_image:
+                        profile_image.name = f'profile_image_{user.email}'
+                        user.profile_image_url = profile_image
+                        user.save()
+
                     return JsonResponse("Usuario actualizado", safe=False, status=200)
 
             return JsonResponse("Error al actualizar usuario", safe=False, status=400)
@@ -254,7 +262,7 @@ def sign_in(request):
             if email !="" and password != "":
                 try:
                     user = User.objects.get(email=email) # Get the user of the BD
-                    email_verification = user.email_verification
+                    email_verification = user.email_verification # Get the email verification of the user
 
                     if email_verification:
                         password_user = user.password

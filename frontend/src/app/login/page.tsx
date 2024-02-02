@@ -85,7 +85,7 @@ export default function Page() {
 
     // make login request
     const response = await crud_user.login(user);
-    if (response === "Contraseña incorrecta" || response === "Usuario no encontrado" || response === "Usuario no verificado" || response === "Correo electrónico y contraseña no ingresados"){
+    if (response === "Contraseña incorrecta" || response === "Usuario no encontrado" || response === "Correo electrónico no verificado" || response === "Correo electrónico y contraseña no ingresados"){
       message = response;
       showAlert(message);
       setUser({
