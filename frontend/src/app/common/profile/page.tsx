@@ -17,7 +17,6 @@ const initialUserState = {
   name: "",
   lastname: "",
   email: "",
-  password: "",
   role: "student",
   semester: "",
   approve_teacher: "",

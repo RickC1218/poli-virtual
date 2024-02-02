@@ -18,7 +18,7 @@ import crud_user from "@/app/api/crud_user";
 
 
 interface Category {
-  id: number;
+  id: string;
   name: string;
 }
 interface Comment {
@@ -27,7 +27,7 @@ interface Comment {
   assessment: number;
 }
 interface Course {
-  courseID: number;
+  courseID: string;
   name: string;
   instructor: string;
   description: string;
@@ -51,7 +51,6 @@ export default function Page() {
   const [user, setUser] = useState<any>(null);
   const [userCourse, setUserCourse] = useState<any>(null);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -81,7 +80,7 @@ export default function Page() {
           /* verify if the user isn't subscribe in the course */
           const userCourses = await crud_user.getEnrolledCourses(sessionToken ?? "");
           /* find course */
-          const userCourse = userCourses.find((course: any) => course.id === courseData.id);
+          const userCourse = userCourses.find((course: any) => course.name === courseData.name);
           setUserCourse(userCourse);
           if (userCourse) {
             const res = await crud_user.getLastVideoWatched(userCourse.name, sessionToken ?? "");
@@ -121,9 +120,9 @@ export default function Page() {
 
   if (
     !course ||
-    (course && course.courseID === 0) ||
+    (course && course.courseID === "") ||
     !category ||
-    (category && category.id === 0)
+    (category && category.id === "")
   ) {
     return (
       <div

@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 interface Category {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
@@ -39,7 +39,7 @@ export default function Page() {
     }
   }, [id]);
 
-  if (!category || (category && category.id === 0)) {
+  if (!category || (category && category.id === "")) {
     return (
       <div
         className={`flex flex-between w-full h-full flex-col justify-center`}

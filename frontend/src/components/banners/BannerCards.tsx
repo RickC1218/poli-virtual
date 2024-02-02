@@ -52,20 +52,40 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
 
     switch (subtype) {
       case "featured":
-        courses = await crud_course.getFeaturedCourses();
+        try {
+          courses = await crud_course.getFeaturedCourses();
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       case "daily":
-        courses = await crud_course.getRecentlyAddedCourses();
+        try {
+          courses = await crud_course.getRecentlyAddedCourses();
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       case "your-courses":
-        courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        try {
+          courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       case "instructor-courses":
-        courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        try {
+          courses = await crud_course.getUserCourses(instructorCourses ?? "");
+        } catch (error) {
+          // console.log(error);
+        }
         break;
         case "your-learning":
-        enrolledCourses = await crud_user.getEnrolledCourses(getToken());
-        setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
+        try {
+          enrolledCourses = await crud_user.getEnrolledCourses(getToken());
+          setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
+        } catch (error) {
+          // console.log(error);
+        }
         break;
       default:
         break;
@@ -163,7 +183,13 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
             ))
           ) : (
             <div className="font-bold text-[--principal-red] hover:drop-shadow">
-              <h1>No hay cursos agregados todavía.</h1>
+              <p>
+                <FontAwesomeIcon
+                  icon={icons.faChevronRight}
+                  className="mx-3 text-[--principal-red]"
+                />
+                No hay cursos disponibles en este momento.
+              </p>
             </div>
           )}
         </div>

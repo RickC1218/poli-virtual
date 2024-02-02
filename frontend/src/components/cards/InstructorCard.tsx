@@ -32,7 +32,8 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ email, name, lastname, 
         <div className='flex justify-center items-center'>
           <div className="pt-2.5 text-center">
             <div className='mb-3'>
-              <p className="font-bold">{name + " " + lastname}</p>
+              <p className="font-bold">{name}</p>
+              <p className="font-bold">{lastname}</p>
               <p className="text-base">{semester}</p>
               <p className="text-base">{tutor}</p>
             </div>
