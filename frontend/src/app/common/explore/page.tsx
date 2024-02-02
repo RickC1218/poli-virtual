@@ -40,7 +40,7 @@ export default function Page() {
               estudiantes.
             </>}
             description="¡Descubre una comunidad educativa única y emocionante! 
-          En nuestra plataforma de educación virtual, los estudiantes se convierten en maestros, compartiendo su conocimiento y pasión."
+            En nuestra plataforma de educación virtual, los estudiantes se convierten en maestros, compartiendo su conocimiento y pasión."
             button={true}
             image="/image.jpg"
           />
