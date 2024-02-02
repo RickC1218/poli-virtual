@@ -21,6 +21,11 @@ from Courses.serializers import CourseSerializer
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
+# AWS S3
+import boto3
+
+import re
+
 
 # API views (Update and delete user - Get/update enrolled courses)
 @csrf_exempt
@@ -92,6 +97,9 @@ def user_api(request):
 
                     # Modify the name profile_image_url
                     profile_image = request.FILES.get('profile_image_url')
+                    profile_image_url = config('URL_IMAGE_INSTRUCTOR_STORAGE') + clean_string(profile_image.name) # Get the previous image in S3
+                    delete_object_in_s3(profile_image_url) # Delete the previous image in S3
+
                     if profile_image:
                         profile_image.name = f'profile_image_{user.email}'
                         user.profile_image_url = profile_image
@@ -656,3 +664,20 @@ def is_valid_email(email):
         return True
     except ValidationError:
         return False
+
+
+# Eliminate objects in bucket S3
+def delete_object_in_s3(object_url):
+    try:
+        s3 = boto3.client('s3', aws_access_key_id=config('AWS_ACCESS_KEY_ID'), aws_secret_access_key=config('AWS_SECRET_ACCESS_KEY'))
+        s3.delete_object(Bucket=config('AWS_STORAGE_BUCKET_NAME'), Key=object_url)
+    except Exception as e:
+        print('Error al eliminar el objeto en S3')
+
+
+# Delete special characters in a string
+def clean_string(text):
+    # Remove special characters and replace spaces with underscores
+    clean_text = re.sub(r'[^a-zA-Z0-9\s\.-]', '', text)
+    clean_text = re.sub(r'\s+', '_', clean_text)
+    return clean_text

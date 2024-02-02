@@ -14,6 +14,8 @@ from decouple import config
 
 import json
 
+from Users import views
+
 # API views
 @csrf_exempt
 @api_view(['POST', 'GET', 'DELETE'])
@@ -26,11 +28,23 @@ def course_api(request, id="0"):
         if course_serializer.is_valid():
             course = course_serializer.save()
 
-            # Modify trailer_video_url name with course ID before saving
+            # Modify trailer_video_url and course_image_url name with course ID before saving
             trailer_video = request.FILES.get('trailer_video_url')
-            if trailer_video:
+            course_image = request.FILES.get('course_image_url')
+
+            trailer_video_url = config('URL_VIDEO_COURSE_STORAGE') + views.clean_string(trailer_video.name)
+            course_image_url = config('URL_IMAGE_COURSE_STORAGE') + views.clean_string(course_image.name)
+
+            views.delete_object_in_s3(trailer_video_url) # Delete the object in S3
+            views.delete_object_in_s3(course_image_url) # Delete the object in S3
+
+            if trailer_video and course_image:
                 trailer_video.name = f"trailer_video_{course.id}"
+                course_image.name = f"course_image_{course.id}"
+
                 course.trailer_video_url = trailer_video
+                course.course_image_url = course_image
+
                 course.save()
 
             response_data = {'mensaje': f'Curso agregado'}
@@ -265,3 +279,12 @@ def get_course_with_content(course_serializer_data):
     }
 
     return course_to_return
+
+
+# Eliminate objects in bucket S3
+def delete_object_in_s3(object_url):
+    try:
+        s3 = boto3.client('s3', aws_access_key_id=config('AWS_ACCESS_KEY_ID'), aws_secret_access_key=config('AWS_SECRET_ACCESS_KEY'))
+        s3.delete_object(Bucket=config('AWS_STORAGE_BUCKET_NAME'), Key=object_url)
+    except Exception as e:
+        print('Error al eliminar el objeto en S3')
