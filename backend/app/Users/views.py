@@ -95,15 +95,16 @@ def user_api(request):
                 if user_serializer.is_valid():
                     user = user_serializer.save()
 
-                    # Modify the name profile_image_url
-                    profile_image = request.FILES.get('profile_image_url')
-                    profile_image_url = config('URL_IMAGE_INSTRUCTOR_STORAGE') + clean_string(profile_image.name) # Get the previous image in S3
-                    delete_object_in_s3(profile_image_url) # Delete the previous image in S3
+                    if (request.FILES.get('profile_image_url')): # If the profile image is updated
+                        # Modify the name profile_image_url
+                        profile_image = request.FILES.get('profile_image_url')
+                        profile_image_url = config('URL_IMAGE_INSTRUCTOR_STORAGE') + clean_string(profile_image.name) # Get the previous image in S3
+                        delete_object_in_s3(profile_image_url) # Delete the previous image in S3
 
-                    if profile_image:
-                        profile_image.name = f'profile_image_{user.email}'
-                        user.profile_image_url = profile_image
-                        user.save()
+                        if profile_image:
+                            profile_image.name = f'profile_image_{user.email}'
+                            user.profile_image_url = profile_image
+                            user.save()
 
                     return JsonResponse("Usuario actualizado", safe=False, status=200)
 
