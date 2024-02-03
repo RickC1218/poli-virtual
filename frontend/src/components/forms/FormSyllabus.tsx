@@ -8,12 +8,13 @@ import BannerSubThemeCard from "../cards/BannerSubThemeCard";
 import Swal from "sweetalert2";
 
 interface FormSyllabusProps {
+  course: string;
   modules: Module[];
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
   onConfirmSyllabus: (modules: Module[]) => void;
 }
 
-const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConfirmSyllabus }) => {
+const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules, onConfirmSyllabus }) => {
   /* index para modules */
   const [index, setIndex] = useState<number>(0);
   /* index para contents */
@@ -28,6 +29,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
     cuantity: 0,
     content: contents,
     action: "add",
+    course: course,
   });
 
   const [content, setContent] = useState<Content>({
@@ -80,6 +82,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
         cuantity: 0,
         content: [],
         action: "add",
+        course: course,
       });
     }
   };
@@ -102,6 +105,8 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
     }
   };
 
+  const allowedVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
+
   /* drag and drop files */
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -116,11 +121,16 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      const droppedFile = files[files.length - 1];
-      setContent({
-        ...content,
-        video_url: droppedFile,
-      });
+      if (!allowedVideoTypes.includes(files[0].type)) {
+        showAlert("El archivo debe ser un video.", "error");
+        return;
+      } else {
+        const droppedFile = files[files.length - 1];
+        setContent({
+          ...content,
+          video_url: droppedFile,
+        });
+      }
     }
     setIsDragOver(false);
   };
@@ -128,10 +138,16 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
   const handleVideoDrag = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setContent({
-        ...content,
-        video_url: file,
-      });
+      if(!allowedVideoTypes.includes(file.type)){
+        showAlert("El archivo debe ser un video.", "error");
+        event.target.value = "";
+        return;
+      } else {
+        setContent({
+          ...content,
+          video_url: file,
+        }); 
+      }
     }
   };
 
@@ -161,6 +177,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
           cuantity: module.cuantity,
           content: module.content,
           action: "add",
+          course: course,
         },
       ]);
     } else {
@@ -179,6 +196,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
             action: "add",
           })),
           action: "add",
+          course: course,
         };
         return newModules;
       });
@@ -191,6 +209,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
       cuantity: 0,
       content: [],
       action: "add",
+      course: course,
     });
   };
 
@@ -203,6 +222,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
       cuantity: modules[id].cuantity,
       content: modules[id].content,
       action: "edit",
+      course: course,
     });
     setExpandFormModule(true);
   };
@@ -403,6 +423,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
             duration={120}
             content={module.content}
             action={module.action}
+            course={course}
           />
           <div className="absolute top-[1.5px] right-[1.8px] m-2 p-2 flex space-x-2 cursor-pointer">
             <button type="button" onClick={() => handleEditModule(id)}>

@@ -96,6 +96,8 @@ const FormCourse = () => {
     comments: [],
   });
 
+  const allowedVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
+
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -109,11 +111,16 @@ const FormCourse = () => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      const droppedFile = files[files.length - 1];
-      setCourse({
-        ...course,
-        trailer_video_url: droppedFile,
-      });
+      if (!allowedVideoTypes.includes(files[0].type)) {
+        showAlert("El archivo debe ser un video", "error");
+        return;
+      } else {
+        const droppedFile = files[files.length - 1];
+        setCourse({
+          ...course,
+          trailer_video_url: droppedFile,
+        });
+      }
     }
     setIsDragOver(false);
   };
@@ -121,20 +128,31 @@ const FormCourse = () => {
   const handleVideoDrag = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setCourse({
-        ...course,
-        trailer_video_url: file,
-      });
+      if (!allowedVideoTypes.includes(file.type)) {
+        showAlert("El archivo debe ser un video", "error");
+        event.target.value = "";
+        return;
+      } else {
+        setCourse({
+          ...course,
+          trailer_video_url: file,
+        });
+      }
     }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setCourse({
-        ...course,
-        course_image_url: file,
-      });
+      if (file.type.includes("image/")) {
+        setCourse({
+          ...course,
+          course_image_url: file,
+        });
+      } else {
+        showAlert("El archivo debe ser una imagen", "error");
+        event.target.value = "";
+      }
     }
   };
 
@@ -336,6 +354,7 @@ const FormCourse = () => {
         </div>
       </div>
       <FormSyllabus 
+        course={course.name}
         modules={modules}
         setModules={setModules}       
         onConfirmSyllabus={handleConfirmSyllabus}
