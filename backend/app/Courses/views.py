@@ -12,9 +12,9 @@ from Content.serializers import ContentSerializer
 import boto3
 from decouple import config
 
-import json
-
 from Users import views
+from Users.models import User
+from Users.serializers import UserSerializer
 
 # API views
 @csrf_exempt
@@ -190,47 +190,65 @@ def courses_by_instructor(request, instructor_name):
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
 
 
+# Update course comments and course assessment
 @csrf_exempt
-@api_view(['POST'])
-def upload_videos(request):
-    if request.method == 'POST':
-        # Get the modules of the course
-        modules = json.loads(request.data['modules'])
+@api_view(['PUT'])
+def update_course_comments(request, id):
+    user_token = views.verify_token(request) # return the email of the user if the token is valid
 
-        for module in modules:
-            # Get the videos of the module
-            topics = module['content']
+    if user_token is False:
+        return JsonResponse("Acceso no autorizado", safe=False, status=401)
 
-            # Get the list of videos from request.FILES['videos']
-            video_files = request.FILES.getlist('videos')
+    else:
+        if request.method == 'PUT':
+            try:
+                # Get the comments from the request
+                course_comments = request.data['comments']
 
-            # Iterate over the videos and assign their names to topics
-            for i, video_file in enumerate(video_files):
-                topics[i]['video_url'] = video_file.name
+                # Get the course and update the comments
+                course = Course.objects.get(id=id)
+                course_serializer = CourseSerializer(course, data={'comments': course.comments + course_comments}, partial=True)
 
-        course_to_upload = {
-            'name': request.data['name'],
-            'description': request.data['description'],
-            'category': request.data['category'],
-            'instructor': request.data['instructor'],
-            'modules': modules,
-            'comments': request.data['comments'],
-            'assessment': request.data['assessment'],
-            'trailer_video_url': request.FILES['trailer_video_url'],
-            'course_image_url': request.FILES['course_image_url']
-        }
+                if course_serializer.is_valid():
+                    course_serializer.save()
 
-        course_serializer = CourseSerializer(data=course_to_upload)
+                    # Update the course assessment
+                    update_course_assessment(id)
+
+                    return JsonResponse("Comentarios agregados", safe=False, status=200)
+                else:
+                    return JsonResponse("Error al agregar comentarios", safe=False, status=400)
+
+            except Course.DoesNotExist:
+                return JsonResponse("Curso no encontrado", safe=False, status=404)
+
+
+# Update course assessment when a comment is added
+def update_course_assessment(course_id):
+    try:
+        # Get the course and update the assessment
+        course = Course.objects.get(id=course_id)
+        course_serializer = CourseSerializer(course)
+
+        number_comments = len(course_serializer.data['comments'])
+
+        assessment = 0
+        for comment in course_serializer.data['comments']:
+            assessment += comment['assessment']
+
+        assessment = round(assessment / number_comments, 2)
+
+        course_serializer = CourseSerializer(course, data={'assessment': assessment}, partial=True)
 
         if course_serializer.is_valid():
             course_serializer.save()
-            response_data = {'mensaje': f'Curso agregado'}
-            status = 200
-        else:
-            response_data = {'mensaje': f'Error al guardar el curso'}
-            status = 400
 
-        return JsonResponse(response_data, safe=False, status=status)
+            print('Calificación del curso actualizada')
+        else:
+            print('Error al actualizar la calificación del curso')
+
+    except Course.DoesNotExist:
+        print('Curso no encontrado')
 
 
 # Upload content videos in bucket S3 AWS

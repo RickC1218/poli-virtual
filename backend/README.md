@@ -60,6 +60,40 @@
   Status: 400 -> Usuario no encontrado
   ```
 
+- `http://127.0.0.1:8000/user/add-last-watched-course/`
+  - Método: `POST`
+  - Descripción: Agregar el último módulo y tema visto del curso.
+  - Es necesario enviar el `Token de Autenticación`.
+
+```bash
+  # Entrada
+{
+  "name": "", # Nombre del último curso visto
+  "state": "", # enrolled, in-progress, completed
+  "last_module_name": "", # Nombre del último módulo del curso visto
+  "last_subtopic_name": "" # Nombre del último tema del módulo visto.
+}
+
+  # Salida
+  Status: 200 -> Último curso visto agregado.
+  Status: 401 -> Acceso no autorizado.
+  Status: 404 -> Usuario no encontrado.
+  ```
+
+- `http://127.0.0.1:8000/user/get-last-watched-course/<str:course_name>/`
+  - Método: `GET`
+  - Descripción: Obtener el último curso visto.
+  - Es necesario enviar el `Token de Autenticación`.
+
+```bash
+  # Entrada -> Ninguna
+
+  # Salida
+  Status: 200 -> Retorna el último curso visto.
+  Status: 401 -> Acceso no autorizado.
+  Status: 404 -> Usuario no encontrado.
+  ```
+
 - `http://127.0.0.1:8000/user/is-enrolled-in-course/<str: course_name>/`
   - Método: `GET`
   - Descripción: Verificar si un usuario esta inscrito en un curso.
@@ -109,7 +143,7 @@
 }
 
   # Salida
-  Status: 200 -> Inicio de sesión correcto.
+  Status: 200 -> Inicio de sesión correcto y retorna token de sesión.
   Status: 400 -> Correo electrónico inválido.
   Status: 400 -> Correo electrónico y contraseña no ingresados.
   Status: 401 -> Contraseña incorrecta.
@@ -407,6 +441,30 @@
   Status: 404 -> No hay cursos disponibles.
   ```
 
+- `http://127.0.0.1:8000/course/update-course-comments/<str:id>/`
+  - Método: `PUT`
+  - Descripción: Actualizar comentarios de un curso mediante el id de este.
+  - Se debe enviar el `Token de Autenticación`.
+
+  ```bash
+  # Entrada
+  {
+  "comments": [
+    {
+      "name": "", # Nombre de la persona que envía el comentario
+      "assessment": , # Puntuación del curso, es número.
+      "comment": "", # Comentario del curso
+    }
+  ]
+}
+  
+  # Salida
+  Status: 200 -> Comentarios agregados.
+  Status: 400 -> Error al agregar comentarios.
+  Status: 401 -> Acceso no autorizado.
+  Status: 404 -> Curso no encontrado.
+  ```
+
 ## Categorías
 
 - `http://127.0.0.1:8000/category/`
@@ -473,6 +531,27 @@
   # Salida
   Status: 200 -> Retorna el id de la categoría.
   Status: 404 -> Categoría no encontrada.
+  ```
+
+## Content
+
+- `http://127.0.0.1:8000/content/`
+  - Método: `POST`
+  - Descripción: Crea el contenido de un curso.
+
+  ```bash
+  # Método POST
+  # Entrada
+  {
+    "course_name": "", # Nombre del curso.
+    "module": "", # Nombre del módulo del curso.
+    "title": "", # Título del tema del módulo.
+    "video_url": FILE # Video del tema del módulo.
+  }
+  
+  # Salida
+  Status: 200 -> Contenido agregado.
+  Status: 400 -> Revisar campos y contenido de entrada.
   ```
 
 **Nota:** Esta documentación está sujeta a cambios a medida que evoluciona la API.
