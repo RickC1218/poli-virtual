@@ -679,7 +679,7 @@ def delete_object_in_s3(object_url):
 # Delete special characters in a string
 def clean_string(text):
     # Remove special characters and replace spaces with underscores
-    clean_text = re.sub(r'[^a-zA-Z0-9\s\.-]', '', text)
+    clean_text = re.sub(r'[^a-zA-Z0-9\s\.-_]', '', text)
     clean_text = re.sub(r'\s+', '_', clean_text)
     return clean_text
 
