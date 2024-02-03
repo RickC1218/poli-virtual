@@ -215,6 +215,9 @@ def update_course_comments(request, id):
                     # Update the course assessment
                     update_course_assessment(id)
 
+                    # Update the instructor assessment
+                    views.update_instructor_assessment(course.instructor)
+
                     return JsonResponse("Comentarios agregados", safe=False, status=200)
                 else:
                     return JsonResponse("Error al agregar comentarios", safe=False, status=400)

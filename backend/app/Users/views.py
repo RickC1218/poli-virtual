@@ -682,3 +682,39 @@ def clean_string(text):
     clean_text = re.sub(r'[^a-zA-Z0-9\s\.-]', '', text)
     clean_text = re.sub(r'\s+', '_', clean_text)
     return clean_text
+
+
+# Update instructor assessment
+def update_instructor_assessment(instructor_name):
+    try:
+        # Get all the instructors
+        instructors = User.objects.filter(role='instructor')
+        instructors_serializer = UserSerializer(instructors, many=True)
+
+        # Get the instructor
+        instructor_to_update = None
+        for index in range(len(instructors_serializer.data)):
+            instructor_full_name = instructors_serializer.data[index]["name"] + " " + instructors_serializer.data[index]["lastname"]
+            if instructor_full_name == instructor_name:
+                instructor_to_update = instructors[index]
+
+        # Get the courses of the instructor
+        instructor_courses = Course.objects.filter(instructor=instructor_name)
+        instructor_courses_serializer = CourseSerializer(instructor_courses, many=True)
+
+        instructor_assessment = 0
+        for course in instructor_courses_serializer.data:
+            instructor_assessment += course["assessment"]
+
+        instructor_assessment = instructor_assessment / len(instructor_courses_serializer.data)
+
+        # Update the assessment of the instructor
+        instructor_serializer = UserSerializer(instructor_to_update, data={'score_teacher': instructor_assessment}, partial=True)
+
+        if instructor_serializer.is_valid():
+            instructor_serializer.save()
+
+            print('Calificación del instructor actualizada')
+
+    except User.DoesNotExist:
+        print('Instructor no encontrado')
