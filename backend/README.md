@@ -441,6 +441,30 @@
   Status: 404 -> No hay cursos disponibles.
   ```
 
+- `http://127.0.0.1:8000/course/update-course-comments/<str:id>/`
+  - Método: `PUT`
+  - Descripción: Actualizar comentarios de un curso mediante el id de este.
+  - Se debe enviar el `Token de Autenticación`.
+
+  ```bash
+  # Entrada
+  {
+  "comments": [
+    {
+      "name": "", # Nombre de la persona que envía el comentario
+      "assessment": , # Puntuación del curso, es número.
+      "comment": "", # Comentario del curso
+    }
+  ]
+}
+  
+  # Salida
+  Status: 200 -> Comentarios agregados.
+  Status: 400 -> Error al agregar comentarios.
+  Status: 401 -> Acceso no autorizado.
+  Status: 404 -> Curso no encontrado.
+  ```
+
 ## Categorías
 
 - `http://127.0.0.1:8000/category/`
