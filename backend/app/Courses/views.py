@@ -287,6 +287,7 @@ def get_course_with_content(course_serializer_data):
                 course_modules[course_index]['content'].append(content_serializer.data[content_index])
 
     course_to_return = {
+        'id': course_serializer_data['id'],
         'name': course_serializer_data['name'],
         'description': course_serializer_data['description'],
         'category': course_serializer_data['category'],
