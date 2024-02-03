@@ -54,7 +54,6 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
       case "featured":
         try {
           courses = await crud_course.getFeaturedCourses();
-          console.log(courses);
         } catch (error) {
           console.error(error);
         }

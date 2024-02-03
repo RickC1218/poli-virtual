@@ -35,7 +35,6 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
         const allCourses = categoryID
           ? await crud_course.getCourses(category)
           : "";
-        console.log(allCourses);
         setCourses(Array.isArray(allCourses) ? allCourses : []);
       } catch (error) {
         console.error("Error fetching categories:", error);

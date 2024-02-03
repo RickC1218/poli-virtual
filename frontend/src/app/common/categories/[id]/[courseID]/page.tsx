@@ -17,17 +17,16 @@ import { Module } from "@/components/forms//FormCourse";
 import crud_user from "@/app/api/crud_user";
 import Swal from "sweetalert2";
 
-
-interface Category {
+export interface Category {
   id: string;
   name: string;
 }
-interface Comment {
+export interface Comment {
   name: string;
   comment: string;
   assessment: number;
 }
-interface Course {
+export interface Course {
   courseID: string;
   name: string;
   instructor: string;
@@ -283,6 +282,7 @@ export default function Page() {
                 content={module.content}
                 action="read"
                 course={course.name}
+                course_ID={course.courseID}
               />
             </div>
           ))

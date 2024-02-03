@@ -298,6 +298,24 @@ const crud_user = {
         }
     },
 
+    //Is enrolled in a course
+    isEnrolledCourse: async (courseName: string, session_token: string) => {
+        try {
+            const headers = {
+                "Authorization": `Bearer ${session_token}`,
+            };
+            const response = await axios.get(`${API_BASE_URL}/user/is-enrolled-in-course/${courseName}/`, { headers });
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 401) {
+                return "Error al encontrar al usuario";
+            } else {
+                return "Error al encontrar al usuario";
+            }
+        }
+    },
+
     //get last video watched
     getLastVideoWatched: async (name: string, session_token: string) => {
         try {

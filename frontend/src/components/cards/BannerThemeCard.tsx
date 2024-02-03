@@ -3,9 +3,9 @@ import icons from "../icons/icons";
 import BannerSubThemeCard from "./BannerSubThemeCard";
 import { useEffect, useState } from "react";
 import {Module} from "../forms/FormCourse";
-import Link from "next/link";
 import crud_user from "@/app/api/crud_user";
 import Swal from "sweetalert2";
+import { useParams } from "next/navigation";
 
 
 const BannerThemeCard: React.FC<Module> = ({
@@ -17,6 +17,7 @@ const BannerThemeCard: React.FC<Module> = ({
   action,
   currentSubtopic,
   course,
+  course_ID,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -26,6 +27,8 @@ const BannerThemeCard: React.FC<Module> = ({
     }
     setExpanded(!expanded);
   };
+
+  const params = useParams();
 
   const Toast = Swal.mixin({
     toast: true,
@@ -59,9 +62,8 @@ const BannerThemeCard: React.FC<Module> = ({
 
   const handleLinkSubtheme = async (subtheme: string) => {
     const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
-    const response = crud_user.getEnrolledCourses(sessionToken);
-    console.log(response)
-    if (!course) {
+    const res = await crud_user.isEnrolledCourse(course, sessionToken);
+    if (!res) {
       showAlert("Aún no te has inscrito en este curso.", "warning")
     } else {
       await crud_user.addLastVideoWatched(
@@ -73,6 +75,7 @@ const BannerThemeCard: React.FC<Module> = ({
         },
         sessionToken,
       );
+      window.location.href = `/common/categories/${params.id}/${course_ID}/${title}_${subtheme}`;
     }
   };
 
@@ -104,12 +107,11 @@ const BannerThemeCard: React.FC<Module> = ({
         content?.map((subthemeCard, id) => {
           return (
           <div key={id} className={`relative m-1 mx-8 ${id === content.length -1 && 'pb-2'} text-${currentSubtopic === subthemeCard.title ? '[--principal-red]' : '[--medium-gray]'}`}>
-            <Link
-              href={`${title}_${subthemeCard.title}`}
+            <button className="w-full"
               onClick={() => handleLinkSubtheme(subthemeCard.title)}
             >
               <BannerSubThemeCard {...subthemeCard} action="read" />
-            </Link>
+            </button>
           </div>
         )})
       }

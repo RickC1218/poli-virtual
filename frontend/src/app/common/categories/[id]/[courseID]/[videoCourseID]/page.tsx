@@ -13,29 +13,7 @@ import crud_user from "@/app/api/crud_user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "@/components/icons/icons";
 import Swal from "sweetalert2";
-
-interface Category {
-  id: number;
-  name: string;
-}
-interface Comment {
-  name: string;
-  comment: string;
-  assessment: number;
-}
-interface Course {
-  courseID: number;
-  name: string;
-  instructor: string;
-  description: string;
-  assessment: number;
-  course_image_url: string;
-  trailer_video_url: string;
-  comments: Comment[];
-  modules: Module[];
-  category: string;
-  state: "none" | "enrolled" | "completed" | "in-progress";
-}
+import { Category, Course } from "../page";
 
 export default function Page() {
   const { id, courseID, videoCourseID } = useParams();
@@ -361,9 +339,9 @@ export default function Page() {
   
   if (
     !course ||
-    (course && course.courseID === 0) ||
+    (course && course.courseID === "0") ||
     !category ||
-    (category && category.id === 0)
+    (category && category.id === "0")
   ) {
     return (
       <div
@@ -380,7 +358,7 @@ export default function Page() {
 
   return (
     <div className={`flex flex-between w-full h-full flex-col justify-between`}>
-      <div className="grid grid-cols-1 gap-0 lg:grid-cols-5 bg-[--gray] lg:gap-2 w-full p-6 md:px-20 md:py-10">
+      <div className="grid grid-cols-5 gap-0 lg:grid-cols-5 bg-[--gray] lg:gap-2 w-full p-6 md:px-20 md:py-10">
         <div className="col-span-5 self-center flex justify-center items-center">
           <video
             ref={videoRef}
@@ -396,7 +374,7 @@ export default function Page() {
             />
           </video>
         </div>
-        <div className="text-[--white] pt-2 flex justify-center items-center">
+        <div className="col-span-5 w-full text-[--white] pt-2 flex justify-center items-center">
           {currentModule}
           <FontAwesomeIcon icon={icons.faChevronRight} className="mx-3 text-[--principal-red]" />
           {currentSubtopic}
@@ -430,6 +408,7 @@ export default function Page() {
                   action="read"
                   currentSubtopic={currentSubtopic ?? ""}
                   course={course.name}
+                  course_ID={course.courseID}
                   />
               </div>
             );

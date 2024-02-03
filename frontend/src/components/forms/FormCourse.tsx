@@ -39,6 +39,7 @@ export interface Module {
   action: "add" | "edit" | "read" | "delete" | "show";
   currentSubtopic?: string;
   course: string;
+  course_ID: string;
 }
 export interface Content {
   title: string;
