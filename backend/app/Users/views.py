@@ -95,15 +95,16 @@ def user_api(request):
                 if user_serializer.is_valid():
                     user = user_serializer.save()
 
-                    # Modify the name profile_image_url
-                    profile_image = request.FILES.get('profile_image_url')
-                    profile_image_url = config('URL_IMAGE_INSTRUCTOR_STORAGE') + clean_string(profile_image.name) # Get the previous image in S3
-                    delete_object_in_s3(profile_image_url) # Delete the previous image in S3
+                    if (request.FILES.get('profile_image_url')): # If the profile image is updated
+                        # Modify the name profile_image_url
+                        profile_image = request.FILES.get('profile_image_url')
+                        profile_image_url = config('URL_IMAGE_INSTRUCTOR_STORAGE') + clean_string(profile_image.name) # Get the previous image in S3
+                        delete_object_in_s3(profile_image_url) # Delete the previous image in S3
 
-                    if profile_image:
-                        profile_image.name = f'profile_image_{user.email}'
-                        user.profile_image_url = profile_image
-                        user.save()
+                        if profile_image:
+                            profile_image.name = f'profile_image_{user.email}'
+                            user.profile_image_url = profile_image
+                            user.save()
 
                     return JsonResponse("Usuario actualizado", safe=False, status=200)
 
@@ -681,3 +682,39 @@ def clean_string(text):
     clean_text = re.sub(r'[^a-zA-Z0-9\s\.-]', '', text)
     clean_text = re.sub(r'\s+', '_', clean_text)
     return clean_text
+
+
+# Update instructor assessment
+def update_instructor_assessment(instructor_name):
+    try:
+        # Get all the instructors
+        instructors = User.objects.filter(role='instructor')
+        instructors_serializer = UserSerializer(instructors, many=True)
+
+        # Get the instructor
+        instructor_to_update = None
+        for index in range(len(instructors_serializer.data)):
+            instructor_full_name = instructors_serializer.data[index]["name"] + " " + instructors_serializer.data[index]["lastname"]
+            if instructor_full_name == instructor_name:
+                instructor_to_update = instructors[index]
+
+        # Get the courses of the instructor
+        instructor_courses = Course.objects.filter(instructor=instructor_name)
+        instructor_courses_serializer = CourseSerializer(instructor_courses, many=True)
+
+        instructor_assessment = 0
+        for course in instructor_courses_serializer.data:
+            instructor_assessment += course["assessment"]
+
+        instructor_assessment = instructor_assessment / len(instructor_courses_serializer.data)
+
+        # Update the assessment of the instructor
+        instructor_serializer = UserSerializer(instructor_to_update, data={'score_teacher': instructor_assessment}, partial=True)
+
+        if instructor_serializer.is_valid():
+            instructor_serializer.save()
+
+            print('Calificación del instructor actualizada')
+
+    except User.DoesNotExist:
+        print('Instructor no encontrado')
