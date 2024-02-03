@@ -210,7 +210,15 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
               </div>
             ))
           ) : (
-            <h1>No hay instructor agregados todavía.</h1>
+            <div className="font-bold text-[--principal-red] hover:drop-shadow">
+              <p>
+                <FontAwesomeIcon
+                  icon={icons.faChevronRight}
+                  className="mx-3 text-[--principal-red]"
+                />
+                No hay instructores disponibles en este momento.
+              </p>
+            </div>
           )}
         </div>
       )}

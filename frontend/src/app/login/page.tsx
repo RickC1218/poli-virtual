@@ -9,6 +9,7 @@ import crud_user from "@/app/api/crud_user";
 
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const text = "Iniciar sesión";
@@ -31,8 +32,7 @@ export default function Page() {
     email: "",
     password: "",
   });
-  
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const router = useRouter();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -49,11 +49,25 @@ export default function Page() {
     }
   });
 
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => {
-      setAlertMessage(null);
-    }, 2000); // close the alert after 2 seconds
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+
+  const showAlert = (message: string, type: 'success' | 'error') => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 2000,
+    });
   };
 
   const escapeHTML = (unsafe: string): string => {
@@ -87,7 +101,7 @@ export default function Page() {
     const response = await crud_user.login(user);
     if (response === "Contraseña incorrecta" || response === "Usuario no encontrado" || response === "Correo electrónico no verificado" || response === "Correo electrónico y contraseña no ingresados"){
       message = response;
-      showAlert(message);
+      showAlert(message, "error");
       setUser({
         email: "",
         password: "",
@@ -96,7 +110,7 @@ export default function Page() {
       localStorage.setItem("token", JSON.stringify(response));
       if (response) {
         message = "Inicio de sesión exitoso";
-        showAlert(message);
+        showAlert(message, "success");
         setTimeout(() => {
           // Redirect to the explore page after the delay
           router.push("/common/explore");
@@ -104,14 +118,14 @@ export default function Page() {
         }, 2000);
       } else {
         message = response;
-        showAlert(message);
+        showAlert(message, "error");
       }
     }
   };
 
   return (
-    <div className="h-screen grid grid-cols-4 gap-2 bg-[--white] place-items-center p-10">
-      <div className="col-span-2 hidden md:block">
+    <div className="h-screen grid grid-cols-3 lg:grid-cols-4 gap-2 bg-[--white] place-items-center md:p-10">
+      <div className="col-span-1 lg:col-span-2 hidden md:block">
         <Link
           key="Explorar"
           href='/common/explore'
@@ -125,6 +139,19 @@ export default function Page() {
         </Link>
       </div>
       <form className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center " onSubmit={handleSubmit}>
+        <div className="block md:hidden py-5">
+          <Link
+            key="Explorar"
+            href='/common/explore'
+          >
+            <Image
+              src="/logo.png"
+              alt="logo"
+              width={85}
+              height={21.268}
+            />
+          </Link>
+        </div>
         <h1 className="text-[38px] mb-5">Inicio de sesión</h1>
         <div className="flex items-center justify-between w-full mx-2 p-2">
           <p className="font-bold">Correo institucional:</p>
@@ -151,11 +178,6 @@ export default function Page() {
         >
           {forgotlink.name}
         </Link>
-        {alertMessage && (
-          <div className={`${alertMessage.startsWith("Inicio de sesión exitoso") ? 'bg-green-500' : 'bg-red-500'} text-[--light] z-40 p-2 rounded-md text-center`}>
-            {alertMessage}
-          </div>
-        )}
         <div className="flex items-center justify-center w-full m-5 p-2">
           <Button
             text={text}
@@ -169,7 +191,7 @@ export default function Page() {
           <Link
             key={signinlink.name}
             href={signinlink.href}
-            className="block md:flex-none hover:text-[--principal-blue] hover:drop-shadow"
+            className="block md:flex-none hover:text-[--principal-red] hover:drop-shadow"
           >
             {signinlink.name}
           </Link>
