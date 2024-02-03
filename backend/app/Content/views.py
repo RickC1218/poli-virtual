@@ -22,6 +22,7 @@ def content_api(request):
             # Modify video_url name with the id
             content_video = request.FILES.get('video_url')
             content_video_url = config('URL_VIDEO_COURSE_CONTENT_STORAGE') + views.clean_string(content_video.name)
+            print(content_video_url)
             views.delete_object_in_s3(content_video_url)
 
             if content_video:
