@@ -20,6 +20,11 @@ export default function NotFound() {
         </Link>
       </div>
       <div className="col-span-4 md:col-span-2 w-[70%] rounded-[10px] bg-[--light] shadow-md shadow-gray-500/50 p-3 md:p-5 flex flex-col justify-center items-center">
+        <div className="block md:hidden py-5">
+          <Link key="Explorar" href="/common/explore">
+            <Image src="/logo.png" alt="logo" width={85} height={21.268} />
+          </Link>
+        </div>
         <h1 className="text-[38px] m-5 text-center align-middle">
           Página no encontrada
         </h1>

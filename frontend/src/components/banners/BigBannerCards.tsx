@@ -1,7 +1,7 @@
 "use client";
 import CourseCard from "../cards/CourseCard";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import crud_course from "@/app/api/crud_course";
 import crud_user from "@/app/api/crud_user";
@@ -26,66 +26,92 @@ const BigBannerCards: React.FC<BigBannerCardsProps> = ({ category, state }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const params = useParams();
+  const mounted = useRef(true);
   
-  // get courses by category
-  const getCourses = async () => {
-    try {
-      const categoryID = params.id;
-      const allCourses = categoryID
-        ? await crud_course.getCourses(category)
-        : "";
-      setCourses(Array.isArray(allCourses) ? allCourses : []);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
+  const fetchData = useCallback(async () => {
+    if (state === "none") {
+      try {
+        const categoryID = params.id;
+        const allCourses = categoryID
+          ? await crud_course.getCourses(category)
+          : "";
+        console.log(allCourses);
+        setCourses(Array.isArray(allCourses) ? allCourses : []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    } else {
+      try {
+        const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+        const enrolledCourses = await crud_user.getEnrolledCourses(sessionToken);
+        setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
     }
-  };
-
-  //get courses by your learning
-  const getEnrolled = async () => {
-    try {
-      const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
-      const enrolledCourses = await crud_user.getEnrolledCourses(sessionToken);
-      setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  }, [category, state, params.id]);
 
   useEffect(() => {
-    getCourses();
-    if (localStorage.getItem("token")) getEnrolled();
-
-  }, []);
+    fetchData();
+    mounted.current = false;
+  }, [fetchData]);
 
   return (
     <div className="flex flex-wrap py-3 items-center justify-center lg:justify-start space-x-1 space-y-1">
-      {(state === "none" && params.id && courses.length > 0) ||
-      (state === "enrolled" && enrolledCourses.length > 0) ? (
-        ((state === "none")  ? courses : enrolledCourses).map((course: Course) => (
-          <div key={course.id}>
-            <CourseCard
-              courseID={course.id}
-              title={course.name}
-              instructor={course.instructor}
-              assessment={course.assessment}
-              image={course.course_image_url ? course.course_image_url : ""}
-              category={category}
-              state={course.state}
-            />
-          </div>
-        ))
-      ) : (
-        <button className="font-bold text-[--principal-red] hover:drop-shadow">
-          <FontAwesomeIcon
-            icon={icons.faChevronRight}
-            className="mx-3 text-[--principal-red]"
-          />
-          {params.id ? (
-            "No hay cursos disponibles en esta categoría."
+      { state === "none" ? (
+        <>
+          {courses.length > 0 ? (
+            courses.map((course: Course) => (
+              <div key={course.id}>
+                <CourseCard
+                  courseID={course.id}
+                  title={course.name}
+                  instructor={course.instructor}
+                  assessment={course.assessment}
+                  image={course.course_image_url ? course.course_image_url : "/course.jpg"}
+                  category={category}
+                  state={course.state}
+                />
+              </div>
+            ))
           ) : (
-            "No has iniciado a aprender, busca cursos según tus gustos."
+            <button className="font-bold text-[--principal-red] hover:drop-shadow">
+              <FontAwesomeIcon
+                icon={icons.faChevronRight}
+                className="mx-3 text-[--principal-red]"
+              />
+              {params.id && (
+                "No hay cursos disponibles en esta categoría."
+              )}
+            </button>
           )}
-        </button>
+        </>
+      ) : (
+        <>
+          {enrolledCourses.length > 0 ? (
+            enrolledCourses.map((course: Course) => (
+              <div key={course.id}>
+                <CourseCard
+                  courseID={course.id}
+                  title={course.name}
+                  instructor={course.instructor}
+                  assessment={course.assessment}
+                  image={course.course_image_url ? course.course_image_url : "/course.jpg"}
+                  category={course.category}
+                  state={course.state}
+                />
+              </div>
+            ))
+          ) : (
+            <button className="font-bold text-[--principal-red] hover:drop-shadow">
+              <FontAwesomeIcon
+                icon={icons.faChevronRight}
+                className="mx-3 text-[--principal-red]"
+              />
+              {state === "enrolled" && ("No te has inscrito en ningún curso aún.")}
+            </button>
+          )}
+        </>
       )}
     </div>
   );

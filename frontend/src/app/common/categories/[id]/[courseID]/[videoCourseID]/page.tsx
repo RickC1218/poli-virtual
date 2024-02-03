@@ -300,8 +300,8 @@ export default function Page() {
       if(currentSubtopicIndex === course.modules[currentModuleIndex].content.length - 1) {
         // si el subtema actual es el ultimo del modulo, entonces se debe ir al primer subtema del modulo siguiente
         const nextModule = course.modules[currentModuleIndex + 1];
-        const nextSubtopic = nextModule.content[nextModule.content.length + 1].title;
-        const nextVideoUrl = nextModule.content[nextModule.content.length + 1].video_url;
+        const nextSubtopic = nextModule.content[0].title;
+        const nextVideoUrl = nextModule.content[0].video_url;
         setCurrentModule(nextModule.title);
         setCurrentSubtopic(nextSubtopic);
         setCurrentVideo(nextVideoUrl);
@@ -395,6 +395,11 @@ export default function Page() {
               label="Captions"
             />
           </video>
+        </div>
+        <div className="text-[--white] pt-2 flex justify-center items-center">
+          {currentModule}
+          <FontAwesomeIcon icon={icons.faChevronRight} className="mx-3 text-[--principal-red]" />
+          {currentSubtopic}
         </div>
       </div>
       <div className="col-span-5 self-center flex items-center justify-between w-[70%] pt-3">

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {Module} from "../forms/FormCourse";
 import Link from "next/link";
 import crud_user from "@/app/api/crud_user";
+import Swal from "sweetalert2";
 
 
 const BannerThemeCard: React.FC<Module> = ({
@@ -26,6 +27,30 @@ const BannerThemeCard: React.FC<Module> = ({
     setExpanded(!expanded);
   };
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+  };
+
   useEffect(() => {
     if (action !== "read") {
       setExpanded(true);
@@ -34,15 +59,21 @@ const BannerThemeCard: React.FC<Module> = ({
 
   const handleLinkSubtheme = async (subtheme: string) => {
     const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
-    await crud_user.addLastVideoWatched(
-      {
-        "name": course,
-        "state": "in-progress",
-        "last_module_name": title,
-        "last_subtopic_name": subtheme,
-      },
-      sessionToken,
-    );
+    const response = crud_user.getEnrolledCourses(sessionToken);
+    console.log(response)
+    if (!course) {
+      showAlert("Aún no te has inscrito en este curso.", "warning")
+    } else {
+      await crud_user.addLastVideoWatched(
+        {
+          "name": course,
+          "state": "in-progress",
+          "last_module_name": title,
+          "last_subtopic_name": subtheme,
+        },
+        sessionToken,
+      );
+    }
   };
 
   return (

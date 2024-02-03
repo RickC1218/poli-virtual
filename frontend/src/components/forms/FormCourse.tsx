@@ -36,7 +36,7 @@ export interface Module {
   cuantity: number;
   duration: number;
   content: Content[];
-  action: "add" | "edit" | "read" | "delete";
+  action: "add" | "edit" | "read" | "delete" | "show";
   currentSubtopic?: string;
   course: string;
 }
@@ -170,22 +170,43 @@ const FormCourse = () => {
 
   // Modules
   const [modules, setModules] = useState<Module[]>([]);
-  
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    setTimeout(() => {
-      showAlert("Cargando...", "info");
-    }, 1500000);
-    // Create course
-    await crud_course.createCourse(course, modules)
-    .catch((err) => {
-      showAlert("Error al crear el curso", "error");
-    })
-    .finally(() => {
-        showAlert("Curso creado exitosamente", "success");
-        router.push("/common/profile");
+  
+    const loadingToast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      },
     });
+  
+    const loadingAlert = (
+      message: string,
+      type: "success" | "error" | "warning" | "info"
+    ) => {
+      loadingToast.fire({
+        icon: type,
+        title: message,
+      });
+    };
+  
+    loadingAlert("Cargando...", "info");
+  
+    try {
+      // Create course
+      await crud_course.createCourse(course, modules);
+      loadingToast.close(); // Cerrar la alerta de carga
+  
+      showAlert("Curso creado exitosamente", "success");
+      router.push("/common/profile");
+    } catch (err) {
+      loadingToast.close(); // Cerrar la alerta de carga en caso de error
+      showAlert("Error al crear el curso", "error");
+    }
   };
 
   // Confirm syllabus
