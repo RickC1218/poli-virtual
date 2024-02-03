@@ -263,7 +263,6 @@ def get_course_with_content(course_serializer_data):
     for course_index in range(len(course_serializer_data['modules'])):
         for content_index in range(len(content_serializer.data)):
             if course_modules[course_index]['title'] == content_serializer.data[content_index]['module']:
-                #content_serializer.data[content_index].pop('module')
                 course_modules[course_index]['content'].append(content_serializer.data[content_index])
 
     course_to_return = {

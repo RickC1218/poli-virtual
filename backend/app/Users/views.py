@@ -26,6 +26,9 @@ import boto3
 
 import re
 
+from Content.models import Content
+from Content.serializers import ContentSerializer
+
 
 # API views (Update and delete user - Get/update enrolled courses)
 @csrf_exempt
@@ -142,9 +145,13 @@ def add_last_watched_course(request):
                 for enrolled_course in user_serializer.data["enrolled_courses"]:
                     if enrolled_course["name"] == data["name"]:
                         # Update the last_module_name and last_subtopic_name
-                        #enrolled_course["state"] = data["state"]
                         enrolled_course["last_module_name"] = data["last_module_name"]
                         enrolled_course["last_subtopic_name"] = data["last_subtopic_name"]
+
+                        if(is_last_watched_course(data["name"], data["last_module_name"], data["last_subtopic_name"])):
+                            enrolled_course["state"] = "completed"
+                        else:
+                            enrolled_course["state"] = "in-progress"
 
                 # Update the enrolled courses
                 user_serializer = UserSerializer(user, data={'enrolled_courses': user_serializer.data["enrolled_courses"]}, partial=True)
@@ -155,6 +162,28 @@ def add_last_watched_course(request):
 
             except User.DoesNotExist:
                 return JsonResponse("Usuario no encontrado", safe=False, status=404)
+
+
+# Verify if is the last module and content watched of the course
+def is_last_watched_course(course_name, module_name, content_name):
+    course = Course.objects.get(name=course_name)
+    course_serializer = CourseSerializer(course)
+
+    # Get the last module and content of the course
+    last_module_name = course_serializer.data["modules"][-1]["title"]
+
+    contents = Content.objects.filter(module=last_module_name)
+    contents_serializer = ContentSerializer(contents, many=True)
+
+    if(len(contents_serializer.data) == 1):
+        last_content_name = contents_serializer.data[0]["title"]
+    else:
+        last_content_name = contents_serializer.data[-1]["title"]
+
+    if module_name == last_module_name and content_name == last_content_name:
+        return True
+    else:
+        return False
 
 
 # Get the last watched course
