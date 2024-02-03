@@ -131,9 +131,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
 
   // Onchange for the file input
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
+    const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
+      if (file.type.includes("image/")) {
+        setSelectedFile(file);
+      } else {
+        showAlert("El archivo seleccionado no es una imagen", "error");
+        event.target.value = "";
+      }
     }
   };
 
@@ -146,6 +151,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
     }
   };
 
+  //Validating email
   const validateEmail = (email: string) => {
     const regex = /^[a-zA-Z0-9._%+-]+@epn\.edu\.ec$/;
     return regex.test(email);
@@ -312,6 +318,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         // update the user in the local storage with token
         const storedUser = await crud_user.getUser(session_token);
         setUser(storedUser);
+        showAlert(message, "success");
         // redirect to the explore page
         setTimeout(() => {
           router.push("/common/profile");
@@ -419,17 +426,15 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       const userData = getUserData();
       // make sure the session token is available
       if (session_token) {
+        message = "Cerrando sesión...";
+        showAlert(message, "info");
         //Logout
         await crud_user.logout(userData, session_token);
         //Remove the token
         localStorage.removeItem("token");
         //closing the session
-        message = "Cerrando sesión...";
-        showAlert(message, "info");
-        setTimeout(() => {
-          window.location.reload();
-          window.location.href = "/common/explore";
-        }, 3000);
+        window.location.reload();
+        window.location.href = "/common/explore";
       } else {
         message = "Probablemente no has iniciado sesión.";
         showAlert(message, "error");
