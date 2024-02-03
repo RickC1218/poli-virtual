@@ -7,6 +7,7 @@ import icons from "../icons/icons";
 import crud_user from "@/app/api/crud_user";
 import crud_course from "@/app/api/crud_course";
 import FormSyllabus from "./FormSyllabus";
+import Swal from "sweetalert2";
 
 interface Instructor {
   email: string;
@@ -56,7 +57,30 @@ const FormCourse = () => {
   });
 
   const [isDragOver, setIsDragOver] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+  };
   
   /* Create course */
   const [course, setCourse] = useState<CourseState>({
@@ -127,26 +151,22 @@ const FormCourse = () => {
 
   // Modules
   const [modules, setModules] = useState<Module[]>([]);
-
-  //Alert message
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => {
-      setAlertMessage(null);
-    }, 3000); // close the alert after 3 seconds
-  };
   
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Create course
-    const response = await crud_course.createCourse(course, modules);
-    if (response) {
-      showAlert("Curso creado exitosamente");
-      //router.push("/common/profile");
-    } else {
-      showAlert("Error al crear el curso");
-    }
+    await crud_course.createCourse(course, modules)
+    .catch((err) => {
+      showAlert("Error al crear el curso", "error");
+    })
+    .then((res) => {
+      showAlert("Cargando...", "info");
+    })
+    .finally(() => {
+        showAlert("Curso creado exitosamente", "success");
+        router.push("/common/profile");
+    });
   };
 
   // Confirm syllabus
@@ -155,7 +175,6 @@ const FormCourse = () => {
       ...course,
       modules: updateModules,
     });
-    showAlert("Cargando...");
   };
   
   useEffect(() => {
@@ -320,31 +339,6 @@ const FormCourse = () => {
         setModules={setModules}       
         onConfirmSyllabus={handleConfirmSyllabus}
       />
-      {alertMessage && (
-        <div className={`flex justify-center ${alertMessage === "Curso creado exitosamente" ? "hidden" : "block" }`}>
-          <div
-            className={`${
-              alertMessage.startsWith("Cargando...")
-                ? "bg-yellow-500"
-                : "bg-red-500"
-            } z-40 text-[--light] p-2 rounded-md text-center`}
-          >
-            {alertMessage}
-          </div>
-        </div>
-      )}
-      {alertMessage === "Curso creado exitosamente" && (
-        <div className={`flex justify-center`}>
-          <div
-            className={`${
-              alertMessage.startsWith("Curso creado exitosamente")
-                && "bg-green-500"
-            } z-40 text-[--light] p-2 rounded-md text-center`}
-          >
-            {alertMessage}
-          </div>
-        </div>
-      )}
     </form>
   );
 };

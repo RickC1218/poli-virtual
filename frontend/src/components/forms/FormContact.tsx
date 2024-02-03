@@ -5,26 +5,42 @@ import Image from 'next/image';
 import DifferentText from '../tools/DifferentText';
 import { useState } from 'react';
 import crud_user from '@/app/api/crud_user';
+import Swal from 'sweetalert2';
 
 
 const FormContact: React.FC = () => {
   const color = "blue";
   const size = "small";
-  
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: '',
   });
 
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => {
-      setAlertMessage(null);
-    }, 3000); // close the alert after 5 seconds
-  };
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
 
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+  };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -52,7 +68,7 @@ const FormContact: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.name === '' || formData.email === '' || formData.message === '') {
-      showAlert("Por favor, rellene todos los campos");
+      showAlert("Por favor, rellene todos los campos", "warning");
     } else {
       // sanitize inputs
       const name = escapeHTML(formData.name);
@@ -77,7 +93,7 @@ const FormContact: React.FC = () => {
     }
     const response = await crud_user.sendEmailContact(res);
     console.log(response);
-    showAlert("Correo enviado a nuestro equipo de soporte");
+    showAlert("Correo enviado a nuestro equipo de soporte", "success");
   };
 
   return (
@@ -125,12 +141,6 @@ const FormContact: React.FC = () => {
             />
           </div>
         </div>
-        {alertMessage && (
-          <div className={`${alertMessage.startsWith("Correo enviado a nuestro equipo de soporte") ? 'bg-green-500' : 'bg-red-500'} z-40 text-[--light] p-2 rounded-md text-center`}>
-              {alertMessage}
-          </div>
-          
-        )}
       </div>
       <div className="visible justify-self-end self-center pb-20 px-20 lg:p-0">
         <Image

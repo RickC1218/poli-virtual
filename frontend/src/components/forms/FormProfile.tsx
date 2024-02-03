@@ -419,8 +419,10 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         //closing the session
         message = "Cerrando sesión...";
         showAlert(message, "info");
-        window.location.reload();
-        window.location.href = "/common/explore";
+        setTimeout(() => {
+          window.location.reload();
+          window.location.href = "/common/explore";
+        }, 3000);
       } else {
         message = "Probablemente no has iniciado sesión.";
         showAlert(message, "error");

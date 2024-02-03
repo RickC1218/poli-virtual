@@ -2,10 +2,39 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import crud_user from "@/app/api/crud_user";
 import DifferentText from "@/components/tools/DifferentText";
+import Swal from "sweetalert2";
+import { useEffect } from "react";
 
 export default function Page() {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+  };
+
+  useEffect(() => {
+    showAlert("Correo enviado", "success");
+  });
+
   return (
     <div className="h-screen grid grid-cols-3 lg:grid-cols-4 gap-2 bg-[--white] place-items-center md:p-10">
       <div className="col-span-1 lg:col-span-2 hidden md:block">

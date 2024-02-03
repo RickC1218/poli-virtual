@@ -115,9 +115,7 @@ const crud_course = {
         "Content-Type": "multipart/form-data",
       };
 
-      const response_course = await axios.post(`${API_BASE_URL}/course/`, courseData, { headers });
-
-      console.log("Response Course", response_course);
+      await axios.post(`${API_BASE_URL}/course/`, courseData, { headers });
 
       let response_content = "";
       videos.forEach(async (video: any) => {
@@ -128,11 +126,10 @@ const crud_course = {
             title: video.title[i],
             video_url: video.video_url[i],
           }, { headers });
-          console.log("Response", response_content);
         }
       });
 
-      return response_course.data;
+      return response_content;
 
     } catch (error) {
       const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
@@ -162,6 +159,25 @@ const crud_course = {
         return "Error al actualizar el curso";
       } else {
         return "Error desconocido";
+      }
+    }
+  },
+
+  // create comment
+  createComment: async (sesionToken: string, commentData: any, courseID: string) => {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${sesionToken}`,
+      };
+      const response = await axios.put(`${API_BASE_URL}/course/update-course-comments/${courseID}`, {comments: commentData}, {headers});
+      return response.data;
+    } catch (error) {
+      const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+      if (responseError?.response?.status === 404) {
+        return "Error al crear el comentario";
+      } else {
+        return "Error al crear el comentario";
       }
     }
   },

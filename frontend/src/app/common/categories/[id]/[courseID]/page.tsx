@@ -9,11 +9,11 @@ import StarRating from "@/components/tools/StarRating";
 import BannerThemeCard from "@/components/cards/BannerThemeCard";
 import CommentCard from "@/components/cards/CommentCard";
 import { useParams, useRouter } from "next/navigation";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import crud_category from "@/app/api/crud_category";
 import DifferentText from "@/components/tools/DifferentText";
 import crud_course from "@/app/api/crud_course";
-import { Module, Content } from "@/components/forms//FormCourse";
+import { Module } from "@/components/forms//FormCourse";
 import crud_user from "@/app/api/crud_user";
 import Swal from "sweetalert2";
 
@@ -137,9 +137,7 @@ export default function Page() {
         await crud_user.subscribeCourse(courseNone, sessionToken);
         setUserCourse(courseNone[0]);
         showAlert("Felicidades, te inscribiste al curso", "success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000)
+        setVideoCourseID(course.modules[0].title + "_" + course.modules[0].content[0].title);
       }
     } catch (error) {
       console.error("error", error)

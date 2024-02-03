@@ -5,6 +5,7 @@ import icons from "../icons/icons";
 import { Module, Content } from "./FormCourse";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BannerSubThemeCard from "../cards/BannerSubThemeCard";
+import Swal from "sweetalert2";
 
 interface FormSyllabusProps {
   modules: Module[];
@@ -37,16 +38,30 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
     action: "add",
   });
 
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
 
-  //Alert message
-  const showAlert = (message: string) => {
-    setAlertMessage(message);
-    setTimeout(() => {
-      setAlertMessage(null);
-    }, 3000); // close the alert after 3 seconds
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
   };
-
+  
   const [isDragOver, setIsDragOver] = useState(false);
 
   const [expandFormModule, setExpandFormModule] = useState<boolean>(false);
@@ -133,7 +148,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
   /* crud modules */
   const handleAddModule = () => {
     if (module.title === "" || module.description === "") {
-      showAlert("Por favor, completa todos los campos.");
+      showAlert("Por favor, completa todos los campos.", "warning");
       return;
     }
     if (module.action === "add") {
@@ -209,7 +224,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
   /* crud contents */
   const handleAddContent = () => {
     if (content.title === "" || content.video_url === null) {
-      showAlert("Por favor, completa todos los campos.");
+      showAlert("Por favor, completa todos los campos.", "warning");
       return;
     }
     if (content.action === "add") {
@@ -293,7 +308,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
   /* confirm syllabus */
   const handleConfirmSyllabus = (modules: Module[]) => {
     if (modules.length === 0) {
-      showAlert("Por favor, agrega al menos un módulo.");
+      showAlert("Por favor, agrega al menos un módulo.", "info");
       return;
     }
     onConfirmSyllabus(modules);
@@ -377,9 +392,6 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
               onClick={handleExpandFormModule}
             />
           </div>
-          {alertMessage && (
-            <p className="text-red-500 text-sm">{alertMessage}</p>
-          )}
         </div>
       )}
       {modules?.map((module, id) => (
@@ -500,10 +512,8 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
                           Da click y escoge el video de tu clase o arrastralo
                           aquí.
                         </p>
+
                         <p className="mb-2 text-sm text-[--principal-red] ">
-                          Formato para el nombre del archivo: "nombreTema_nombreInstructor.mp4"
-                        </p>
-                        <p className="mb-2 text-sm text-[--gray] ">
                           Recuerda que debe ser un archivo MP4 de máximo 10 minutos.
                         </p>
                         <p className="text-xs text-[--gray]">MP4 (Max 100MB)</p>
@@ -557,9 +567,6 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ modules, setModules, onConf
                     onClick={() => handleExpandFormContent(index)}
                   />
                 </div>
-                {alertMessage && (
-                  <p className="text-red-500 text-sm">{alertMessage}</p>
-                )}
               </div>
             )}
           </div>

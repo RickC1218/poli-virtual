@@ -12,7 +12,7 @@ import { Module, Content } from "@/components/forms//FormCourse";
 import crud_user from "@/app/api/crud_user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "@/components/icons/icons";
-import Button from "@/components/buttons/Button";
+import Swal from "sweetalert2";
 
 interface Category {
   id: number;
@@ -49,6 +49,30 @@ export default function Page() {
   const [currentSubtopic, setCurrentSubtopic] = useState<string | null>(null);
   const [currentVideo, setCurrentVideo] = useState<File | string | any>(null);
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
+    Toast.fire({
+      icon: type,
+      text: message,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+  };
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -77,7 +101,6 @@ export default function Page() {
               module.content.forEach((content: Content) => {
                 if (content.title === currentSubtopic) {
                   setCurrentSubtopic(content.title);
-                  console.log(content.video_url)
                   if (content.video_url) {
                     if (typeof content.video_url === 'string' || content.video_url instanceof String){
                       setCurrentVideo(content.video_url.replace("s3.amazonaws.com/", ""));
@@ -102,7 +125,7 @@ export default function Page() {
   }, [courseID]);
 
   useEffect(() => {
-    const handleVideoEnd = () => {
+    const handleVideoEnd = async () => {
       if (!course) return;
   
       // Search the current module index
@@ -119,6 +142,8 @@ export default function Page() {
           const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
           setCurrentSubtopic(nextSubtopic);
           setCurrentVideo(nextVideoUrl);
+          // redirect to the next video
+          window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + nextSubtopic}`;
         } else {
           // If the current subtopic index is the last one, get the next module
           const nextModule = course.modules[currentModuleIndex + 1];
@@ -127,12 +152,28 @@ export default function Page() {
           setCurrentModule(nextModule.title);
           setCurrentSubtopic(nextSubtopic);
           setCurrentVideo(nextVideoUrl);
+          // redirect to the next video
+          window.location.href = `/common/categories/${id}/${courseID}/${nextModule.title + "_" + nextSubtopic}`;
         }
       } else {
+        //update the course state
+        const response = await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "completed",
+            "last_module_name": currentModule,
+            "last_subtopic_name": currentSubtopic,
+          },
+          JSON.parse(localStorage.getItem("token") ?? ""),
+        )
+        console.log(response);
         // If the current module index is the last one, get the next module
         setCurrentModule('¡Felicidades!');
         setCurrentSubtopic('¡Has terminado el curso!');
-        setCurrentVideo('https://www.youtube.com/watch?v=6ZfuNTqbHE8');
+        setCurrentVideo('');
+
+        // redirect to the finish page
+        window.location.href = `/common/categories/${id}/${courseID}/finish`;
       }
     };
   
@@ -151,6 +192,66 @@ export default function Page() {
   
   }, [currentModule, currentSubtopic, course]); 
 
+  const handleBeforeVideo = () => {
+    // redirect to the previous video
+    if (!course) return;
+    
+    const currentModuleIndex = course.modules.findIndex((mod: Module) => mod.title === currentModule);
+    const currentSubtopicIndex = course.modules[currentModuleIndex]?.content.findIndex((content: Content) => content.title === currentSubtopic);
+
+    if (currentModuleIndex !== -1 && currentModuleIndex > 0) {
+      if (currentSubtopicIndex !== -1 && currentSubtopicIndex > 0) {
+        const previousSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].title;
+        const previousVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].video_url;
+        setCurrentSubtopic(previousSubtopic);
+        setCurrentVideo(previousVideoUrl);
+        // redirect to the previous video
+        window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + previousSubtopic}`;
+      } else {
+        const previousModule = course.modules[currentModuleIndex - 1];
+        const previousSubtopic = previousModule.content[previousModule.content.length - 1].title;
+        const previousVideoUrl = previousModule.content[previousModule.content.length - 1].video_url;
+        setCurrentModule(previousModule.title);
+        setCurrentSubtopic(previousSubtopic);
+        setCurrentVideo(previousVideoUrl);
+        // redirect to the previous video
+        window.location.href = `/common/categories/${id}/${courseID}/${previousModule.title + "_" + previousSubtopic}`;
+      }
+    } else {
+      showAlert("Este es el primer video del curso", "info");
+    }
+  };
+
+  const handleAfterVideo = () => {
+    // redirect to the next video
+    if (!course) return;
+    
+    const currentModuleIndex = course.modules.findIndex((mod: Module) => mod.title === currentModule);
+    const currentSubtopicIndex = course.modules[currentModuleIndex]?.content.findIndex((content: Content) => content.title === currentSubtopic);
+
+    if (currentModuleIndex !== -1 && currentModuleIndex < course.modules.length - 1) {
+      if (currentSubtopicIndex !== -1 && currentSubtopicIndex < course.modules[currentModuleIndex].content.length - 1) {
+        const nextSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].title;
+        const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
+        setCurrentSubtopic(nextSubtopic);
+        setCurrentVideo(nextVideoUrl);
+        // redirect to the next video
+        window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + nextSubtopic}`;
+      } else {
+        const nextModule = course.modules[currentModuleIndex + 1];
+        const nextSubtopic = nextModule.content[0]?.title || '';
+        const nextVideoUrl = nextModule.content[0]?.video_url ?? '';
+        setCurrentModule(nextModule.title);
+        setCurrentSubtopic(nextSubtopic);
+        setCurrentVideo(nextVideoUrl);
+        // redirect to the next video
+        window.location.href = `/common/categories/${id}/${courseID}/${nextModule.title + "_" + nextSubtopic}`;
+      }
+    } else {
+      showAlert("Este es el último video del curso", "info");
+    }
+  }
+  
   if (
     !course ||
     (course && course.courseID === 0) ||
@@ -190,12 +291,12 @@ export default function Page() {
         </div>
       </div>
       <div className="col-span-5 self-center flex items-center justify-between w-[70%] pt-3">
-        <button className="flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer bg-[--principal-blue] w-[175px] h-[50px] p-3 hover:shadow-lg hover:shadow-blue-500/50">
+        <button onClick={handleBeforeVideo} className="flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer bg-[--principal-blue] w-[175px] h-[50px] p-3 hover:shadow-lg hover:shadow-blue-500/50">
           <FontAwesomeIcon icon={icons.faChevronLeft} className=" w-[18px] text-[--white]" />
           Video anterior
         </button>
-        <button className="flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer bg-[--principal-blue] w-[175px] h-[50px] p-3 hover:shadow-lg hover:shadow-blue-500/50">
-          Video Siguiente
+        <button onClick={handleAfterVideo} className="flex justify-around items-center text-[--white] text-base font-bold rounded-[10px] cursor-pointer bg-[--principal-blue] w-[175px] h-[50px] p-3 hover:shadow-lg hover:shadow-blue-500/50">
+          Video siguiente
           <FontAwesomeIcon icon={icons.faChevronRight} className="w-[18px] text-[--white]" />
         </button>
       </div>

@@ -7,9 +7,8 @@ import Button from "@/components/buttons/Button";
 import icons from "@/components/icons/icons";
 
 import crud_user from "@/app/api/crud_user";
-import { ChangeEvent, useState } from "react";
+import { useEffect, ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import Swal from "sweetalert2";
 
 export default function Page() {

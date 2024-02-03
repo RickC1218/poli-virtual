@@ -314,6 +314,24 @@ const crud_user = {
                 return "Error al encontrar el curso";
             }
         }
+    },
+
+    //add last video watched
+    addLastVideoWatched: async (lastVideoData: any, session_token: string) => {
+        try {
+            const headers = {
+                "Authorization": `Bearer ${session_token}`,
+            }
+            const response = await axios.post(`${API_BASE_URL}/user/add-last-watched-course/`, { headers}, lastVideoData);
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            if (responseError?.response?.status === 404) {
+                return "Error al encontrar el usuario";
+            } else {
+                return "Error al encontrar el usuario";
+            }
+        }
     }
 };
 
