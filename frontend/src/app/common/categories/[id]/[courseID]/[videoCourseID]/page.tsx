@@ -19,8 +19,8 @@ interface Category {
   name: string;
 }
 interface Comment {
-  student: string;
-  description: string;
+  name: string;
+  comment: string;
   assessment: number;
 }
 interface Course {
@@ -128,6 +128,9 @@ export default function Page() {
     const handleVideoEnd = async () => {
       if (!course) return;
   
+      const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
+      if (!sessionToken) return;
+
       // Search the current module index
       const currentModuleIndex = course.modules.findIndex((mod: Module) => mod.title === currentModule);
   
@@ -142,6 +145,16 @@ export default function Page() {
           const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
           setCurrentSubtopic(nextSubtopic);
           setCurrentVideo(nextVideoUrl);
+
+          await crud_user.addLastVideoWatched(
+            {
+              "name": course.name,
+              "state": "in-progress",
+              "last_module_name": currentModule,
+              "last_subtopic_name": nextSubtopic,
+            },
+            sessionToken,
+          )
           // redirect to the next video
           window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + nextSubtopic}`;
         } else {
@@ -152,21 +165,30 @@ export default function Page() {
           setCurrentModule(nextModule.title);
           setCurrentSubtopic(nextSubtopic);
           setCurrentVideo(nextVideoUrl);
+
+          await crud_user.addLastVideoWatched(
+            {
+              "name": course.name,
+              "state": "in-progress",
+              "last_module_name": nextModule.title,
+              "last_subtopic_name": nextSubtopic,
+            },
+            sessionToken,
+          )
           // redirect to the next video
           window.location.href = `/common/categories/${id}/${courseID}/${nextModule.title + "_" + nextSubtopic}`;
         }
       } else {
         //update the course state
-        const response = await crud_user.addLastVideoWatched(
+        await crud_user.addLastVideoWatched(
           {
             "name": course.name,
             "state": "completed",
             "last_module_name": currentModule,
             "last_subtopic_name": currentSubtopic,
           },
-          JSON.parse(localStorage.getItem("token") ?? ""),
+          sessionToken,
         )
-        console.log(response);
         // If the current module index is the last one, get the next module
         setCurrentModule('¡Felicidades!');
         setCurrentSubtopic('¡Has terminado el curso!');
@@ -192,65 +214,150 @@ export default function Page() {
   
   }, [currentModule, currentSubtopic, course]); 
 
-  const handleBeforeVideo = () => {
+  const handleBeforeVideo = async () => {
     // redirect to the previous video
     if (!course) return;
+
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
     
     const currentModuleIndex = course.modules.findIndex((mod: Module) => mod.title === currentModule);
     const currentSubtopicIndex = course.modules[currentModuleIndex]?.content.findIndex((content: Content) => content.title === currentSubtopic);
 
-    if (currentModuleIndex !== -1 && currentModuleIndex > 0) {
-      if (currentSubtopicIndex !== -1 && currentSubtopicIndex > 0) {
-        const previousSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].title;
-        const previousVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].video_url;
-        setCurrentSubtopic(previousSubtopic);
-        setCurrentVideo(previousVideoUrl);
-        // redirect to the previous video
-        window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + previousSubtopic}`;
-      } else {
+    if (currentModuleIndex > 0 ) {
+      if(currentSubtopicIndex === 0) {
+        // si el subtema actual es el primero del modulo, entonces se debe ir al ultimo subtema del modulo anterior
         const previousModule = course.modules[currentModuleIndex - 1];
         const previousSubtopic = previousModule.content[previousModule.content.length - 1].title;
         const previousVideoUrl = previousModule.content[previousModule.content.length - 1].video_url;
         setCurrentModule(previousModule.title);
         setCurrentSubtopic(previousSubtopic);
         setCurrentVideo(previousVideoUrl);
+        await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "in-progress",
+            "last_module_name": previousModule.title,
+            "last_subtopic_name": previousSubtopic,
+          },
+          sessionToken,
+        )
         // redirect to the previous video
         window.location.href = `/common/categories/${id}/${courseID}/${previousModule.title + "_" + previousSubtopic}`;
+      } else {
+        // si el subtema actual no es el primero del modulo, entonces se debe ir al subtema anterior
+        const previousSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].title;
+        const previousVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].video_url;
+        setCurrentSubtopic(previousSubtopic);
+        setCurrentVideo(previousVideoUrl);
+        await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "in-progress",
+            "last_module_name": currentModule,
+            "last_subtopic_name": previousSubtopic,
+          },
+          sessionToken,
+        )
+        // redirect to the previous video
+        window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + previousSubtopic}`;
       }
-    } else {
-      showAlert("Este es el primer video del curso", "info");
+    } else if (currentModuleIndex === 0){
+      if(currentSubtopicIndex === 0) {
+        // si el modulo actual es el primero y el subtema actual es el primero, entonces se debe mostrar un mensaje de que es el primer video del curso
+        showAlert("Este es el primer video del curso", "info");
+      } else {
+        // si el modulo actual es el primero, pero el subtema no es el primero, entonces se debe ir al subtema anterior
+        const previousSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].title;
+        const previousVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex - 1].video_url;
+        setCurrentSubtopic(previousSubtopic);
+        setCurrentVideo(previousVideoUrl);
+        await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "in-progress",
+            "last_module_name": currentModule,
+            "last_subtopic_name": previousSubtopic,
+          },
+          sessionToken,
+        )
+        // redirect to the previous video
+        window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + previousSubtopic}`;
+      }
     }
   };
 
-  const handleAfterVideo = () => {
-    // redirect to the next video
+
+  const handleAfterVideo = async () => {
+    // redirect to the previous video
     if (!course) return;
+
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
     
     const currentModuleIndex = course.modules.findIndex((mod: Module) => mod.title === currentModule);
     const currentSubtopicIndex = course.modules[currentModuleIndex]?.content.findIndex((content: Content) => content.title === currentSubtopic);
 
-    if (currentModuleIndex !== -1 && currentModuleIndex < course.modules.length - 1) {
-      if (currentSubtopicIndex !== -1 && currentSubtopicIndex < course.modules[currentModuleIndex].content.length - 1) {
+    if (currentModuleIndex < course.modules.length - 1) {
+      if(currentSubtopicIndex === course.modules[currentModuleIndex].content.length - 1) {
+        // si el subtema actual es el ultimo del modulo, entonces se debe ir al primer subtema del modulo siguiente
+        const nextModule = course.modules[currentModuleIndex + 1];
+        const nextSubtopic = nextModule.content[nextModule.content.length + 1].title;
+        const nextVideoUrl = nextModule.content[nextModule.content.length + 1].video_url;
+        setCurrentModule(nextModule.title);
+        setCurrentSubtopic(nextSubtopic);
+        setCurrentVideo(nextVideoUrl);
+        await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "in-progress",
+            "last_module_name": nextModule.title,
+            "last_subtopic_name": nextSubtopic,
+          },
+          sessionToken,
+        )
+        // redirect to the previous video
+        window.location.href = `/common/categories/${id}/${courseID}/${nextModule.title + "_" + nextSubtopic}`;
+      } else {
+        // si el subtema actual no es el ultimo del modulo, entonces se debe ir al subtema siguiente
         const nextSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].title;
         const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
         setCurrentSubtopic(nextSubtopic);
         setCurrentVideo(nextVideoUrl);
-        // redirect to the next video
+        await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "in-progress",
+            "last_module_name": currentModule,
+            "last_subtopic_name": nextSubtopic,
+          },
+          sessionToken,
+        )
+        // redirect to the previous video
         window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + nextSubtopic}`;
+      }
+    } else if (currentModuleIndex === course.modules.length - 1){
+      if(currentSubtopicIndex === course.modules[currentModuleIndex].content.length - 1) {
+        // si el modulo actual es el ultimo y el subtema actual es el ultimo, entonces se debe mostrar un mensaje de que es el ultimo video del curso
+        showAlert("Este es el último video del curso", "info");
       } else {
-        const nextModule = course.modules[currentModuleIndex + 1];
-        const nextSubtopic = nextModule.content[0]?.title || '';
-        const nextVideoUrl = nextModule.content[0]?.video_url ?? '';
-        setCurrentModule(nextModule.title);
+        // si el modulo actual es el ultimo, pero el subtema no es el ultimo, entonces se debe ir al subtema siguiente
+        const nextSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].title;
+        const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
         setCurrentSubtopic(nextSubtopic);
         setCurrentVideo(nextVideoUrl);
-        // redirect to the next video
-        window.location.href = `/common/categories/${id}/${courseID}/${nextModule.title + "_" + nextSubtopic}`;
+        await crud_user.addLastVideoWatched(
+          {
+            "name": course.name,
+            "state": "in-progress",
+            "last_module_name": currentModule,
+            "last_subtopic_name": nextSubtopic,
+          },
+          sessionToken,
+        )
+        // redirect to the previous video
+        window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + nextSubtopic}`;
       }
-    } else {
-      showAlert("Este es el último video del curso", "info");
     }
-  }
+  };
   
   if (
     !course ||
@@ -317,6 +424,7 @@ export default function Page() {
                   content={module.content}
                   action="read"
                   currentSubtopic={currentSubtopic ?? ""}
+                  course={course.name}
                   />
               </div>
             );
@@ -350,9 +458,9 @@ export default function Page() {
             {course.comments?.map((comment, index) => (
                 <div key={index} className="col-span-1">
                   <CommentCard
-                    name={comment.student}
-                    calification={comment.assessment}
-                    comment={comment.description}
+                    name={comment.name}
+                    assessment={comment.assessment}
+                    comment={comment.comment}
                   />
                 </div>
               )

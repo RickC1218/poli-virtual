@@ -164,13 +164,12 @@ const crud_course = {
   },
 
   // create comment
-  createComment: async (sesionToken: string, commentData: any, courseID: string) => {
+  createComment: async ( commentData: any, courseID: string, sesionToken: string) => {
     try {
       const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${sesionToken}`,
+        'Authorization': `Bearer ${sesionToken}`,
       };
-      const response = await axios.put(`${API_BASE_URL}/course/update-course-comments/${courseID}`, {comments: commentData}, {headers});
+      const response = await axios.put(`${API_BASE_URL}/course/update-course-comments/${courseID}/`, {comments: [commentData]}, { headers });
       return response.data;
     } catch (error) {
       const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };

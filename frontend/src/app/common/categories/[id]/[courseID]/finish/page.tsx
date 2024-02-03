@@ -18,8 +18,8 @@ interface Category {
   name: string;
 }
 interface Comment {
-  student: string;
-  description: string;
+  name: string;
+  comment: string;
   assessment: number;
 }
 interface Course {
@@ -143,6 +143,7 @@ export default function Page() {
                   content={module.content}
                   action="read"
                   currentSubtopic={""}
+                  course={course.name}
                   />
               </div>
             );
@@ -176,9 +177,9 @@ export default function Page() {
             {course.comments?.map((comment, index) => (
                 <div key={index} className="col-span-1">
                   <CommentCard
-                    name={comment.student}
-                    calification={comment.assessment}
-                    comment={comment.description}
+                    name={comment.name}
+                    assessment={comment.assessment}
+                    comment={comment.comment}
                   />
                 </div>
               )

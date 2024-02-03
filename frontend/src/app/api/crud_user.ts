@@ -304,7 +304,7 @@ const crud_user = {
             const headers = {
                 "Authorization": `Bearer ${session_token}`,
             }
-            const response = await axios.get(`${API_BASE_URL}/user/get-last-watched-course/${name}/`, { headers});
+            const response = await axios.get(`${API_BASE_URL}/user/get-last-watched-course/${name}/`, { headers });
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
@@ -322,7 +322,7 @@ const crud_user = {
             const headers = {
                 "Authorization": `Bearer ${session_token}`,
             }
-            const response = await axios.post(`${API_BASE_URL}/user/add-last-watched-course/`, { headers}, lastVideoData);
+            const response = await axios.put(`${API_BASE_URL}/user/add-last-watched-course/`,lastVideoData, { headers });
             return response.data;
         } catch (error) {
             const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };

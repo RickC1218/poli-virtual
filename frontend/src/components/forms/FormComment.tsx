@@ -124,14 +124,14 @@ const FormContact: React.FC = () => {
       assessment,
       comment,
     }
-    const response = await crud_course.createComment(
-      JSON.parse(localStorage.getItem("token") ?? ""),
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
+    await crud_course.createComment(
       res,
-      courseID.toString()
+      courseID.toString(),
+      sessionToken,
     );
-    console.log(response);
     showAlert("Gracias por tu retroalimentación", "info");
-    //window.location.href = "/common/explore";
+    window.location.href = "/common/explore";
   };
 
   return (

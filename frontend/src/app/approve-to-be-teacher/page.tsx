@@ -124,7 +124,7 @@ export default function Page() {
           <Link
             key="Quienes somos"
             href="/common/us"
-            className="block md:flex-none hover:text-[--principal-blue] hover:drop-shadow"
+            className="block md:flex-none hover:text-[--principal-red] hover:drop-shadow"
           >
             ¿Quienes somos?
           </Link>

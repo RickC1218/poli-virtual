@@ -38,6 +38,7 @@ export interface Module {
   content: Content[];
   action: "add" | "edit" | "read" | "delete";
   currentSubtopic?: string;
+  course: string;
 }
 export interface Content {
   title: string;
@@ -155,13 +156,13 @@ const FormCourse = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    setTimeout(() => {
+      showAlert("Cargando...", "info");
+    }, 1500000);
     // Create course
     await crud_course.createCourse(course, modules)
     .catch((err) => {
       showAlert("Error al crear el curso", "error");
-    })
-    .then((res) => {
-      showAlert("Cargando...", "info");
     })
     .finally(() => {
         showAlert("Curso creado exitosamente", "success");
@@ -192,7 +193,7 @@ const FormCourse = () => {
 
   return (
     <form onSubmit={handleSubmit}
-      className="grid grid-cols-1 gap-0 lg:grid-cols-5 lg:gap-2 w-full p-6 md:px-20 md:py-10"
+      className="grid grid-cols-1 gap-0 w-full p-6 md:px-20 md:py-10"
     >
       <div className="col-span-5 lg:col-span-3 self-center rounded-[25px] flex items-center justify-center w-full">
         <label
@@ -243,7 +244,7 @@ const FormCourse = () => {
       </div>
       <div className="col-span-5 lg:col-span-2 px-4 lg:flex lg:flex-col justify-between items-center sm:items-start w-full">
         <div className="flex flex-col md:items-start">
-          <div className="pt-6 md:pt-0">
+          <div className="w-full pt-6 md:pt-0">
             <div className={`flex items-center justify-between w-full py-2`}>
               <input
                 type="text"

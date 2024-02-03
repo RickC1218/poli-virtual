@@ -4,6 +4,7 @@ import BannerSubThemeCard from "./BannerSubThemeCard";
 import { useEffect, useState } from "react";
 import {Module} from "../forms/FormCourse";
 import Link from "next/link";
+import crud_user from "@/app/api/crud_user";
 
 
 const BannerThemeCard: React.FC<Module> = ({
@@ -14,6 +15,7 @@ const BannerThemeCard: React.FC<Module> = ({
   content,
   action,
   currentSubtopic,
+  course,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -29,6 +31,19 @@ const BannerThemeCard: React.FC<Module> = ({
       setExpanded(true);
     }
   }, [action]);
+
+  const handleLinkSubtheme = async (subtheme: string) => {
+    const sessionToken = JSON.parse(localStorage.getItem("token") ?? "");
+    await crud_user.addLastVideoWatched(
+      {
+        "name": course,
+        "state": "in-progress",
+        "last_module_name": title,
+        "last_subtopic_name": subtheme,
+      },
+      sessionToken,
+    );
+  };
 
   return (
     <>
@@ -60,6 +75,7 @@ const BannerThemeCard: React.FC<Module> = ({
           <div key={id} className={`relative m-1 mx-8 ${id === content.length -1 && 'pb-2'} text-${currentSubtopic === subthemeCard.title ? '[--principal-red]' : '[--medium-gray]'}`}>
             <Link
               href={`${title}_${subthemeCard.title}`}
+              onClick={() => handleLinkSubtheme(subthemeCard.title)}
             >
               <BannerSubThemeCard {...subthemeCard} action="read" />
             </Link>

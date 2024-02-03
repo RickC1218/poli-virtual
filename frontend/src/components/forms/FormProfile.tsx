@@ -302,13 +302,20 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       if (session_token) {
         // update the user
         await crud_user.sendEmailToBeInstructor(userData, session_token);
-        showAlert("Comunicate con el profesor para más información", "info");
+        showAlert("Comunícate con el profesor para más información", "info");
 
         setEmailSent(true);
 
         //update the user in the session storage
+        const response = await crud_user.updateUser(userData, session_token);
+        message = response;
+        // update the user in the local storage with token
+        const storedUser = await crud_user.getUser(session_token);
+        setUser(storedUser);
+        // redirect to the explore page
         setTimeout(() => {
-          handleUpdateProfile(e);
+          router.push("/common/profile");
+          router.refresh();
         }, 3000);
       } else {
         message = "Probablemente no has iniciado sesión.";
@@ -345,7 +352,7 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         setTimeout(() => {
           router.push("/common/profile");
           router.refresh();
-        });
+        }, 3000);
       } else {
         message = "Probablemente no has iniciado sesión.";
         showAlert(message, "error");
