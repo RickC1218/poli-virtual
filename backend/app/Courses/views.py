@@ -137,6 +137,36 @@ def featured_courses(request):
             return JsonResponse("No hay cursos disponibles", safe=False, status=404)
 
 
+# Get the courses by key word
+@csrf_exempt
+@api_view(['GET'])
+def get_courses(request, key_word):
+    if request.method == 'GET':
+        try:
+            courses = Course.objects.all()
+            courses_serializer = CourseSerializer(courses, many=True)
+
+            courses_to_return = []
+
+            # Remove some fields from the courses_to_return
+            for index in range(len(courses_serializer.data)):
+                if key_word.lower() in courses_serializer.data[index]['name'].lower():
+                    del courses_serializer.data[index]['description']
+                    del courses_serializer.data[index]['modules']
+                    del courses_serializer.data[index]['comments']
+                    del courses_serializer.data[index]['trailer_video_url']
+
+                    courses_to_return.append(courses_serializer.data[index])
+
+            if len(courses_to_return) == 0:
+                return JsonResponse("No hay cursos disponibles", safe=False, status=404)
+            else:
+                return JsonResponse(courses_to_return, safe=False, status=200)
+
+        except Course.DoesNotExist:
+            return JsonResponse("No hay cursos disponibles", safe=False, status=404)
+
+
 # Get recently added courses
 @csrf_exempt
 @api_view(['GET'])
