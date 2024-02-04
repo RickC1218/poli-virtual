@@ -33,8 +33,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
-
-# Ignoring files in the Backend
-
-assets
+# Environment files
+.env
