@@ -117,7 +117,7 @@ export default function SideNav() {
                 </button>
                 <input
                   type="text"
-                  placeholder="Buscar"
+                  placeholder="Buscar por nombre del instructor o curso."
                   value={searchValue}
                   onChange={handleSearchChange}
                   name="search"
