@@ -58,14 +58,14 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
         try {
           courses = await crud_course.getFeaturedCourses();
         } catch (error) {
-          console.error(error);
+          //console.error(error);
         }
         break;
       case "daily":
         try {
           courses = await crud_course.getRecentlyAddedCourses();
         } catch (error) {
-          console.error(error);
+          //console.error(error);
         }
         break;
       case "your-courses":
@@ -73,7 +73,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
         try {
           courses = await crud_course.getUserCourses(instructorCourses ?? "");
         } catch (error) {
-          console.error(error);
+          //console.error(error);
         }
         break;
       case "your-learning":
@@ -81,7 +81,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
           enrolledCourses = await crud_user.getEnrolledCourses(getToken());
           setEnrolledCourses(Array.isArray(enrolledCourses) ? enrolledCourses : []);
         } catch (error) {
-          console.error(error);
+          //console.error(error);
         }
         break;
       case "search":
@@ -92,7 +92,7 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
             instructors = await crud_user.searchInstructors(params.get("query") ?? "");
           }
         } catch (error) {
-          console.error(error);
+          //console.error(error);
         }
         break;
       default:
@@ -100,10 +100,18 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
     }
     setCourses(Array.isArray(courses) ? courses : []);
     if(type === "instructors" && subtype === "featured"){
-      instructors = await crud_user.getfeaturedInstructors();
-      setInstructors(Array.isArray(instructors) ? instructors : []);
+      try {
+        instructors = await crud_user.getfeaturedInstructors();
+        setInstructors(Array.isArray(instructors) ? instructors : []);
+      } catch (error) {
+        // console.error(error);
+      }
     } else {
-      setInstructors(Array.isArray(instructors) ? instructors : []);
+      try {
+        setInstructors(Array.isArray(instructors) ? instructors : []);
+      } catch (error) {
+        // console.error(error);
+      }
     }
   }, [subtype]);
 
