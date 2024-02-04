@@ -637,7 +637,10 @@ def get_instructors(request, key_word):
 
                     instructors_to_return.append(instructors_data[index])
 
-            return JsonResponse(instructors_to_return, safe=False, status=200)
+            if len(instructors_to_return) == 0:
+                return JsonResponse("No hay instructores disponibles", safe=False, status=404)
+            else:
+                return JsonResponse(instructors_to_return, safe=False, status=200)
 
         except User.DoesNotExist:
             return JsonResponse("No hay instructores disponibles", safe=False, status=404)
