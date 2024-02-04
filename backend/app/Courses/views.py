@@ -150,7 +150,7 @@ def get_courses(request, key_word):
 
             # Remove some fields from the courses_to_return
             for index in range(len(courses_serializer.data)):
-                if key_word.lower() in courses_serializer.data[index]['name'].lower():
+                if key_word.lower() in courses_serializer.data[index]['name'].lower() or key_word.lower() in courses_serializer.data[index]['instructor'].lower():
                     del courses_serializer.data[index]['description']
                     del courses_serializer.data[index]['modules']
                     del courses_serializer.data[index]['comments']
