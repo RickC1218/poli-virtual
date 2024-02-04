@@ -325,6 +325,18 @@
   Status: 404 -> No hay instructores disponibles.
   ```
 
+- `http://127.0.0.1:8000/user/get-instructors/<str:key_word>/`
+  - Método: `GET`
+  - Descripción: Obtener los instructores si la palabra clave esta en el nombre o apellido.
+
+```bash
+  # Entrada -> Ninguna
+
+  # Salida
+  Status: 200 -> Retorna la información del o los instructores.
+  Status: 404 -> No hay instructores disponibles.
+  ```
+
 ## Cursos
 
 - `http://127.0.0.1:8000/course/`
@@ -463,6 +475,18 @@
   Status: 400 -> Error al agregar comentarios.
   Status: 401 -> Acceso no autorizado.
   Status: 404 -> Curso no encontrado.
+  ```
+
+- `http://127.0.0.1:8000/user/get-courses/<str:key_word>/`
+  - Método: `GET`
+  - Descripción: Obtener los cursos si la palabra clave esta en el nombre del curso.
+
+```bash
+  # Entrada -> Ninguna
+
+  # Salida
+  Status: 200 -> Retorna la información del o los cursos.
+  Status: 404 -> No hay cursos disponibles.
   ```
 
 ## Categorías
