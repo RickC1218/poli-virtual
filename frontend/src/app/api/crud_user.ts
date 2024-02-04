@@ -350,6 +350,17 @@ const crud_user = {
                 return "Error al encontrar el usuario";
             }
         }
+    },
+
+    // search instructors
+    searchInstructors: async (searchData: any) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/user/get-instructors/${searchData}`);
+            return response.data;
+        } catch (error) {
+            const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+            return "Error al buscar instructores";
+        }
     }
 };
 

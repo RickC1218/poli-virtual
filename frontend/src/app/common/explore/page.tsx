@@ -94,6 +94,7 @@ export default function Page() {
         description="Descubre a nuestros instructores destacados: expertos en sus campos, apasionados por la enseñanza y listos para guiarte hacia el éxito."
         enrolled="none"
         sectionType="instructors"
+        subtype="featured"
       />
       {
         !sessionActive && (

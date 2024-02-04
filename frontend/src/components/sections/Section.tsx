@@ -8,7 +8,7 @@ interface SectionProps {
   enrolled: 'none' | 'enrolled';
   sectionType: 'courses' | 'instructors';
   addStyle?: string;
-  subtype?: 'featured' | 'daily' | 'your-learning' | 'your-courses' | 'instructor-courses';
+  subtype?: 'featured' | 'daily' | 'your-learning' | 'your-courses' | 'instructor-courses' | 'search';
   userName?: string;
 }
 

@@ -16,7 +16,8 @@ interface BannerCardsProps {
     | "daily"
     | "your-learning"
     | "your-courses"
-    | "instructor-courses";
+    | "instructor-courses"
+    | "search";
     instructorName?: string;
 }
 interface Instructor {
@@ -38,7 +39,7 @@ interface Course {
   state: "none" | "enrolled" | "completed" | "in-progress";
 }
 
-const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instructorName }) => {
+const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instructorName,  }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
@@ -48,6 +49,8 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
     let courses = [];
     let enrolledCourses = [];
     let instructors = [];
+    let searchCourses = [];
+    let searchInstructors = [];
     const instructorCourses = instructorName?.replace(/-/g, ' ');
 
     switch (subtype) {
@@ -81,12 +84,27 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
           console.error(error);
         }
         break;
+      case "search":
+        try {
+          if (type === "courses") {
+            courses = await crud_course.searchCourses(subtype);
+          } else {
+            instructors = await crud_user.searchInstructors(subtype);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+        break;
       default:
         break;
     }
     setCourses(Array.isArray(courses) ? courses : []);
-    instructors = await crud_user.getfeaturedInstructors();
-    setInstructors(Array.isArray(instructors) ? instructors : []);
+    if(type === "instructors" && subtype === "featured"){
+      instructors = await crud_user.getfeaturedInstructors();
+      setInstructors(Array.isArray(instructors) ? instructors : []);
+    } else {
+      setInstructors(Array.isArray(instructors) ? instructors : []);
+    }
   }, [subtype]);
 
   useEffect(() => {

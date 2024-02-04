@@ -12,6 +12,7 @@ import Button from "../buttons/Button";
 export default function SideNav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sessionActive, setSessionActive] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -20,6 +21,30 @@ export default function SideNav() {
     const isSessionActive = localStorage.getItem("token") !== null;
     setSessionActive(isSessionActive);
   }, []);
+
+  // 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  }
+
+  const handleSearch = () => {
+    if (searchValue.trim() !== "") {
+      // Redirect to search page
+      window.location.href = `/common/explore/search?query=${searchValue}`;
+    }
+  }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      // Evita que se dispare el evento `onKeyDown` cuando se suelta la tecla Enter
+      event.preventDefault();
+    }
+  };
 
   const loginLink = {
     href: "/login",
@@ -83,14 +108,21 @@ export default function SideNav() {
               }`}
             >
               <div className="flex justify-start w-full">
-                <div className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
+                <button type="button"         onClick={handleSearch}
+                className="flex items-center rounded-l-[10px] bg-[--white] border border-[--high-gray] p-2 hover:border-[--medium-gray] hover:cursor-pointer self-center">
                   <FontAwesomeIcon
                     icon={icons.faSearch}
                     className="text-[--medium-gray] w-[16px] m-1"
                   />
-                </div>
+                </button>
                 <input
                   type="text"
+                  placeholder="Buscar"
+                  value={searchValue}
+                  onChange={handleSearchChange}
+                  name="search"
+                  onKeyDown={handleKeyDown}
+                  onKeyUp={handleKeyUp}
                   className="bg-[--light] rounded-r-[10px] p-2 text-sm w-full"
                 />
               </div>
