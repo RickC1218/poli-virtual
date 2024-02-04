@@ -96,7 +96,8 @@ def user_api(request):
 
                     if(request.FILES.get('profile_image_url')):
                         profile_image = request.FILES.get('profile_image_url')
-                        profile_image.name = f'profile_image_{user.email}'
+                        current_time = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+                        profile_image.name = f'profile_image_{user.email}_{current_time}'
                         user_serializer.profile_image_url = profile_image
 
                     user_serializer.save()
