@@ -357,8 +357,8 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
         // redirect to the explore page
         showAlert(message, "success");
         setTimeout(() => {
-          router.push("/common/profile");
-          router.refresh();
+          window.location.reload();
+          window.location.href = "/common/profile";
         }, 3000);
       } else {
         message = "Probablemente no has iniciado sesión.";
