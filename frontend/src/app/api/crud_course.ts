@@ -180,6 +180,22 @@ const crud_course = {
       }
     }
   },
+
+  // search courses
+  searchCourses: async (searchData: string) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/course/get-courses/${searchData}`);
+      return response.data;
+    } catch (error) {
+      const responseError = error as { response?: { status?: number; data?: { mensaje?: string } } };
+      if (responseError?.response?.status === 404) {
+        return "Error al buscar cursos";
+      } else {
+        return "Error al buscar cursos";
+      }
+    }
+  }
+
 };
 
 export default crud_course;
