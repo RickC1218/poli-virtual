@@ -93,18 +93,13 @@ def user_api(request):
                 user_serializer = UserSerializer(user, data=request.data, partial=True)
 
                 if user_serializer.is_valid():
-                    user = user_serializer.save()
 
-                    if (request.FILES.get('profile_image_url')): # If the profile image is updated
-                        # Modify the name profile_image_url
+                    if(request.FILES.get('profile_image_url')):
                         profile_image = request.FILES.get('profile_image_url')
-                        profile_image_url = config('URL_IMAGE_INSTRUCTOR_STORAGE') + clean_string(profile_image.name) # Get the previous image in S3
-                        delete_object_in_s3(profile_image_url) # Delete the previous image in S3
+                        profile_image.name = f'profile_image_{user.email}'
+                        user_serializer.profile_image_url = profile_image
 
-                        if profile_image:
-                            profile_image.name = f'profile_image_{user.email}'
-                            user.profile_image_url = profile_image
-                            user.save()
+                    user_serializer.save()
 
                     return JsonResponse("Usuario actualizado", safe=False, status=200)
 
@@ -714,7 +709,7 @@ def delete_object_in_s3(object_url):
 # Delete special characters in a string
 def clean_string(text):
     # Remove special characters and replace spaces with underscores
-    clean_text = re.sub(r'[^a-zA-Z0-9\s\.-_]', '', text)
+    clean_text = re.sub(r'[^a-zA-Z0-9\s\._-]', '', text)
     clean_text = re.sub(r'\s+', '_', clean_text)
     return clean_text
 
