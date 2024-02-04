@@ -7,6 +7,7 @@ import icons from "../icons/icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 interface BannerCardsProps {
   state: "none" | "enrolled";
@@ -44,13 +45,12 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const mounted = useRef(true);
+  const params = useSearchParams();
 
   const fetchData = useCallback(async () => {
     let courses = [];
     let enrolledCourses = [];
     let instructors = [];
-    let searchCourses = [];
-    let searchInstructors = [];
     const instructorCourses = instructorName?.replace(/-/g, ' ');
 
     switch (subtype) {
@@ -87,9 +87,9 @@ const BannerCards: React.FC<BannerCardsProps> = ({ state, type, subtype, instruc
       case "search":
         try {
           if (type === "courses") {
-            courses = await crud_course.searchCourses(subtype);
+            courses = await crud_course.searchCourses(params.get("query") ?? "");
           } else {
-            instructors = await crud_user.searchInstructors(subtype);
+            instructors = await crud_user.searchInstructors(params.get("query") ?? "");
           }
         } catch (error) {
           console.error(error);
