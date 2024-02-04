@@ -19,4 +19,5 @@ urlpatterns = [
     path('user/add-last-watched-course/', views.add_last_watched_course, name='user-add-last-watched-course'), # Add last watched course
     path('user/get-last-watched-course/<str:course_name>/', views.get_last_watched_course, name='user-get-last-watched-course'), # Get last watched course
     path('user/is-enrolled-in-course/<str:course_name>/', views.is_enrolled_in_course, name='user-is-enrolled-in-course'), # Is enrolled in course
+    path('user/get-instructors/<str:key_word>/', views.get_instructors, name='user-get-instructors'), # Get instructors or courses
 ]

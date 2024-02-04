@@ -611,6 +611,41 @@ def featured_teachers(request):
             return JsonResponse("No hay instructores disponibles", safe=False, status=404)
 
 
+# Get the instructors by key word
+@csrf_exempt
+@api_view(['GET'])
+def get_instructors(request, key_word):
+    if request.method == 'GET':
+        try:
+            # Search if the key_word is in instructors
+            instructors = User.objects.filter(role='instructor')
+            instructors_serializer = UserSerializer(instructors, many=True)
+
+            instructors_data = instructors_serializer.data
+
+            instructors_to_return = []
+
+            for index in range(len(instructors_data)):
+                if key_word.lower() in instructors_data[index]['name'].lower() or key_word.lower() in instructors_data[index]['lastname'].lower():
+                    del instructors_data[index]['password'] # Remove the field password
+                    del instructors_data[index]['approve_teacher_email'] # Remove the field approve_teacher_email
+                    del instructors_data[index]['user_description'] # Remove the field user_description
+                    del instructors_data[index]['enrolled_courses'] # Remove the field enrolled_courses
+                    del instructors_data[index]['email_verification'] # Remove the field email_verification
+                    del instructors_data[index]['session_token'] # Remove the field session_token
+                    del instructors_data[index]['role'] # Remove the field role
+
+                    instructors_to_return.append(instructors_data[index])
+
+            if len(instructors_to_return) == 0:
+                return JsonResponse("No hay instructores disponibles", safe=False, status=404)
+            else:
+                return JsonResponse(instructors_to_return, safe=False, status=200)
+
+        except User.DoesNotExist:
+            return JsonResponse("No hay instructores disponibles", safe=False, status=404)
+
+
 # Send an email
 def send_email(email, subject, message):
     email = EmailMessage(
