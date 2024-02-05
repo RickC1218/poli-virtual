@@ -48,14 +48,18 @@ def category_api(request, id="0"):
     # Update
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        category = Category.objects.get(id=data['id'])
-        category_serializer = CategorySerializer(category, data=data, partial=True)
+        try:
+            category = Category.objects.get(id=data['id'])
+            category_serializer = CategorySerializer(category, data=data, partial=True)
 
-        if category_serializer.is_valid():
-            category_serializer.save()
-            return JsonResponse("Categoria actualizada", safe=False, status=200)
+            if category_serializer.is_valid():
+                category_serializer.save()
+                return JsonResponse("Categoria actualizada", safe=False, status=200)
+            else:
+                return JsonResponse("Error al actualizar categoria", safe=False, status=400)
 
-        return JsonResponse("Error al actualizar categoria", safe=False, status=400)
+        except Category.DoesNotExist:
+            return JsonResponse("Categoria no encontrada", safe=False, status=404)
 
     # Delete
     elif request.method == 'DELETE':
