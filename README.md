@@ -62,9 +62,6 @@ poetry install
 - Install MongoDB Compass https://www.mongodb.com/products/tools/compass.
 - Create a database in Compass and add a collection.
 
-
-<img width="513" alt="image1" src="assets\image-1.png">
-
 ## Project operation
 - You need to execute the following commands:
 ```bash
