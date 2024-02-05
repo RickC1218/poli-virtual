@@ -355,25 +355,10 @@
     {
       "title": "",
       "description": "",
-      "content": [
-        {
-          "title": "",
-          "video_url": ""
-        },
-        # Otros temas
-      ]
     }
   # Otros módulos
   ],
-  "comments": [
-    {
-      "student": "",
-      "title": "",
-      "description": "",
-      "date": ""
-    }
-  # Otros comentarios
-  ],
+  "comments": [],
   "trailer_video_url": "",
   "course_image_url": ""
 
@@ -382,7 +367,7 @@
   Status: 404 -> Error al guardar el curso.
   ```
 
-- `http://127.0.0.1:8000/course/<int:id>/`
+- `http://127.0.0.1:8000/course/<str:id>/`
   - Método: `GET`, `DELETE`
   - Descripción: Obtener un curso o todos y eliminar un curso dado su id.
 
@@ -404,7 +389,7 @@
   Status: 404 -> Curso no encontrado.
   ```
 
-- `http://127.0.0.1:8000/course/<str:category>/`
+- `http://127.0.0.1:8000/course/courses-by-category/<str:category>/`
   - Método: `GET`
   - Descripción: Obtener los cursos en función de una categoría.
 
@@ -522,7 +507,7 @@
   Status: 404 -> Error al actualizar categoria.
   ```
 
-- `http://127.0.0.1:8000/category/<int:id>/`
+- `http://127.0.0.1:8000/category/<str:id>/`
   - Método: `GET`, `DELETE`
   - Descripción: Obtiene y elimina una categoría.
 
@@ -544,7 +529,7 @@
   Status: 404 -> Categoria no encontrada.
   ```
 
-- `http://127.0.0.1:8000/category/<str:category_name>/`
+- `http://127.0.0.1:8000/category/get_category_id/<str:category_name>/`
   - Método: `GET`
   - Descripción: Obtiene el id de la categoría.
 
