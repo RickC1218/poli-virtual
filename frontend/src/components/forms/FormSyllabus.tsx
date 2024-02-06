@@ -9,12 +9,13 @@ import Swal from "sweetalert2";
 
 interface FormSyllabusProps {
   course: string;
+  courseID: string;
   modules: Module[];
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
   onConfirmSyllabus: (modules: Module[]) => void;
 }
 
-const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules, onConfirmSyllabus }) => {
+const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, courseID, modules, setModules, onConfirmSyllabus }) => {
   /* index para modules */
   const [index, setIndex] = useState<number>(0);
   /* index para contents */
@@ -30,6 +31,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
     content: contents,
     action: "add",
     course: course,
+    course_ID: courseID,
   });
 
   const [content, setContent] = useState<Content>({
@@ -83,6 +85,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
         content: [],
         action: "add",
         course: course,
+        course_ID: courseID,
       });
     }
   };
@@ -178,6 +181,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
           content: module.content,
           action: "add",
           course: course,
+          course_ID: courseID,
         },
       ]);
     } else {
@@ -197,6 +201,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
           })),
           action: "add",
           course: course,
+          course_ID: "",
         };
         return newModules;
       });
@@ -210,6 +215,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
       content: [],
       action: "add",
       course: course,
+      course_ID: courseID,
     });
   };
 
@@ -223,6 +229,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
       content: modules[id].content,
       action: "edit",
       course: course,
+      course_ID: courseID,
     });
     setExpandFormModule(true);
   };
@@ -327,7 +334,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
 
   /* confirm syllabus */
   const handleConfirmSyllabus = (modules: Module[]) => {
-    if (modules.length === 0) {
+    if (modules.length === 0 || modules === null) {
       showAlert("Por favor, agrega al menos un módulo.", "info");
       return;
     }
@@ -424,6 +431,7 @@ const FormSyllabus: React.FC<FormSyllabusProps> = ({ course, modules, setModules
             content={module.content}
             action={module.action}
             course={course}
+            course_ID={module.course_ID}
           />
           <div className="absolute top-[1.5px] right-[1.8px] m-2 p-2 flex space-x-2 cursor-pointer">
             <button type="button" onClick={() => handleEditModule(id)}>

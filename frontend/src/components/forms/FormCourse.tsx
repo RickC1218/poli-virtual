@@ -198,6 +198,10 @@ const FormCourse = () => {
     loadingAlert("Cargando...", "info");
   
     try {
+      if (modules.length === 0) {
+        showAlert("El curso debe tener al menos un módulo", "error");
+        return;
+      }
       // Create course
       await crud_course.createCourse(course, modules);
       loadingToast.close(); // Cerrar la alerta de carga
@@ -377,6 +381,7 @@ const FormCourse = () => {
       </div>
       <FormSyllabus 
         course={course.name}
+        courseID={""}
         modules={modules}
         setModules={setModules}       
         onConfirmSyllabus={handleConfirmSyllabus}
