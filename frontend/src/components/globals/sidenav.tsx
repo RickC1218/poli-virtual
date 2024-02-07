@@ -30,7 +30,7 @@ export default function SideNav() {
   const handleSearch = () => {
     if (searchValue.trim() !== "") {
       // Redirect to search page
-      window.location.href = `/common/explore/search?query=${searchValue}`;
+      window.location.href = `/common/search?query=${searchValue}`;
     }
   }
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
