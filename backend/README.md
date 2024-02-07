@@ -453,7 +453,7 @@
       "comment": "", # Comentario del curso
     }
   ]
-}
+  }
   
   # Salida
   Status: 200 -> Comentarios agregados.
