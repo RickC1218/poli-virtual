@@ -81,7 +81,7 @@ export default function Page() {
         const sessionToken = JSON.parse(localStorage.getItem("token") ?? "{}");
         const categoryData = await crud_category.getCategoryById(id);
         const courseData = await crud_course.getCourseById(courseID);
-        if (categoryData === "Error desconocido") {
+        if (categoryData === "Categoria no encontrada") {
           routerNotFound.push("/common/not-found");
         } else if (categoryData.name === courseData.category) {
           setCategory(categoryData as Category);

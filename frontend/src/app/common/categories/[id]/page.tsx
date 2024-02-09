@@ -24,7 +24,7 @@ export default function Page() {
     const fetchData = async () => {
       try {
         const categoryData = await crud_category.getCategoryById(id);
-        if (categoryData === "Error desconocido") {
+        if (categoryData === "Categoria no encontrada") {
           routerNotFound.push("/common/not-found");
         } else {
           setCategory(categoryData as Category);
@@ -33,7 +33,6 @@ export default function Page() {
         console.error("Error fetching categories:", error);
       }
     };
-
     if (id) {
       fetchData();
     }

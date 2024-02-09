@@ -24,6 +24,7 @@ const crud_category = {
   getCategoryById: async (id: any) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/category/${id}`);
+      console.log(response.status)
       return response.data;
     } catch (error) {
       const responseError = error as {
@@ -33,7 +34,7 @@ const crud_category = {
         return "Categoria no encontrada";
       } else {
         console.log(responseError);
-        return "Error desconocido";
+        return "Categoria no encontrada";
       }
     }
   },
