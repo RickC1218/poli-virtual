@@ -1,9 +1,10 @@
+"use client";
 import BigSection from "@/components/sections/BigSection";
 import Breadcrumbs from "@/components/tools/Breadcrumbs";
 import DifferentText from "@/components/tools/DifferentText";
 import Section from "@/components/sections/Section";
 import crud_category from "@/app/api/crud_category";
-import { useRouter } from "next/router";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 interface Category {
@@ -12,28 +13,44 @@ interface Category {
   description: string;
 }
 
-export async function generateStaticParams() {
-  try {
-    // Obtener todas las categorías disponibles
-    const categories = await crud_category.getCategories('0');
-    // Crear un arreglo de objetos de parámetros para las rutas estáticas
-    const paths = categories.map((category: any) => ({
-      params: { id: category.id.toString() },
-    }));
-    return paths;
-  } catch (error) {
-    console.error("Error fetching categories for static generation:", error);
-    return [];
-  }
-}
-
-export default function Page({ category }: { category: Category }) {
+export default function Page() {
+  const params = useParams();
   const routerNotFound = useRouter();
+  const id = params.id;
 
-  if (!category || category.id === "") {
-    // Manejo de casos en los que no se puede encontrar la categoría
-    routerNotFound.push("/common/not-found");
-    return null; // O un componente de carga, o un mensaje de error, etc.
+  const [category, setCategory] = useState<Category | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryData = await crud_category.getCategoryById(id);
+        if (categoryData === "Error desconocido") {
+          routerNotFound.push("/common/not-found");
+        } else {
+          setCategory(categoryData as Category);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
+  }, [id]);
+
+  if (!category || (category && category.id === "")) {
+    return (
+      <div
+        className={`flex flex-between w-full h-full flex-col justify-center`}
+      >
+        <div className="w-full p-6 md:px-20 md:py-10 self-center">
+          <h1 className="text-[32px] xl:text-[38px] text-center lg:text-start">
+            <DifferentText color="--principal-blue">Cargando...</DifferentText>
+          </h1>
+        </div>
+      </div>
+    );
   }
 
   const breadcrumbs = [
