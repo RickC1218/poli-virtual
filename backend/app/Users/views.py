@@ -26,6 +26,7 @@ import boto3
 
 import re
 
+from django.shortcuts import render
 
 # API views (Update and delete user - Get/update enrolled courses)
 @csrf_exempt
@@ -640,6 +641,13 @@ def get_instructors(request, key_word):
 
         except User.DoesNotExist:
             return JsonResponse("No hay instructores disponibles", safe=False, status=404)
+
+
+@csrf_exempt
+@api_view(['GET'])
+def hello_world(request):
+    message = "Hello World"
+    return render(request, 'hello_world.html', {'message': message}, status=200)
 
 
 # Send an email

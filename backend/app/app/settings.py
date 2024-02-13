@@ -16,18 +16,21 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR_CERT = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY')
+GLOBAL_PEM_FILE = BASE_DIR_CERT / 'app/global-bundle.pem'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:3001"]
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOWED_ORIGINS = ["*"]
 
 # Application definition
 
@@ -98,11 +101,11 @@ AWS_QUERYSTRING_AUTH = False
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'CLIENT':{
-            'host': 'localhost',
-            'port': 27017,
-        },
-        'NAME': config('DATABASE_NAME'),
+        'NAME': 'django-db',
+        'ENFORCE_SCHEMA': True,
+        'CLIENT': {
+            'host': f'mongodb://adminPolivirtual:P0l1v1rtu4L-2023@d@docdb-2024-02-12-02-19-01.cluster-c3emq2wu4rlz.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile={GLOBAL_PEM_FILE}&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false&connectTimeoutMS=5000'
+        }
     }
 }
 
