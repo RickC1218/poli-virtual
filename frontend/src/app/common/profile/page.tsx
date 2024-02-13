@@ -129,7 +129,7 @@ export default function Page() {
               creados por ti
             </>
           }
-          description="Gracias a tí, brindamos educación a estudiantes que lo necesitan"
+          description="Gracias a ti, brindamos educación a estudiantes que lo necesitan"
           enrolled="none"
           sectionType="courses"
           subtype="your-courses"

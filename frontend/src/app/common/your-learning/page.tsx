@@ -12,7 +12,7 @@ export default function Page() {
             de cursos
           </>
         }
-        description="Explora y administra tu aprendizaje de manera comoda."
+        description="Explora y administra tu aprendizaje de manera cómoda."
         enrolled="enrolled"
       />
     </div>
