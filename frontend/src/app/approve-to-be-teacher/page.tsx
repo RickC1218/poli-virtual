@@ -126,7 +126,7 @@ export default function Page() {
             href="/common/us"
             className="block md:flex-none hover:text-[--principal-red] hover:drop-shadow"
           >
-            ¿Quienes somos?
+            ¿Quiénes somos?
           </Link>
         </p>
       </form>
