@@ -157,23 +157,43 @@ export default function Page() {
           window.location.href = `/common/categories/${id}/${courseID}/${nextModule.title + "_" + nextSubtopic}`;
         }
       } else {
-        //update the course state
-        await crud_user.addLastVideoWatched(
-          {
-            "name": course.name,
-            "state": "completed",
-            "last_module_name": currentModule,
-            "last_subtopic_name": currentSubtopic,
-          },
-          sessionToken,
-        )
-        // If the current module index is the last one, get the next module
-        setCurrentModule('¡Felicidades!');
-        setCurrentSubtopic('¡Has terminado el curso!');
-        setCurrentVideo('');
+        // If the current subtopic index is not the last one, get the next subtopic
+        if (currentSubtopicIndex !== -1 && currentSubtopicIndex < course.modules[currentModuleIndex].content.length - 1) {
+          const nextSubtopic = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].title;
+          const nextVideoUrl = course.modules[currentModuleIndex].content[currentSubtopicIndex + 1].video_url;
+          setCurrentSubtopic(nextSubtopic);
+          setCurrentVideo(nextVideoUrl);
 
-        // redirect to the finish page
-        window.location.href = `/common/categories/${id}/${courseID}/finish`;
+          await crud_user.addLastVideoWatched(
+            {
+              "name": course.name,
+              "state": "in-progress",
+              "last_module_name": currentModule,
+              "last_subtopic_name": nextSubtopic,
+            },
+            sessionToken,
+          )
+          // redirect to the next video
+          window.location.href = `/common/categories/${id}/${courseID}/${currentModule + "_" + nextSubtopic}`;
+        } else {
+          // If the current module index is the last one, get the next module
+          await crud_user.addLastVideoWatched(
+            {
+              "name": course.name,
+              "state": "completed",
+              "last_module_name": currentModule,
+              "last_subtopic_name": currentSubtopic,
+            },
+            sessionToken,
+          )
+          setCurrentModule('¡Felicidades!');
+          setCurrentSubtopic('¡Has terminado el curso!');
+          setCurrentVideo('');
+
+          // when the video ends, redirect to the finish page
+          // redirect to the finish page
+          window.location.href = `/common/categories/${id}/${courseID}/finish`;
+        }
       }
     };
   
