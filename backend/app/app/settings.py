@@ -26,7 +26,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 GLOBAL_PEM_FILE = BASE_DIR_CERT / 'app/global-bundle.pem'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -104,7 +104,7 @@ DATABASES = {
         'NAME': 'django-db',
         'ENFORCE_SCHEMA': True,
         'CLIENT': {
-            'host': f'mongodb://adminPolivirtual:P0l1v1rtu4L-2023@d@docdb-2024-02-12-02-19-01.cluster-c3emq2wu4rlz.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile={GLOBAL_PEM_FILE}&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false&connectTimeoutMS=5000'
+            'host': f'mongodb://adminPolivirtual:P0l1v1rtu4L-2023@docdb-2024-02-12-02-19-01.cluster-c3emq2wu4rlz.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile={GLOBAL_PEM_FILE}&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false&connectTimeoutMS=5000'
         }
     }
 }
