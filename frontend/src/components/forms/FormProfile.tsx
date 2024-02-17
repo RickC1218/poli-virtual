@@ -207,7 +207,14 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
                 showAlert("Cargando...", "warning");
   
                 //create the user
-                await crud_user.createUser(newUser);
+                const res = await crud_user.createUser(newUser);
+                if (res === "Este usuario ya existe") {
+                  showAlert("Este usuario ya existe", "error");
+                  return;
+                } else if (res === "Error al registrar el usuario") {
+                  showAlert("Error al registrar el usuario", "error");
+                  return;
+                }
   
                 // temporal email
                 localStorage.setItem("emailVerify", user.email);
