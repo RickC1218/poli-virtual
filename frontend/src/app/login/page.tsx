@@ -89,6 +89,12 @@ export default function Page() {
     });
   };
 
+    //Validating email
+    const validateEmail = (email: string) => {
+      const regex = /^[a-zA-Z0-9._%+-]+@epn\.edu\.ec$/;
+      return regex.test(email);
+    };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     let message = "";
@@ -96,6 +102,13 @@ export default function Page() {
     //sanitize inputs
     user.email = escapeHTML(user.email);
     user.password = escapeHTML(user.password);
+
+    // validate email
+    if (!validateEmail(user.email)) {
+      message = "Correo electrónico inválido";
+      showAlert(message, "error");
+      return;
+    }
 
     // make login request
     const response = await crud_user.login(user);

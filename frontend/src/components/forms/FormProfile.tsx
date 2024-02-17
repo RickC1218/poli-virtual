@@ -295,6 +295,11 @@ const FormProfile: React.FC<FormProfileProps> = ({ type }) => {
       let message = "";
       e.preventDefault();
 
+      if (!validateEmail(user.approve_teacher_email)) {
+        showAlert("El correo electrónico debe ser institucional.", "error");
+        return;
+      }
+
       // If the email is already sent, do nothing
       if (emailSent) {
         return;

@@ -60,7 +60,17 @@ export default function Page() {
     });
   };
 
+  //Validating email
+  const validateEmail = (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@epn\.edu\.ec$/;
+    return regex.test(email);
+  };
+
   const sendEmail = async () => {
+    if (!validateEmail(email)) {
+      showAlert("Correo electrónico inválido", "error");
+      return;
+    }
     const response = await crud_user.sendEmailToRestorePassword(email);
     showAlert(
       response,

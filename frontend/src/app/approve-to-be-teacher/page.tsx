@@ -39,12 +39,23 @@ export default function Page() {
     setEmailVerification(e.target.value)
   };
 
+  //Validating email
+  const validateEmail = (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@epn\.edu\.ec$/;
+    return regex.test(email);
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     let message = "";
     try {
       //sanitize input
       const email = escapeHTML(emailVerification);
+      if (!validateEmail(email)) {
+        showAlert("Correo inválido", "error");
+        return;
+      }
+
       const response = await crud_user.beInstructor({email});
       message = response;
       //redirect to confirm page
