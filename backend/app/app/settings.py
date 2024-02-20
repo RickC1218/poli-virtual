@@ -30,7 +30,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ALLOWED_ORIGINS = ['https://polivirtual.me','http:ELB-FrontEnd-1165388717.us-east-1.elb.amazonaws.com']
+CORS_ALLOWED_ORIGINS = ['https://polivirtual.me','https://dev.polivirtual.me']
 
 # Application definition
 
