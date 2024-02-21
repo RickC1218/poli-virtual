@@ -1,8 +1,11 @@
+"use client";
 import BigSection from "@/components/sections/BigSection";
 import Breadcrumbs from "@/components/tools/Breadcrumbs";
 import DifferentText from "@/components/tools/DifferentText";
 import Section from "@/components/sections/Section";
 import crud_category from "@/app/api/crud_category";
+import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface Category {
   id: string;
@@ -11,7 +14,31 @@ interface Category {
   category: string;
 }
 
-export default function Page({category}: {category: Category}) {
+export default function Page() {
+  const params = useParams();
+  const routerNotFound = useRouter();
+  const id = params.id;
+
+  const [category, setCategory] = useState<Category | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryData = await crud_category.getCategoryById(id);
+        if (categoryData === "Error desconocido") {
+          routerNotFound.push("/common/not-found");
+        } else {
+          setCategory(categoryData as Category);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
+  }, [id]);
 
   if (!category || (category && category.id === "")) {
     return (
@@ -57,7 +84,7 @@ export default function Page({category}: {category: Category}) {
     </div>
   );
 }
-
+/*
 export async function getServerSideProps (params:any){
   alert(params);
   let id = params.id;
@@ -76,4 +103,4 @@ export async function getServerSideProps (params:any){
       }
     }
   }
-}
+}*/
